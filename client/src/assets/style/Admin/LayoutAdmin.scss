@@ -1,0 +1,28 @@
+.content{
+    padding: 1% 4%;
+    background-color: var(--body-background);
+    
+    .card-info{
+        box-shadow: 2px 2px 3px rgb(195, 195, 195);
+        border: transparent;
+        width: 95%;
+        margin-top: 16px;
+        &:hover{
+            background-color: rgb(233, 233, 233);
+        }
+    }
+    .card-detail{
+        margin: 1% 3%;
+        .edit-img{
+            .btn-edit-img{
+                overflow: hidden;
+            }
+        }
+    }
+    .pagination{
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+    }
+
+}
