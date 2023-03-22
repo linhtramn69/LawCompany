@@ -35,7 +35,8 @@ const data = [
     {
         icon: faUser,
         title: "Nhân viên",
-        color: `var(--oranger)`
+        color: `var(--oranger)`,
+        link: "staff"
     }
     
 ];

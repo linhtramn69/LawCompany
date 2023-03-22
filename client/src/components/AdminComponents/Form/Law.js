@@ -1,7 +1,8 @@
-import { Avatar, Button, Col, Form, Input, Radio, Row, Switch } from "antd";
+import { Avatar, Button, Col, Form, Input, Radio, Row, Select, Switch } from "antd";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { avatar } from "~/assets/images";
-import { userService } from '../../../services/index';
+import { boPhanService, chucVuService, userService } from '../../../services/index';
 
 const formItemLayout = {
     labelCol: {
@@ -13,17 +14,55 @@ const formItemLayout = {
         },
     }
 };
-function FormCustomer({ props }) {
+function FormLaw({ props }) {
+
     let { id } = useParams();
     let navigate = useNavigate();
     let btn = ['Thêm mới', 'Cập nhật'];
     const user = { ...props }
     const [form] = Form.useForm();
+    const [chucVu, setChucVu] = useState([]);
+    const [boPhan, setBoPhan] = useState([]);
+    let selectedChucVu, selectedBoPhan;
+
+    const getChucVu = async () => {
+        setChucVu((await chucVuService.get()).data)
+    };
+    useEffect(() => {
+        getChucVu();
+    }, []);
+    const arrChucVu = chucVu.map((value) => {
+        return {
+            label: value.ten_chuc_vu,
+            value: value._id
+        }
+    });
+
+    const getBoPhan = async () => {
+        setBoPhan((await boPhanService.get()).data)
+    };
+    useEffect(() => {
+        getBoPhan();
+    }, []);
+    const arrBoPhan = boPhan.map((value) => {
+        return {
+            label: value.ten_bo_phan,
+            value: value._id
+        }
+    });
+
+    const handleSelectedBoPhan = async (e) => {
+        selectedBoPhan = (await boPhanService.getById(e)).data
+    }
+    const handleSelectedChucVu = async (e) => {
+        selectedChucVu = (await chucVuService.getById(e)).data
+    }
+
     const handleUpdate = async (data) => {
         try {
             if (window.confirm(`Bạn muốn cập nhật lại người dùng ${user.ho_ten} ?`)) {
                 await userService.update(id, data);
-                navigate(`/admin/customer/${id}`);
+                navigate(`/admin/staff/${id}`);
             }
         }
         catch (error) {
@@ -33,7 +72,7 @@ function FormCustomer({ props }) {
     const handleAdd = async (data) => {
         try {
             let result = (await userService.create(data)).data;
-            navigate(`/admin/customer/${result.insertedId}`);
+            navigate(`/admin/staff/${result.insertedId}`);
         }
         catch (error) {
             console.log(error);
@@ -42,21 +81,26 @@ function FormCustomer({ props }) {
     const onFinish = (values) => {
         if (values.active === undefined)
             values.active = 1;
+
         const data = {
             ho_ten: values.name,
             ngay_sinh: values.dateOfBirth,
             email: values.email,
-            nghe_nghiep: values.job,
             dia_chi: values.address,
-            loai_user: values.typeOfUser,
-            website_cong_ty: values.website,
             account: {
                 sdt: values.phone,
                 mat_khau: values.password,
-                quyen: 0
+                quyen: 2
             },
             active: values.active,
-            
+            chuc_vu: {
+                id: values.chucVu,
+                ten_chuc_vu: selectedChucVu.ten_chuc_vu
+            },
+            bo_phan: {
+                id: values.boPhan,
+                ten_bo_phan: selectedBoPhan.ten_bo_phan
+            }
         }
         if (props)
             handleUpdate(data);
@@ -110,6 +154,14 @@ function FormCustomer({ props }) {
                             {
                                 name: ["active"],
                                 value: user.active,
+                            },
+                            {
+                                name: ["chucVu"],
+                                value: user.chuc_vu.ten_chuc_vu,
+                            },
+                            {
+                                name: ["boPhan"],
+                                value: user.bo_phan.ten_bo_phan,
                             },
                         ]
                         :
@@ -180,8 +232,8 @@ function FormCustomer({ props }) {
                     </Col>
                     <Col md={{ span: 8, push: 1 }}>
                         <Form.Item
-                            name="mobile"
-                            label="Số điện thoại"
+                            label="Địa chỉ"
+                            name="address"
                         >
                             <Input />
                         </Form.Item>
@@ -189,14 +241,6 @@ function FormCustomer({ props }) {
                 </Row>
                 <Row>
                     <Col md={{ span: 8 }}>
-                        <Form.Item
-                            label="Địa chỉ"
-                            name="address"
-                        >
-                            <Input />
-                        </Form.Item>
-                    </Col>
-                    <Col md={{ span: 8, push: 1 }}>
                         <Form.Item
                             name="email"
                             label="E-mail"
@@ -214,33 +258,7 @@ function FormCustomer({ props }) {
                             <Input />
                         </Form.Item>
                     </Col>
-
-                </Row>
-
-                <Row>
-                    <Col md={{ span: 8 }}>
-                        <Form.Item
-                            label="Nghề nghiệp"
-                            name="job"
-                        >
-                            <Input />
-                        </Form.Item>
-                    </Col>
                     <Col md={{ span: 8, push: 1 }}>
-                        <Form.Item
-                            name="website"
-                            label="Website"
-                        >
-                            <Input />
-                        </Form.Item>
-                    </Col>
-                    <Col md={{ span: 8, push: 1 }}>
-
-                    </Col>
-                </Row>
-
-                <Row>
-                    <Col md={{ span: 8 }}>
                         <Form.Item
                             label="Mật khẩu tài khoản"
                             name="password"
@@ -254,20 +272,34 @@ function FormCustomer({ props }) {
                             <Input.Password />
                         </Form.Item>
                     </Col>
-
-                    <Col md={{ span: 8, push: 1 }}>
+                </Row>
+                <Row>
+                    <Col md={{ span: 8 }}>
                         <Form.Item
-                            label="Loại tài khoản"
-                            name="typeOfUser"
+                            label="Chức vụ"
+                            name="chucVu"
                         >
-                            <Radio.Group value={user.loai_user}>
-                                <Radio value={'Cá nhân'}>Cá nhân</Radio>
-                                <Radio value={'Doanh nghiệp'}>Doanh nghiệp</Radio>
-                            </Radio.Group>
+                            <Select
+                                defaultValue = {selectedChucVu ? user.chuc_vu.ten_chuc_vu : null}
+                                options={arrChucVu}
+                                onChange={handleSelectedChucVu}
+                            />
                         </Form.Item>
                     </Col>
-
+                    <Col md={{ span: 8, push: 1 }}>
+                        <Form.Item
+                            name="boPhan"
+                            label="Bộ phận"
+                        >
+                            <Select
+                                defaultValue = {selectedBoPhan ? user.bo_phan.ten_bo_phan : null}
+                                options={arrBoPhan}
+                                onChange={handleSelectedBoPhan}
+                            />
+                        </Form.Item>
+                    </Col>
                 </Row>
+
                 <Row>
                     <Col md={{ span: 8 }}>
                         <Form.Item
@@ -292,4 +324,4 @@ function FormCustomer({ props }) {
     );
 }
 
-export default FormCustomer;
+export default FormLaw;

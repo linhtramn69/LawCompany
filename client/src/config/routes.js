@@ -7,12 +7,21 @@ const routes = {
     },
     admin: {
         dashboard: '/',
+        // Customer
         customerManager: '/customer',
         customerDetail: '/customer/:id',
         customerEdit: '/customer/edit/:id',
         customerAdd: '/customer/add',
+        // Staff
+        staffManager: '/staff',
+        staffDetail: '/staff/:id',
+        staffEdit: '/staff/edit/:id',
+        staffAdd: '/staff/add',
+        // Matter
         matterManager: '/matter',
-
+        matetrAdd: '/matter/add',
+        
+        table: '/table',
     }
 }
 export default routes;

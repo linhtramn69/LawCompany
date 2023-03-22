@@ -10,22 +10,25 @@ function CardUser({ info }) {
         <Card className='card-info'>
             <Meta
                 avatar={<Avatar shape='square' size={60} src={info.typeOfUser === 'Doanh nghiệp' ? avatar.company : avatar.user} />}
-                title={info.active ? info.name : 
-                <Space>
-                    {info.name}
-                    <FontAwesomeIcon icon={faLock} />
-                </Space>
-            }
+                title={info.active ? info.name :
+                    <Space>
+                        {info.name}
+                        <FontAwesomeIcon icon={faLock} />
+                    </Space>
+                }
                 description={
                     <>
-                      <Row>
-                            <Col md={{span: 16}} sm={{span: 24}} xs={{span: 16}}>{info.address} </Col>
-                            <Col md={{span: 8}} sm={{span: 24}} xs={{span: 8}}>
-                                <Tag color={
-                                        info.typeOfUser === 'Doanh nghiệp' ? "volcano" : "geekblue"}>
-                                    {info.typeOfUser === 'Doanh nghiệp' ? 'Doanh nghiệp' : "Cá nhân"}
-                                </Tag>
-                                
+                        <Row>
+                            <Col md={{ span: 16 }} sm={{ span: 24 }} xs={{ span: 16 }}>{info.address} </Col>
+                            <Col md={{ span: 8 }} sm={{ span: 24 }} xs={{ span: 8 }}>
+                                {
+                                    info.role === 0 ?
+                                        <Tag color={
+                                            info.typeOfUser === 'Doanh nghiệp' ? "volcano" : "geekblue"}>
+                                            {info.typeOfUser === 'Doanh nghiệp' ? 'Doanh nghiệp' : "Cá nhân"}
+                                        </Tag>
+                                        : null
+                                }
                             </Col>
                         </Row>
                         <p>

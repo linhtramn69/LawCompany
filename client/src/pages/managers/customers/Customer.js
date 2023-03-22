@@ -3,45 +3,13 @@ import { useEffect, useState } from "react";
 import { AppstoreOutlined, BarsOutlined } from '@ant-design/icons';
 import { Pagination } from 'antd';
 import Filter from "~/components/AdminComponents/Filter";
-import TableComponent from "~/components/AdminComponents/Table";
+import TableComponent from "~/components/AdminComponents/Table/Table";
 import { Link } from "react-router-dom";
 import { CardUser } from "~/components";
-import BreadcrumpAdmin from "~/components/AdminComponents/Breadcump";
 import { userService } from '../../../services/index';
 
-const columns = [
-    {
-        title: 'Họ tên',
-        dataIndex: 'name',
-    },
-    {
-        title: 'Ngày sinh',
-        dataIndex: 'dateOfBirth',
-    },
-    {
-        title: 'Số điện thoại',
-        dataIndex: 'phone',
-    },
-    {
-        title: 'Email',
-        dataIndex: 'email',
-    },
-    {
-        title: 'Nghề nghiệp',
-        dataIndex: 'job',
-    },
-    {
-        title: 'Địa chỉ',
-        dataIndex: 'address',
-    },
-    {
-        title: 'Phân loại',
-        dataIndex: 'typeOfUser',
-    },
-];
-
-function Customer() {
-
+function Customer({props, columns}) {
+    console.log(columns);
     const [users, setUsers] = useState([]);
     const data = [];
     const [minValue, setMinValue] = useState(0)
@@ -55,9 +23,14 @@ function Customer() {
     useEffect(() => {
         getUsers();
     }, []);
-
+    let chuc_vu=null;
+    let bo_phan=null;
     users.map((value, index) => {
-        if (value.account.quyen === 0) {
+        if (value.account.quyen === props) {
+            if(value.account.quyen !== 0){
+                chuc_vu = value.chuc_vu.ten_chuc_vu;
+                bo_phan = value.bo_phan.ten_bo_phan;
+            }
             return (
                 data.push({
                     key: index,
@@ -72,7 +45,9 @@ function Customer() {
                     typeOfUser: value.loai_user,
                     websiteCompany: value.website_cong_ty,
                     role: value.account.quyen,
-                    active: value.active
+                    active: value.active,
+                    chucVu: chuc_vu,
+                    boPhan: bo_phan
                 })
             )
         }
@@ -102,7 +77,7 @@ function Customer() {
 
     return (
         <>
-            <BreadcrumpAdmin />
+            
             <Filter seg={seg} />
             <br />
             {tab === 'Kanban' ?

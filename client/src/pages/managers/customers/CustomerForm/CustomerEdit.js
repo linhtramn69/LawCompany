@@ -4,7 +4,7 @@ import { Card, Divider, Space, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FormCustomer } from "~/components";
-import { userService } from '../../../services/index';
+import { userService } from '../../../../services/index';
 
 function CustomerEdit() {
 

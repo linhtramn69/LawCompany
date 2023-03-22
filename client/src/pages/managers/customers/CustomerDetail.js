@@ -28,6 +28,7 @@ const items = [
         children: `Content of Tab Pane 4`,
     },
 ];
+const defaultValue = ['customer', 'admin', 'staff']
 
 function CustomerDetail() {
 
@@ -36,6 +37,12 @@ function CustomerDetail() {
         account: {
             sdt: '',
             mat_khau: ''
+        },
+        chuc_vu: {
+            ten_chuc_vu: ''
+        },
+        bo_phan: {
+            ten_bo_phan: ''
         }
     });
 
@@ -60,7 +67,7 @@ function CustomerDetail() {
                     </Space>
                 }
                 extra={
-                    <Link to={`/admin/customer/edit/${id}`}>
+                    <Link to={`/admin/${defaultValue[user.account.quyen]}/edit/${id}`}>
                         <Button type="primary" className="btn-primary">EDIT</Button>
                     </Link>
                 }
@@ -75,9 +82,20 @@ function CustomerDetail() {
                             <Descriptions.Item span={2} label="Số điện thoại (di động)">{user.account.sdt}</Descriptions.Item>
                             <Descriptions.Item span={2} label="Email">{user.email}</Descriptions.Item>
                             <Descriptions.Item span={2} label="Địa chỉ">{user.dia_chi}</Descriptions.Item>
-                            <Descriptions.Item span={2} label="Nghề nghiệp">{user.nghe_nghiep}</Descriptions.Item>
-                            <Descriptions.Item span={2} label="Số điện thoại (doanh nghiệp)"></Descriptions.Item>
-                            <Descriptions.Item span={2} label="Website">{user.website_cong_ty} </Descriptions.Item>
+                            {user.account.quyen === 0 ?
+                                <>
+                                    <Descriptions.Item span={2} label="Nghề nghiệp">{user.nghe_nghiep}</Descriptions.Item>
+                                    <Descriptions.Item span={2} label="Số điện thoại (doanh nghiệp)"></Descriptions.Item>
+                                    <Descriptions.Item span={2} label="Website">{user.website_cong_ty} </Descriptions.Item>
+                                </>
+                                : user.account.quyen === 2 ?
+                                    <>
+                                        <Descriptions.Item span={2} label="Chức vụ">{user.chuc_vu.ten_chuc_vu}</Descriptions.Item>
+                                        <Descriptions.Item span={2} label="Bộ phận">{user.bo_phan.ten_bo_phan}</Descriptions.Item>
+                                    </>
+                                    : null
+                            }
+
                         </Descriptions>
                     </Col>
                     <Col>
