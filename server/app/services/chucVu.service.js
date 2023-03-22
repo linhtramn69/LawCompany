@@ -10,7 +10,7 @@ class ChucVu {
             _id: payload._id,
             ten_chuc_vu: payload.ten_chuc_vu,
             bo_phan: payload.bo_phan,
-            uong: payload.luong,
+            luong: payload.luong,
             phu_cap: payload.phu_cap
         };
 
