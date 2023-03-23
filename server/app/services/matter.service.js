@@ -8,17 +8,10 @@ class Matter {
     // define csdl
     extractConactData(payload){
         const matter = {
-            khach_hang: payload.khach_hang,
-            luat_su_tiep_nhan: payload.luat_su_tiep_nhan,
+            ten_vu_viec: payload.ten_vu_viec,
+            mo_ta_vu_viec: payload.mo_ta_vu_viec,
+            tu_van_vien: payload.tu_van_vien,
             luat_su_phu_trach: payload.luat_su_phu_trach,
-            linh_vuc: payload.linh_vuc,
-            mo_ta: payload.mo_ta,
-            cong_viec: payload.cong_viec,
-            tai_lieu: payload.tai_lieu,
-            chi_phi: payload.chi_phi,
-            lien_he: payload.lien_he,
-            lich_hen: payload.lich_hen,
-            
         };
 
         Object.keys(matter).forEach(
@@ -42,7 +35,7 @@ class Matter {
 
     async create(payload){
         const matter = this.extractConactData(payload);
-        const result = await this.Matter.insertOne(contract);
+        const result = await this.Matter.insertOne(matter);
         return result;
     }
 

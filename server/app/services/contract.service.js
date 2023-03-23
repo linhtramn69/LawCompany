@@ -8,15 +8,12 @@ class Contract {
     // define csdl
     extractConactData(payload){
         const contract = {
-            ngay_du_kien_bd: payload.ngay_du_kien_bd,
-            ngay_du_kien_kt: payload.ngay_du_kien_kt,
-            ngay_ky_hd: payload.ngay_ky_hd,
-            trang_thai_hd: payload.trang_thai_hd,
-            dich_vu: payload.dich_vu,
+            thoi_gian_bd: payload.thoi_gian_bd,
+            thoi_gian_kt: payload.thoi_gian_kt,
+            phieu_bao_gia: payload.phieu_bao_gia,
+            vu_viec: payload.vu_viec,
             khach_hang: payload.khach_hang,
             luat_su: payload.luat_su,
-            ho_so: payload.ho_so,
-            hoa_don: payload.hoa_don
         };
 
         Object.keys(contract).forEach(

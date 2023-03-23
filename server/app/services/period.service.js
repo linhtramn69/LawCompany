@@ -9,9 +9,8 @@ class Period {
     extractConactData(payload){
         const period = {
             ten_giai_doan: payload.ten_giai_doan,
-            mo_ta_giai_doan: payload.mo_ta_giai_doan,
-            id_ho_so: payload.id_ho_so,
-            tai_lieu: payload.tai_lieu
+            so_luong: payload.so_luong,
+            vu_viec: payload.vu_viec
         };
 
         // remove undefined fields

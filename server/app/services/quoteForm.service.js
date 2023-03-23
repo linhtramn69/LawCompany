@@ -1,29 +1,30 @@
 const { ObjectId } = require("mongodb");
 
-class RegiterForm {
+class QuoteForm {
     constructor(client){
-        this.RegiterForm = client.db().collection("registerForm");
+        this.QuoteForm = client.db().collection("quoteForm");
     }
 
     // define csdl
     extractConactData(payload){
-        const registerForm = {
+        const quoteForm = {
             ngay_lap_phieu: payload.ngay_lap_phieu,
             trang_thai_phieu: payload.trang_thai_phieu,
-            lich_hen: payload.lich_hen,
-            dich_vu: payload.dich_vu,
+            lich: payload.lich,
             khach_hang: payload.khach_hang,
-            luat_su: payload.luat_su
+            luat_su: payload.luat_su,
+            dich_vu: payload.dich_vu,
+            hop_dong: payload.hop_dong,
         };
 
-        Object.keys(registerForm).forEach(
-            (key) => registerForm[key] === undefined && delete registerForm[key]
+        Object.keys(quoteForm).forEach(
+            (key) => quoteForm[key] === undefined && delete quoteForm[key]
         );
-        return registerForm;
+        return quoteForm;
     }
 
     async findAll(){
-        const result = await this.RegiterForm.find();
+        const result = await this.QuoteForm.find();
         return result.toArray();
     }
 
@@ -31,13 +32,13 @@ class RegiterForm {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
-        const result = await this.RegiterForm.findOne(id);
+        const result = await this.QuoteForm.findOne(id);
         return result;
     }
 
     async create(payload){
-        const registerForm = this.extractConactData(payload);
-        const result = await this.RegiterForm.insertOne(registerForm);
+        const quoteForm = this.extractConactData(payload);
+        const result = await this.QuoteForm.insertOne(quoteForm);
         return result;
     }
 
@@ -45,10 +46,10 @@ class RegiterForm {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
-        const registerForm = this.extractConactData(payload);
-        const result = await this.RegiterForm.findOneAndUpdate(
+        const quoteForm = this.extractConactData(payload);
+        const result = await this.QuoteForm.findOneAndUpdate(
             id,
-            { $set: registerForm },
+            { $set: quoteForm },
             { returnDocument: "after" }
         );
         return result.value;
@@ -58,9 +59,9 @@ class RegiterForm {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
-        const result = await this.RegiterForm.findOneAndDelete(id);
+        const result = await this.QuoteForm.findOneAndDelete(id);
         return result.value;
     }
 }
 
-module.exports = RegiterForm;
+module.exports = QuoteForm;
