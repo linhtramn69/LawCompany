@@ -1,9 +1,12 @@
-import { Button, Col, Form, Input, Radio, Row, Space, Tabs } from "antd";
-import { useState } from "react";
-import { Select } from "~/components";
+import { Button, Col, Form, Input, Radio, Row, Space, Tabs, Select, Divider } from "antd";
+import { useEffect, useState } from "react";
+import { TableAddFile } from "~/components";
 import { Editor } from 'react-draft-wysiwyg';
-import SelectMltiple from "../SelectMultiple";
-import TableAddRow from "~/components/AdminComponents/Table/TableAddRow";
+import FormAddTask from "./FormAddTask";
+import FormAddPeriod from "./FormAddPeriod";
+import FormAddFee from "./FormAddFee";
+import { useStore } from "~/store";
+import { serviceService, typeServiceService } from '~/services/index';
 const formItemLayout = {
     labelCol: {
         xs: {
@@ -22,56 +25,92 @@ const formItemLayout = {
         }
     }
 };
-const wrapperStyle={
-    border: '1px solid #F1F1F1',
-    padding: '10px',
-    minHeight: '40vh'
-}
 const label = [
     'Nội bộ được phép truy cập',
     'Khách hàng được phép truy cập'
 ]
 
-const items = [
-    {
-        key: '1',
-        label: `Mô tả`,
-        children: <Editor
-            wrapperClassName="wrapper-class"
-            editorClassName="editor-class"
-            toolbarClassName="toolbar-class"
-            wrapperStyle={wrapperStyle}
-        />,
-    },
-    {
-        key: '2',
-        label: `Giấy tờ`,
-        children: <TableAddRow/>,
-    },
-    {
-        key: '3',
-        label: `Liên hệ`,
-        children: `Content of Tab Pane 3`,
-    },
-    {
-        key: '4',
-        label: `Công việc`,
-        children: `Content of Tab Pane 3`,
-    },
-    {
-        key: '5',
-        label: `Chi phí`,
-        children: `Content of Tab Pane 3`,
-    },
-    {
-        key: '6',
-        label: `Lịch`,
-        children: `Content of Tab Pane 3`,
-    },
-];
 function FormMatter() {
+    const items = [
+        {
+            key: '1',
+            label: `Mô tả`,
+            children: <Editor />,
+        },
+        {
+            key: '2',
+            label: `Giấy tờ`,
+            children: <TableAddFile />,
+        },
+        {
+            key: '3',
+            label: `Liên hệ`,
+            children: <TableAddFile />,
+        },
+        {
+            key: '4',
+            label: `Công việc`,
+            children: <FormAddTask />,
+        },
+        {
+            key: '5',
+            label: `Phí cố định`,
+            children: <FormAddPeriod />,
+        },
+        {
+            key: '6',
+            label: `Chi phí`,
+            children: <FormAddFee />,
+        }
+    ];
+    const arrTypeService = [];
+    const arrService = [];
+    const arrCustomer = [];
+    const arrStaff = [];
+    const [state, dispatch] = useStore();
     const [value, setValue] = useState(2);
+    const [typeServices, setTypeServices] = useState([]);
+    const [services, setServices] = useState([]);
 
+    const getTypeServices = async () => {
+        setTypeServices((await typeServiceService.get()).data)
+    };
+    useEffect(() => {
+        getTypeServices();
+    }, []);
+    const handleChangeTypeService = async (value) => {
+        setServices((await serviceService.getByType(value)).data)
+    };
+    state.users.map((value) => {
+        if (value.account.quyen == 0) {
+            arrCustomer.push({
+                value: value._id,
+                label: value.ho_ten
+            })
+        }
+        else {
+            arrStaff.push({
+                value: value._id,
+                label: value.ho_ten
+            })
+        }
+    })
+    typeServices.map((value) => {
+        return (
+            arrTypeService.push({
+                value: value._id,
+                label: value.ten_linh_vuc
+            })
+        )
+    })
+    services.map((value) => {
+        return (
+            arrService.push({
+                value: value._id,
+                label: value.ten_dv
+            })
+        )
+    })
     const onChange = (e) => {
         console.log('radio checked', e.target.value);
         setValue(e.target.value);
@@ -79,63 +118,59 @@ function FormMatter() {
     const onChangeTab = (key) => {
         console.log(key);
     };
+    const onFinish = (values) => {
+        
+        console.log(values);
+    }
     return (
         <>
             <Form {...formItemLayout}
-            >
+                onFinish={onFinish}>
                 <Row>
                     <Col span={12} pull={2}>
                         <Form.Item
                             label="Tên vụ việc"
-                            name="name"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'Please input name matter!',
-                                },
-                            ]}
+                            name="nameMatter"
                         >
                             <Input />
                         </Form.Item>
-                    </Col>
-                    <Col span={12} pull={2}>
                         <Form.Item
-                            label="Luật sư phụ trách"
-                            name="name"
+                            label="Lĩnh vực"
+                            name="typeService"
                         >
-                            <Select />
+                            <Select
+                                showSearch
+                                allowClear
+                                style={{
+                                    width: '100%',
+                                }}
+                                optionFilterProp="children"
+                                filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                filterSort={(optionA, optionB) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                options={arrTypeService}
+                                onChange={handleChangeTypeService}
+                            />
                         </Form.Item>
-                    </Col>
-
-                </Row>
-
-                <Row>
-                    <Col span={12} pull={2}>
                         <Form.Item
-                            label="Khách hàng"
-                            name="name"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'Please input name matter!',
-                                },
-                            ]}
+                            label="Dịch vụ"
+                            name="service"
                         >
-                            <Select />
+                            <Select
+                                showSearch
+                                allowClear
+                                style={{
+                                    width: '100%',
+                                }}
+                                optionFilterProp="children"
+                                filterOption={(input, option) => (option?.label ?? '').includes(input)}
+                                filterSort={(optionA, optionB) =>
+                                    (optionA?.label ?? '').toLowerCase().localeCompare((optionB?.label ?? '').toLowerCase())
+                                }
+                                options={arrService}
+                            />
                         </Form.Item>
-                    </Col>
-                    <Col span={12} pull={2}>
-                        <Form.Item
-                            label="Luật sư ban đầu"
-                            name="name"
-                        >
-                            <Select />
-                        </Form.Item>
-                    </Col>
-
-                </Row>
-                <Row>
-                    <Col span={12} pull={2}>
                         <Form.Item
                             label="Hiển thị"
                             name="show"
@@ -149,17 +184,54 @@ function FormMatter() {
                             </Radio.Group>
                         </Form.Item>
                     </Col>
-                    {value < 2 ?
-                        <Col span={12} pull={2}>
+                    <Col span={12} pull={2}>
+                        <Form.Item
+                            label="Khách hàng"
+                            name="customer"
+                        >
+                            <Select
+                                showSearch
+                                allowClear
+                                style={{
+                                    width: '100%',
+                                }}
+                                options={arrCustomer}
+                            />
+                        </Form.Item>
+                        <Form.Item
+                            label="Luật sư phụ trách"
+                            name="name"
+                        >
+                            <Select
+                                showSearch
+                                allowClear
+                                style={{
+                                    width: '100%',
+                                }}
+                                options={arrStaff}
+                            />
+                        </Form.Item>
+                        {value < 2 ?
                             <Form.Item
                                 label={label[value]}
-                                name="name"
+                                name="nameShow"
                             >
-                                <SelectMltiple />
+                                <Select
+                                    mode="multiple"
+                                    showSearch
+                                    allowClear
+                                    style={{
+                                        width: '100%',
+                                    }}
+                                    options={value === 1 ? arrCustomer : arrStaff}
+                                />
                             </Form.Item>
-                        </Col> : <></>
-                    }
+                            : <></>
+                        }
+                    </Col>
                 </Row>
+
+                <Divider />
                 <Form.Item
                     wrapperCol={{
                         md: 24
@@ -173,7 +245,6 @@ function FormMatter() {
                 >
                     <Button type="primary" htmlType="submit" className="btn-primary">SAVE</Button>
                 </Form.Item>
-
             </Form>
         </>
     );

@@ -4,11 +4,12 @@ import { Card, Divider, Space, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import FormLaw from "~/components/AdminComponents/Form/Law";
+import { useStore } from "~/store";
 import { userService } from '../../../../services/index';
 
 function StaffEdit() {
 
-    let {id} = useParams();
+    let { id } = useParams();
     const [user, setUser] = useState({
         account: {
             sdt: '',
@@ -21,13 +22,14 @@ function StaffEdit() {
             ten_bo_phan: ''
         }
     });
-    const getUser = async () => {
-        setUser((await userService.getById(id)).data)
-    };
+
     useEffect(() => {
+        const getUser = async () => {
+            setUser((await userService.getById(id)).data)
+        };
         getUser();
-    }, []);
-    
+    }, [id]);
+
     return (
         <>
             <Card className="card-form card-detail"
@@ -40,7 +42,7 @@ function StaffEdit() {
                     </Space>
                 }
             >
-                <FormLaw props={user}/>
+                <FormLaw props={user} />
             </Card>
         </>
     );

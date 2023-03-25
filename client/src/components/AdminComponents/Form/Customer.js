@@ -1,7 +1,10 @@
-import { Avatar, Button, Col, Form, Input, Radio, Row, Switch } from "antd";
+import { Avatar, Button, Col, DatePicker, Form, Input, Radio, Row, Switch } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import { avatar } from "~/assets/images";
 import { userService } from '../../../services/index';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+dayjs.extend(customParseFormat);
 
 const formItemLayout = {
     labelCol: {
@@ -44,7 +47,7 @@ function FormCustomer({ props }) {
             values.active = 1;
         const data = {
             ho_ten: values.name,
-            ngay_sinh: values.dateOfBirth,
+            ngay_sinh: values.dateOfBirth.format('DD-MM-YYYY'),
             email: values.email,
             nghe_nghiep: values.job,
             dia_chi: values.address,
@@ -58,11 +61,12 @@ function FormCustomer({ props }) {
             active: values.active,
             
         }
+       
         if (props)
             handleUpdate(data);
         else handleAdd(data);
     }
-
+    console.log(typeof user.ngay_sinh);
     return (
         <>
 
@@ -77,7 +81,7 @@ function FormCustomer({ props }) {
                             },
                             {
                                 name: ["dateOfBirth"],
-                                value: user.ngay_sinh,
+                                value: dayjs(user.ngay_sinh, 'DD-MM-YYYY'),
                             },
                             {
                                 name: ["address"],
@@ -171,11 +175,11 @@ function FormCustomer({ props }) {
                 </Row>
                 <Row>
                     <Col md={{ span: 8 }}>
-                        <Form.Item
-                            label="Ngày sinh"
-                            name="dateOfBirth"
+                        <Form.Item 
+                            name="dateOfBirth" 
+                            label="Ngày sinh" 
                         >
-                            <Input />
+                            <DatePicker format={'DD-MM-YYYY'}/>
                         </Form.Item>
                     </Col>
                     <Col md={{ span: 8, push: 1 }}>

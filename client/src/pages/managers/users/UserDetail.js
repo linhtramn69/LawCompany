@@ -46,12 +46,12 @@ function CustomerDetail() {
         }
     });
 
-    const getUser = async () => {
-        setUser((await userService.getById(id)).data)
-    };
     useEffect(() => {
+        const getUser = async () => {
+            setUser((await userService.getById(id)).data)
+        };
         getUser();
-    }, []);
+    }, [id]);
 
     return (
         <>

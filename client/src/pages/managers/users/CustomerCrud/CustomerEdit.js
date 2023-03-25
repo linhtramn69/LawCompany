@@ -8,20 +8,21 @@ import { userService } from '../../../../services/index';
 
 function CustomerEdit() {
 
-    let {id} = useParams();
+    let { id } = useParams();
     const [user, setUser] = useState({
         account: {
             sdt: '',
             mat_khau: ''
         }
     });
-    const getUser = async () => {
-        setUser((await userService.getById(id)).data)
-    };
+
     useEffect(() => {
+        const getUser = async () => {
+            setUser((await userService.getById(id)).data)
+        };
         getUser();
-    }, []);
-    
+    }, [id]);
+
     return (
         <>
             <Card className="card-form card-detail"
@@ -34,7 +35,7 @@ function CustomerEdit() {
                     </Space>
                 }
             >
-                <FormCustomer props={user}/>
+                <FormCustomer props={user} />
             </Card>
         </>
     );

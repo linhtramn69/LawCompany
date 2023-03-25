@@ -1,6 +1,7 @@
 import BreadcrumpAdmin from "~/components/AdminComponents/Breadcump";
-import Customer from "./Customer";
-const columnsCustomer = [
+import User from "./User";
+
+const columnsStaff = [
     {
         title: 'Họ tên',
         dataIndex: 'name',
@@ -18,26 +19,26 @@ const columnsCustomer = [
         dataIndex: 'email',
     },
     {
-        title: 'Nghề nghiệp',
-        dataIndex: 'job',
-    },
-    {
         title: 'Địa chỉ',
         dataIndex: 'address',
     },
     {
-        title: 'Phân loại',
-        dataIndex: 'typeOfUser',
+        title: 'Bộ phận',
+        dataIndex: 'boPhan',
+    },
+    {
+        title: 'Chức vụ',
+        dataIndex: 'chucVu',
     },
 ];
-function CustomerManager() {
-    return ( 
 
+function StaffManager() {
+    return ( 
         <>
             <BreadcrumpAdmin />
-            <Customer props={0} columns={columnsCustomer}/>
+            <User props={2} columns={columnsStaff}/>
         </>
      );
 }
 
-export default CustomerManager;
+export default StaffManager;

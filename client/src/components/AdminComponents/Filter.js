@@ -52,7 +52,6 @@ function Filter({ seg }) {
         <Col md={{ span: 4 }}>
           <Space>
             <Link to={`add`}><Button type="primary" className="btn-primary">CREATE</Button></Link>
-            {/* <Button className="btn-outline-primary">CREATE</Button> */}
           </Space>
         </Col>
         <Col md={{ span: 8, push: 10 }}>

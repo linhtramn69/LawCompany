@@ -21,7 +21,9 @@ const routes = {
         matterManager: '/matter',
         matetrAdd: '/matter/add',
         
-        table: '/table',
+        //Quotes
+        quotesManager: '/quotes',
+        quotesAdd: '/quotes/add'
     }
 }
 export default routes;

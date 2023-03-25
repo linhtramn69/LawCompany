@@ -1,17 +1,18 @@
-import TableAddRow from "~/components/AdminComponents/Table/TableAddRow"
 import config from "~/config/config"
 import Layout from "~/layouts/Layout"
 import LayoutAdmin from "~/layouts/LayoutAdmin"
-import CustomerAdd from "~/pages/managers/customers/CustomerForm/CustomerAdd"
-import CustomerDetail from "~/pages/managers/customers/CustomerDetail"
-import CustomerEdit from "~/pages/managers/customers/CustomerForm/CustomerEdit"
-import CustomerManager from "~/pages/managers/customers/CustomerManager"
+import CustomerAdd from "~/pages/managers/users/CustomerCrud/CustomerAdd"
+import CustomerDetail from "~/pages/managers/users/UserDetail"
+import CustomerEdit from "~/pages/managers/users/CustomerCrud/CustomerEdit"
+import CustomerManager from "~/pages/managers/users/CustomerManager"
 import Dashboard from "~/pages/managers/dashboard"
-import Matter from "~/pages/managers/matters/Matter"
+import Matter from "~/pages/managers/matters/MatterManager"
 import MatterAdd from "~/pages/managers/matters/MatterAdd"
-import StaffManager from "~/pages/managers/customers/StaffManager"
-import StaffEdit from "~/pages/managers/customers/StaffForm/StaffEdit"
-import StaffAdd from "~/pages/managers/customers/StaffForm/StaffAdd"
+import StaffManager from "~/pages/managers/users/StaffManager"
+import StaffEdit from "~/pages/managers/users/StaffCrud/StaffEdit"
+import StaffAdd from "~/pages/managers/users/StaffCrud/StaffAdd"
+import QuotesManager from "~/pages/managers/quotes/QuotesManager"
+import QuotesAdd from "~/pages/managers/quotes/QuotesAdd"
 
 const publicRoutes = [
     // {path: config.routes.user.home, component: HomePage,  layout: UserLayout},
@@ -33,8 +34,10 @@ const privateRoutes = [
     // Matter
     { path: config.routes.admin.matterManager, component: Matter, layout: LayoutAdmin },
     { path: config.routes.admin.matetrAdd, component: MatterAdd, layout: LayoutAdmin },
+    //Quotes
+    { path: config.routes.admin.quotesManager, component: QuotesManager, layout: LayoutAdmin },
+    { path: config.routes.admin.quotesAdd, component: QuotesAdd, layout: LayoutAdmin },
 
-    { path: config.routes.admin.table, component: TableAddRow, layout: LayoutAdmin },
 
 ]
 

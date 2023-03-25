@@ -7,7 +7,7 @@ const styleCard1 = {
     backgroundColor: `var(--grey-blue)`,
 }
 function CardMatter({ title, total }) {
-    console.log(total);
+    
     return (
         <Col md={{span: 8}} xs={{span: 8}}>
             <div className="card-matter" style={

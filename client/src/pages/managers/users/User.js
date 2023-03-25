@@ -1,31 +1,26 @@
-import { Col, Row, Segmented } from "antd";
-import { useEffect, useState } from "react";
+import { Col, Row, Segmented,Pagination } from "antd";
 import { AppstoreOutlined, BarsOutlined } from '@ant-design/icons';
-import { Pagination } from 'antd';
-import Filter from "~/components/AdminComponents/Filter";
-import TableComponent from "~/components/AdminComponents/Table/Table";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { CardUser } from "~/components";
-import { userService } from '../../../services/index';
-
-function Customer({props, columns}) {
-    console.log(columns);
-    const [users, setUsers] = useState([]);
+import { useStore, actions } from "~/store";
+import { CardUser, Filter,TableComponent } from "~/components";
+import { userService } from '../../../services';
+function User({props, columns}) {
+    const [state, dispatch] = useStore();
     const data = [];
     const [minValue, setMinValue] = useState(0)
     const [maxValue, setMaxValue] = useState(8)
     const [tab, setTab] = useState("Kanban");
     const numEachPage = 8
-
     const getUsers = async () => {
-        setUsers((await userService.get()).data)
+        dispatch(actions.setUsers((await userService.get()).data))
     };
     useEffect(() => {
-        getUsers();
+        getUsers()
     }, []);
     let chuc_vu=null;
     let bo_phan=null;
-    users.map((value, index) => {
+    state.users.map((value, index) => {
         if (value.account.quyen === props) {
             if(value.account.quyen !== 0){
                 chuc_vu = value.chuc_vu.ten_chuc_vu;
@@ -51,6 +46,7 @@ function Customer({props, columns}) {
                 })
             )
         }
+        return data;
     })
 
     const handleChange = value => {
@@ -114,4 +110,4 @@ function Customer({props, columns}) {
     );
 }
 
-export default Customer;
+export default User;

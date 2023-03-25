@@ -1,31 +1,15 @@
-import { Card, Steps } from "antd";
-import { useState } from "react";
+import {  Card } from "antd";
 import BreadcrumpAdmin from "~/components/AdminComponents/Breadcump";
 import FormMatter from "~/components/AdminComponents/Form/Matter";
+import TitleCardModal from "~/components/AdminComponents/TitleCardModal";
 
 function MatterAdd() {
-    const [current, setCurrent] = useState(0);
     return (
         <>
         <BreadcrumpAdmin/>
             <Card
                 title={
-                    <Steps
-                        type="navigation"
-                        className="site-navigation-steps"
-                        current={current}
-                        items={[
-                            {
-                                title: 'Tạo mới'
-                            },
-                            {
-                                title: 'Đang thực hiện'
-                            },
-                            {
-                                title: 'Đã đóng'
-                            },
-                        ]}
-                    />
+                   <TitleCardModal title="Thêm vụ việc" current={1}/>
                 }>
                 <FormMatter />
             </Card>

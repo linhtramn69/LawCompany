@@ -1,8 +1,11 @@
-import { Avatar, Button, Col, Form, Input, Radio, Row, Select, Switch } from "antd";
+import { Avatar, Button, Col, DatePicker, Form, Input, Radio, Row, Select, Switch } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { avatar } from "~/assets/images";
 import { boPhanService, chucVuService, userService } from '../../../services/index';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+dayjs.extend(customParseFormat);
 
 const formItemLayout = {
     labelCol: {
@@ -84,7 +87,7 @@ function FormLaw({ props }) {
 
         const data = {
             ho_ten: values.name,
-            ngay_sinh: values.dateOfBirth,
+            ngay_sinh: values.dateOfBirth.format('DD-MM-YYYY'),
             email: values.email,
             dia_chi: values.address,
             account: {
@@ -121,7 +124,7 @@ function FormLaw({ props }) {
                             },
                             {
                                 name: ["dateOfBirth"],
-                                value: user.ngay_sinh,
+                                value: dayjs(user.ngay_sinh, 'DD-MM-YYYY'),
                             },
                             {
                                 name: ["address"],
@@ -223,11 +226,11 @@ function FormLaw({ props }) {
                 </Row>
                 <Row>
                     <Col md={{ span: 8 }}>
-                        <Form.Item
-                            label="Ngày sinh"
-                            name="dateOfBirth"
-                        >
-                            <Input />
+                    <Form.Item 
+                        name="dateOfBirth" 
+                        label="Ngày sinh" 
+                    >
+                            <DatePicker format={'DD-MM-YYYY'}/>
                         </Form.Item>
                     </Col>
                     <Col md={{ span: 8, push: 1 }}>
