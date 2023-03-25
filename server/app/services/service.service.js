@@ -38,7 +38,7 @@ class Service {
 
     // tìm tất cả Service theo id loại Service
     async findAllByTypeService(id_loai_dv){
-        const result = await this.Service.find({ id_loai_dv: id_loai_dv });
+        const result = await this.Service.find({ "linh_vuc._id": id_loai_dv });
         return result.toArray();
     }
 

@@ -10,7 +10,6 @@ class Matter {
         const matter = {
             ten_vu_viec: payload.ten_vu_viec,
             mo_ta_vu_viec: payload.mo_ta_vu_viec,
-            tu_van_vien: payload.tu_van_vien,
             luat_su_phu_trach: payload.luat_su_phu_trach,
         };
 
