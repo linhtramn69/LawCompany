@@ -10,7 +10,16 @@ class Matter {
         const matter = {
             ten_vu_viec: payload.ten_vu_viec,
             mo_ta_vu_viec: payload.mo_ta_vu_viec,
-            luat_su_phu_trach: payload.luat_su_phu_trach,
+            linh_vuc: payload.linh_vuc,
+            dich_vu: payload.dich_vu,
+            luat_su: payload.luat_su,
+            khach_hang: payload.khach_hang,
+            truy_cap: payload.truy_cap,
+            quy_trinh: payload.quy_trinh,
+            cong_viec: payload.cong_viec,
+            tai_lieu: payload.tai_lieu,
+            chi_phi: payload.chi_phi,
+            lien_he: payload.lien_he
         };
 
         Object.keys(matter).forEach(

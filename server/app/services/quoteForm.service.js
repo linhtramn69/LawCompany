@@ -8,13 +8,19 @@ class QuoteForm {
     // define csdl
     extractConactData(payload){
         const quoteForm = {
-            ngay_lap_phieu: payload.ngay_lap_phieu,
-            trang_thai_phieu: payload.trang_thai_phieu,
-            lich: payload.lich,
             khach_hang: payload.khach_hang,
-            luat_su: payload.luat_su,
+            linh_vuc: payload.linh_vuc,
             dich_vu: payload.dich_vu,
-            hop_dong: payload.hop_dong,
+            nguoi_lap_phieu: payload.nguoi_lap_phieu,
+            ngay_gui_phieu: payload.ngay_gui_phieu,
+            ngay_lap_phieu: payload.ngay_lap_phieu,
+            ngay_xac_nhan_phieu: payload.ngay_xac_nhan_phieu,
+            trang_thai_phieu: payload.trang_thai_phieu,
+            tong_gia_du_kien: payload.tong_gia_du_kien,
+            dieu_khoan_thanh_toan: payload.dieu_khoan_thanh_toan,
+            van_de: payload.van_de,
+            ghi_chu: payload.ghi_chu,
+            status: payload.status
         };
 
         Object.keys(quoteForm).forEach(
