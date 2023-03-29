@@ -23,12 +23,12 @@ const matterRoute = require("./app/routes/matter.route");
 const taskRoute = require("./app/routes/task.route");
 const typeFeeRoute = require("./app/routes/typeFee.route");
 const feeRoute = require("./app/routes/fee.route");
-const fileRoute = require("./app/routes/file.route");
 const periodRoute = require("./app/routes/period.route");
-const imageRoute = require("./app/routes/image.route");
 const billRoute = require("./app/routes/bill.route");
 const thanhToanRoute = require("./app/routes/thanhToan.route");
+const timePayRoute = require("./app/routes/timePay.route");
 const timeAppointmentRoute = require("./app/routes/timeAppointment.route");
+const typeAppointmentRoute = require("./app/routes/typeAppointment.route");
 
 // use Route
 app.use("/api/type-service", typeServiceRoute);
@@ -47,12 +47,12 @@ app.use("/api/matter", matterRoute);
 app.use("/api/task", taskRoute);
 app.use("/api/type-fee", typeFeeRoute);
 app.use("/api/fee", feeRoute);
-app.use("/api/file", fileRoute);
 app.use("/api/period", periodRoute);
-app.use("/api/image", imageRoute);
 app.use("/api/bill", billRoute);
 app.use("/api/hinh-thuc-thanh-toan", thanhToanRoute);
+app.use("/api/dieu-khoan-thanh-toan", timePayRoute);
 app.use("/api/time-appointment", timeAppointmentRoute);
+app.use("/api/type-appointment", typeAppointmentRoute);
 
 // handle 404 response
 app.use((req, res, next) => {

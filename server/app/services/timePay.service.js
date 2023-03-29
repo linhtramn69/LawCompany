@@ -1,27 +1,24 @@
 const { ObjectId } = require("mongodb");
 
-class Image {
+class TimePay {
     constructor(client){
-        this.Image = client.db().collection("image");
+        this.TimePay = client.db().collection("timePay");
     }
 
     // define csdl
     extractConactData(payload){
-        const image = {
-            ten_image: payload.ten_image,
-            link_image: payload.link_image,
-            id_tai_lieu: payload.id_tai_lieu
-        };
-
+        const timePay = {
+            ten: payload.ten
+        }
         // remove undefined fields
-        Object.keys(image).forEach(
-            (key) => image[key] === undefined && delete image[key]
+        Object.keys(timePay).forEach(
+            (key) => timePay[key] === undefined && delete timePay[key]
         );
-        return image;
+        return timePay;
     }
 
     async findAll(){
-        const result = await this.Image.find();
+        const result = await this.TimePay.find();
         return result.toArray();
     }
 
@@ -29,13 +26,13 @@ class Image {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
-        const result = await this.Image.findOne(id);
+        const result = await this.TimePay.findOne(id);
         return result;
     }
 
     async create(payload){
-        const image = this.extractConactData(payload);
-        const result = await this.Image.insertOne(image);
+        const timePay = this.extractConactData(payload);
+        const result = await this.TimePay.insertOne(timePay);
         return result;
     }
 
@@ -43,10 +40,10 @@ class Image {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
-        const image = this.extractConactData(payload);
-        const result = await this.Image.findOneAndUpdate(
+        const timePay = this.extractConactData(payload);
+        const result = await this.TimePay.findOneAndUpdate(
             id,
-            { $set: image },
+            { $set: timePay },
             { returnDocument: "after" }
         )
         return result.value;
@@ -56,10 +53,10 @@ class Image {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
-        const result = await this.Image.findOneAndDelete(id);
+        const result = await this.TimePay.findOneAndDelete(id);
         return result.value;
     }
 
 }
 
-module.exports = Image;
+module.exports = TimePay;

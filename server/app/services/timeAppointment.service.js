@@ -8,10 +8,12 @@ class TimeAppointment {
     // define csdl
     extractConactData(payload){
         const timeAppointment = {
+            tieu_de: payload.tieu_de,
+            loai_lich: payload.loai_lich,
             thoi_gian: payload.thoi_gian,
-            dia_diem: payload.dia_diem,
-            nguoi_tham_du: payload.nguoi_tham_du,
+            mo_ta: payload.mo_ta,
             ghi_chu: payload.ghi_chu,
+            nguoi_tham_du: payload.nguoi_tham_du,
             phieu_bao_gia: payload.phieu_bao_gia,
             khach_hang: payload.khach_hang,
             nhan_vien: payload.nhan_vien,
