@@ -5,41 +5,48 @@ import {
     SET_SERVICES,
     SET_QUOTES,
     SET_QUOTE_BY_ID,
- } from './constants'
+    SET_TIME_PAY,
+} from './constants'
 
- export const setUsers = payload => (
+export const setUsers = payload => (
     {
-        type: SET_USERS, 
+        type: SET_USERS,
         payload
     }
- ) 
- export const setMatters = payload => (
+)
+export const setMatters = payload => (
     {
-        type: SET_MATTERS, 
+        type: SET_MATTERS,
         payload
     }
- )
- export const setTypeServices = payload => (
+)
+export const setTypeServices = payload => (
     {
-        type: SET_TYPE_SERVICES, 
+        type: SET_TYPE_SERVICES,
         payload
     }
- )
- export const setServices = payload => (
+)
+export const setServices = payload => (
     {
-        type: SET_SERVICES, 
+        type: SET_SERVICES,
         payload
     }
- )
- export const setQuotes = payload => (
+)
+export const setQuotes = payload => (
     {
-        type: SET_QUOTES, 
+        type: SET_QUOTES,
         payload
     }
- )
- export const setQuoteById = payload => (
+)
+export const setQuoteById = payload => (
     {
-        type: SET_QUOTE_BY_ID, 
+        type: SET_QUOTE_BY_ID,
+        payload
+    }
+)
+export const setTimePay = payload => (
+    {
+        type: SET_TIME_PAY, 
         payload
     }
  )

@@ -1,4 +1,5 @@
 import { Divider, Tag } from "antd";
+import moment from "moment";
 import { useEffect } from "react";
 import { Filter, TableComponent } from "~/components";
 import { quoteService } from "~/services";
@@ -63,7 +64,9 @@ function QuotesManager() {
                 customer: value.khach_hang.ho_ten,
                 sdt: value.khach_hang.sdt,
                 email: value.khach_hang.email,
-                date: value.ngay_gui_phieu ? value.ngay_gui_phieu : value.ngay_lap_phieu,
+                date: value.ngay_gui_phieu ? 
+                moment(value.ngay_gui_phieu).format('YYYY-MM-DD LTS')  : 
+                moment(value.ngay_gui_phieu).format('YYYY-MM-DD LTS'),
                 status: value.status
             })
         )

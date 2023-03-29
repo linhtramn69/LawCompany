@@ -14,6 +14,7 @@ import {
 } from '@ant-design/icons';
 import TextArea from 'antd/es/input/TextArea';
 import Title from 'antd/es/typography/Title';
+import moment from 'moment';
 const { Text } = Typography;
 const mess = [
     '',
@@ -156,16 +157,17 @@ function HomePage() {
     };
 
     const onFinish = async (values) => {
-        var d = new Date()
-        var dateString = ("0" + d.getDate()).slice(-2) + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" +
-            d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2) + ':' + ("0" + d.getSeconds()).slice(-2);
+        // var d = new Date()
+        // var dateString = ("0" + d.getDate()).slice(-2) + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" +
+        //     d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" 
+        // + ("0" + d.getMinutes()).slice(-2) + ':' + ("0" + d.getSeconds()).slice(-2);
         const data = {
             khach_hang: {
                 ho_ten: values.fullname,
                 sdt: values.sdt,
                 email: values.email
             },
-            ngay_gui_phieu: dateString,
+            ngay_gui_phieu: moment().toDate(),
             van_de: values.description,
             status: 0
         }

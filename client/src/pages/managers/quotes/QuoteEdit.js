@@ -12,11 +12,11 @@ const item = [
         title: 'Đã gửi báo giá'
     },
     {
-        title: 'Đã xác nhận'
+        title: 'Đã tạo lịch hẹn'
     },
 ]
 function QuoteEdit() {
-    let {id} = useParams();
+    let { id } = useParams();
     const [quote, setQuote] = useState();
     useEffect(() => {
         const getQuote = async () => {
@@ -25,21 +25,21 @@ function QuoteEdit() {
         getQuote();
     }, [id])
     console.log(quote);
-    return ( 
+    return (
         <>
-    <Card
+            <Card
                 title={
-                    <TitleCardModal 
-                        title={quote && quote.status === 1 ? 'BÁO GIÁ MỚI' : 'CẬP NHẬT THÔNG TIN'} 
+                    <TitleCardModal
+                        title={quote && quote.status === 0 ? 'BÁO GIÁ MỚI' : 'CẬP NHẬT THÔNG TIN'}
                         item={item}
                         current={quote ? quote.status : 0}
                     />
                 }
             >
-                <FormQuotes quote={quote}/>
+                <FormQuotes quote={quote} />
             </Card>
         </>
-     );
+    );
 }
 
 export default QuoteEdit;

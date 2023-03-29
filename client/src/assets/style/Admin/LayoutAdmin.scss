@@ -46,5 +46,52 @@
     .ant-input-number-group-addon {
         border: none;
     }
-
+    .calendar-small{
+        box-shadow: 3px 3px 10px #bebebefd;
+        .ant-radio-button-wrapper-checked{
+            z-index: 0;
+        }
+    }
+    .calendar-big {
+        // .fc .fc-col-header-cell-cushion {
+        //     display: inline-block;
+        //     padding: 2px 4px;
+        //   }
+        .rbc-month-view, .rbc-agenda-table, 
+        .rbc-time-view, .rbc-btn-group{
+            background-color: #fff;
+        }
+        .rbc-month-view, .rbc-agenda-table, 
+        .rbc-time-view{
+            box-shadow: 3px 3px 10px #bebebefd
+        }
+        .rbc-timeslot-group{
+            height: 50vh;
+        }
+        .rbc-toolbar-label{
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        // .rbc-day-bg{
+        //     border-top: 1px solid #000;
+        //     border-left: 1px solid #000;
+        // }
+        .rbc-month-header, .rbc-time-header-cell{
+            font-size: 1rem;
+            height: 8vh;
+            line-height: 8vh;
+        }
+    }
+    .btn-create-calendar{
+        padding: 10px 25px 12px 25px;
+        background-color: #fff;
+        border: none;
+        border-radius: 30px;
+        box-shadow: 0px 2px 2px #c7c7c7;
+        margin-bottom: 10px;
+        &:hover{
+        box-shadow: 0px 5px 5px #c7c7c7;
+           
+        }
+    }
 }

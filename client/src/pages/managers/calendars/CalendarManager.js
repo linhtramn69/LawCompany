@@ -1,66 +1,34 @@
-import { Calendar, momentLocalizer } from 'react-big-calendar'
-import moment from 'moment'
+import { faCalendarPlus } from '@fortawesome/free-regular-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Col, Row, Calendar, Divider } from 'antd';
+
+import moment from 'moment';
 import { useState } from 'react';
-import { Col, Row } from 'antd';
-import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
-import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
-const DnDCalendar = withDragAndDrop(Calendar);
-const localizer = momentLocalizer(moment)
+import CalendarBig from './CalendarBig';
+
 
 function CalendarManager() {
-    const [events, setEvents] = useState(
-        [
-            {
-                start: moment('2023 03 25, 8:00:00').toDate(),
-                end: moment('2023 03 25, 8:00:00').toDate(),
-                title: "Gặp khách hàng",
-            },
-            {
-                start: moment('2023 03 27').toDate(),
-                end: moment('2023 03 28').toDate(),
-                title: "Họp tại văn phòng",
-            },
-            {
-                start: moment().toDate(),
-                end: moment().toDate(),
-                title: "Ăn trưa với cty A",
-            },
-        ]
-    )
-    const onEventResize = (data) => {
-        const { start, end } = data;
-
-        setEvents((events) => {
-            events[0].start = start;
-            events[0].end = end;
-            return { events: [...events] };
-        });
-    };
-
-    const onEventDrop = (data) => {
-        console.log(data);
-    };
-
+    const [dateSelect, setDateSelect] = useState(moment().toDate())
+    
     return (
-        <Row>
-            <Col md={{ span: 6 }}>
-            </Col>
-            <Col md={{ span: 18 }}>
-                <DnDCalendar
-                    defaultDate={new Date()}
-                    localizer={localizer}
-                    defaultView="month"
-                    events={events}
-                    startAccessor="start"
-                    endAccessor="end"
-                    onEventDrop={onEventDrop}
-                    onEventResize={onEventResize}
-                    resizable
-                    style={{ height: "100vh" }}
-                />
-            </Col>
+        <>
+            <Divider />
+            <Row>
+                <Col md={{ span: 6 }}  >
+                    <button className='btn-create-calendar' >
+                        <FontAwesomeIcon icon={faCalendarPlus} style={{ color: "#496ba7", marginRight: 10 }} />
+                        Tạo lịch</button>
+                    <Calendar className='calendar-small' fullscreen={false} onChange={(value) => setDateSelect(moment(value.$d).toDate())} />
 
-        </Row>);
+                </Col>
+                <Col md={{ span: 17, push: 1 }} className='calendar-big'>
+                    <CalendarBig dateSelect={dateSelect} />
+                </Col>
+            </Row>
+           
+        </>
+
+    );
 }
 
 export default CalendarManager;

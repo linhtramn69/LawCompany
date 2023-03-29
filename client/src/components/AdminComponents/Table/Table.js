@@ -57,7 +57,7 @@ function TableComponent({ data, columns }) {
             navigate(`${record._id}`)
           }, // click row
         }
-    }}
+      }}
     />
   )
     ;

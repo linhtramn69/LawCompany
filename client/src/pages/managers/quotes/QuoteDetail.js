@@ -2,9 +2,12 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { quoteService } from "~/services";
-import { Button, Card, Col, Descriptions, Divider, Row, Typography } from "antd";
+import { Button, Card, Col, Descriptions, Divider, Row, Space, Typography } from "antd";
 import { TitleCardModal } from "~/components";
+import ModalCalendar from "./ModalCalendar";
+
 const { Text } = Typography;
+
 const item = [
     {
         title: 'Yêu cầu báo giá'
@@ -13,9 +16,10 @@ const item = [
         title: 'Đã gửi báo giá'
     },
     {
-        title: 'Đã xác nhận'
+        title: 'Đã tạo lịch hẹn'
     },
 ]
+
 function QuoteDetail() {
     let { id } = useParams();
     const [quote, setQuote] = useState({
@@ -27,21 +31,39 @@ function QuoteDetail() {
         }
         getQuote();
     }, [id])
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const showModal = () => {
+        setIsModalOpen(true)
+    }
+    const handleOk = () => {
+        setIsModalOpen(false);
+    };
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
     return (
         <>
             <Card style={{ paddingLeft: 20 }}
                 title={
-                <TitleCardModal 
-                title={quote.status === 0 ? 'YÊU CẦU BÁO GIÁ' : 'THÔNG TIN BÁO GIÁ'} 
-                item={item}
+                    <TitleCardModal
+                        title={quote.status === 0 ? 'YÊU CẦU BÁO GIÁ' : 'THÔNG TIN BÁO GIÁ'}
+                        item={item}
                         current={quote ? quote.status : 0}
-                />}>
-                <Link to={`/admin/quotes/edit/${id}`}>
-                    <Button type="primary" className="btn-primary">
-                        {quote.status === 0 ? 'TẠO BÁO GIÁ' : 'CẬP NHẬT'}
-                    </Button>
-                </Link>
-
+                    />}>
+                <Space size={10}>
+                    {quote.status < 2 ?
+                        <Link to={`/admin/quotes/edit/${id}`}>
+                            <Button type="primary" className="btn-primary">
+                                {quote.status === 0 ? 'TẠO BÁO GIÁ' : 'CHỈNH SỬA'}
+                            </Button>
+                        </Link>
+                        : null}
+                    {quote.status === 1 ?
+                        <Button type="primary" className="btn-primary" onClick={showModal}>
+                            TẠO LỊCH HẸN
+                        </Button>
+                        : null}
+                </Space>
                 <Divider />
                 <Row>
                     <Col md={{ span: 12 }} style={{ borderRight: '1px solid #d8d8d8' }}>
@@ -71,7 +93,6 @@ function QuoteDetail() {
                         </Descriptions>
                     </Col>
                 </Row>
-
                 <Divider />
                 <Descriptions title="Thông tin chi tiết"
                     column={{
@@ -91,6 +112,7 @@ function QuoteDetail() {
                     Để có giá thành chính xác nhất, hãy trao đổi trực tiếp cụ thể vấn đề của bạn.
                 </Text>
             </Card>
+                <ModalCalendar open={isModalOpen} onOk={handleOk} onCancel={handleCancel}/> 
 
         </>
     );
