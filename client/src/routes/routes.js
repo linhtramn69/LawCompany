@@ -13,9 +13,14 @@ import StaffEdit from "~/pages/managers/users/StaffCrud/StaffEdit"
 import StaffAdd from "~/pages/managers/users/StaffCrud/StaffAdd"
 import QuotesManager from "~/pages/managers/quotes/QuotesManager"
 import QuotesAdd from "~/pages/managers/quotes/QuotesAdd"
+import HomePage from "~/pages/user/HomePage"
+import UserLayout from "~/layouts/UserLayout/UserLayout"
+import QuoteDetail from "~/pages/managers/quotes/QuoteDetail"
+import QuoteEdit from "~/pages/managers/quotes/QuoteEdit"
+import CalendarManager from "~/pages/managers/calendars/CalendarManager"
 
 const publicRoutes = [
-    // {path: config.routes.user.home, component: HomePage,  layout: UserLayout},
+    {path: config.routes.user.home, component: HomePage,  layout: UserLayout},
 ]
 
 const privateRoutes = [
@@ -37,6 +42,10 @@ const privateRoutes = [
     //Quotes
     { path: config.routes.admin.quotesManager, component: QuotesManager, layout: LayoutAdmin },
     { path: config.routes.admin.quotesAdd, component: QuotesAdd, layout: LayoutAdmin },
+    { path: config.routes.admin.quoteDetail, component: QuoteDetail, layout: LayoutAdmin },
+    { path: config.routes.admin.quoteEdit, component: QuoteEdit, layout: LayoutAdmin },
+    //Calendar
+    { path: config.routes.admin.calendarManager, component: CalendarManager, layout: LayoutAdmin },
 
 
 ]

@@ -3,6 +3,7 @@ import { privateRoutes, publicRoutes } from "./routes/routes";
 import 'antd/dist/reset.css';
 import "~/assets/GlobalStyle.scss"
 import '../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
+import "react-big-calendar/lib/css/react-big-calendar.css";
 function App() {
 
   let role = 1;

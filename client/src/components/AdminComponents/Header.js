@@ -88,7 +88,6 @@ const items2 = [
 function HeaderAdmin() {
   const [current, setCurrent] = useState('mail');
   const onClick = (e) => {
-    console.log('click ', e);
     setCurrent(e.key);
   };
   const onSearch = (value) => console.log(value);

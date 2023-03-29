@@ -23,7 +23,13 @@ const routes = {
         
         //Quotes
         quotesManager: '/quotes',
-        quotesAdd: '/quotes/add'
+        quotesAdd: '/quotes/add',
+        quoteDetail: '/quotes/:id',
+        quoteEdit: '/quotes/edit/:id',
+
+        //Calendar
+        calendarManager: '/calendar'
+
     }
 }
 export default routes;

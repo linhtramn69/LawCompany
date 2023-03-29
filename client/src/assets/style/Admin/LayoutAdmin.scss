@@ -33,7 +33,7 @@
         border-radius: 3px;
         text-transform: uppercase;
     }
-    .ant-input, .ant-select>.ant-select-selector{
+    .ant-input, .ant-input-number-input, .ant-select>.ant-select-selector{
         border-top: none;
         border-left: none;
         border-right: none;
@@ -42,6 +42,9 @@
         &:focus{
            box-shadow: none !important;
         }
+    }
+    .ant-input-number-group-addon {
+        border: none;
     }
 
 }

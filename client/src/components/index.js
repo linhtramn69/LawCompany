@@ -10,4 +10,4 @@ export {default as TableAddFile} from './AdminComponents/Table/TableAddFile';
 export {default as FormCustomer} from './AdminComponents/Form/Customer';
 export {default as BreadcrumpAdmin} from './AdminComponents/Breadcump';
 export {default as TitleCardModal} from './AdminComponents/TitleCardModal';
-export {default as FormQuotes} from './AdminComponents/Form/Quotes';
+export {default as FormQuotes} from './AdminComponents/Form/FormQuote';
