@@ -18,5 +18,5 @@ class BoPhanService {
     }
 }
 
-let userService = new BoPhanService();
-export default userService;
+let boPhanService = new BoPhanService();
+export default boPhanService;

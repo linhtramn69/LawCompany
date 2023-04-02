@@ -112,7 +112,7 @@ function QuoteDetail() {
                     Để có giá thành chính xác nhất, hãy trao đổi trực tiếp cụ thể vấn đề của bạn.
                 </Text>
             </Card>
-                <ModalCalendar open={isModalOpen} onOk={handleOk} onCancel={handleCancel}/> 
+                <ModalCalendar quote={quote} open={isModalOpen} onOk={handleOk} onCancel={handleCancel}/> 
 
         </>
     );

@@ -24,7 +24,7 @@ function QuoteEdit() {
         }
         getQuote();
     }, [id])
-    console.log(quote);
+    
     return (
         <>
             <Card

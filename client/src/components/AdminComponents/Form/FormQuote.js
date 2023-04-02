@@ -37,6 +37,7 @@ const staff = {
     chuc_vu: 'Luật sư'
 }
 function FormQuotes({ quote }) {
+
     let navigate = useNavigate();
     const [form] = Form.useForm();
     const [state, dispatch] = useStore();
@@ -82,17 +83,14 @@ function FormQuotes({ quote }) {
     })
 
     const handleChangeTypeService = async (value) => {
-        console.log(value);
         const type = {
             id: JSON.parse(value)._id,
             ten_linh_vuc: JSON.parse(value).ten_linh_vuc
         }
         setTypeService(type)
         dispatch(actions.setServices((await serviceService.getByType(type.id)).data));
-
     }
     const handleChangeService = (value) => {
-        console.log(value);
         const sv = {
             id: JSON.parse(value)._id,
             ten_dv: JSON.parse(value).ten_dv,
@@ -112,7 +110,6 @@ function FormQuotes({ quote }) {
         )
     })
     state.users.map((value) => {
-
         if (value.account.quyen === 0) {
             arrCustomer.push({
                 value: JSON.stringify(value),
@@ -144,7 +141,6 @@ function FormQuotes({ quote }) {
         }
     }
     const onFinish = (values) => {
-        console.log(values);
         const customer = quote ? { ...quote } : {
             khach_hang: {
                 ho_ten: JSON.parse(values.customer).ho_ten,
@@ -170,7 +166,6 @@ function FormQuotes({ quote }) {
         <>
             <Form
                 {...formItemLayout}
-
                 fields={
                     quote && quote.status > 0 ? [
                         {
@@ -238,7 +233,6 @@ function FormQuotes({ quote }) {
                                     options={arrCustomer}
                                 />
                             </Form.Item>
-
                         </Col>
                     }
                     <Col md={{ span: 12, push: 2 }}>
@@ -323,9 +317,7 @@ function FormQuotes({ quote }) {
                             <TextArea />
                         </Form.Item>
                         <br />
-
                     </Col>
-
                 </Row>
                 <Divider />
                 <Text style={{ marginLeft: 30 }} keyboard italic>

@@ -7,6 +7,9 @@ class UserService {
     async getById(id){
         return (await API.get(`/user/${id}`));
     }
+    async getByBoPhan(id){
+        return (await API.get(`/user/findByBoPhan/${id}`));
+    }
     async create(data){
         return (await API.post(`user`, data));
     }
