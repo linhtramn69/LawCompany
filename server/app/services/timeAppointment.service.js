@@ -13,7 +13,6 @@ class TimeAppointment {
             thoi_gian: payload.thoi_gian,
             mo_ta: payload.mo_ta,
             ghi_chu: payload.ghi_chu,
-            nguoi_tham_du: payload.nguoi_tham_du,
             phieu_bao_gia: payload.phieu_bao_gia,
             khach_hang: payload.khach_hang,
             nhan_vien: payload.nhan_vien,

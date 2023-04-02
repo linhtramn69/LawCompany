@@ -46,6 +46,12 @@ class User {
         return result;
     }
 
+    // tim tat ca nhan vien theo bo phan
+    async findAllByBoPhan(id_bo_phan){
+        const result = await this.User.find({ "bo_phan.id": id_bo_phan });
+        return result.toArray();
+    }
+
     async create(payload){
         const user = this.extractConactData(payload);
         const isExist = await this.User.findOne({ "account.sdt": user.account.sdt })

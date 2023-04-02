@@ -15,4 +15,7 @@ router.route("/:id")
 router.route("/login")
     .post(user.login);
 
+router.route("/findByBoPhan/:id")
+    .get(user.findAllByBoPhan);
+
 module.exports = router;
