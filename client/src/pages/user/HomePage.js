@@ -1,9 +1,7 @@
 import { quoteService } from '~/services';
-import Message from '~/components/Message';
-import { useState } from 'react';
 import '~/assets/style/User/HomePage.scss';
 import { banner, service, attribute, avatar } from '~/assets/images/index';
-import { Row, Col, Divider, Card, Space, Button, Input, Form, Avatar, notification, Typography, FloatButton } from 'antd';
+import { Row, Col, Divider, Card, Space, Button, Input, Form, Avatar, notification, Typography, FloatButton, message } from 'antd';
 import {
     ForwardOutlined,
     PhoneOutlined,
@@ -16,12 +14,7 @@ import TextArea from 'antd/es/input/TextArea';
 import Title from 'antd/es/typography/Title';
 import moment from 'moment';
 const { Text } = Typography;
-const mess = [
-    '',
-    'Yêu cầu báo giá thành công!',
-    'Yêu cầu báo giá thất bại!',
-    'Yêu cầu gửi có vấn đề lỗi!'
-]
+
 function HomePage() {
 
     const lawyer = [
@@ -65,7 +58,8 @@ function HomePage() {
 
     const [form] = Form.useForm();
     const [api, contextHolder] = notification.useNotification();
-    const [isSubmit, setisSubmit] = useState(null);
+    const [messageApi, contextHolderMess] = message.useMessage();
+
     const openNotification = (placement) => {
         api.open({
             duration: false,
@@ -157,10 +151,6 @@ function HomePage() {
     };
 
     const onFinish = async (values) => {
-        // var d = new Date()
-        // var dateString = ("0" + d.getDate()).slice(-2) + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" +
-        //     d.getFullYear() + " " + ("0" + d.getHours()).slice(-2) + ":" 
-        // + ("0" + d.getMinutes()).slice(-2) + ':' + ("0" + d.getSeconds()).slice(-2);
         const data = {
             khach_hang: {
                 ho_ten: values.fullname,
@@ -173,11 +163,17 @@ function HomePage() {
         }
         try {
             await quoteService.create(data).data;
-            setisSubmit(1);
+            messageApi.open({
+                type: 'success',
+                content: 'Yêu cầu báo giá thành công!',
+            });
         }
         catch (error) {
+            messageApi.open({
+                type: 'error',
+                content: 'Yêu cầu báo giá thất bại!',
+            });
             console.log(error);
-            setisSubmit(2);
         }
         form.resetFields();
     }
@@ -343,9 +339,7 @@ function HomePage() {
                     <FloatButton.BackTop visibilityHeight={0} />
                 </FloatButton.Group>
             </div>
-            <Message props={isSubmit} mess={mess[isSubmit]} />
-
-
+            {contextHolderMess}
         </>
     );
 }

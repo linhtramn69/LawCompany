@@ -1,14 +1,14 @@
-import { Col, Divider, Row, Form, Input, Modal, Select, Tabs, DatePicker, InputNumber, Button } from "antd";
+import { Col, Divider, Row, Form, Input, Modal, Select, Tabs, DatePicker, Button, message } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useEffect } from "react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { boPhanService, quoteService, timeAppointmentService, typeAppointmentService, userService } from "~/services";
+import { boPhanService, timeAppointmentService, userService } from "~/services";
+import typeAppointment from "~/services/typeAppointment.service";
 const { RangePicker } = DatePicker;
 const formItemLayout = {
     labelCol: {
         xs: {
-            span: 24,
+            span: 8,
         },
         md: {
             span: 8,
@@ -16,53 +16,43 @@ const formItemLayout = {
     },
     wrapperCol: {
         xs: {
-            span: 24
+            span: 16
         },
         md: {
-            span: 14
-        }
+            span: 16
+        },
     }
 };
+function ModalAdd(props) {
 
-function ModalCalendar(props) {
-
-    let navigate = useNavigate();
-    const [form] = Form.useForm();
-    const [typeAppoint, setTypeAppoint] = useState([]);
+    const [type, setType] = useState([]);
     const [boPhan, setBoPhan] = useState([]);
-    const [users, setUsers] = useState([]);
-    const quote = { ...props.quote };
-    const khach_hang = { ...props.quote.khach_hang };
-    const dich_vu = { ...props.quote.dich_vu };
-    const linh_vuc = { ...props.quote.linh_vuc };
+    const [staff, setStaff] = useState([]);
+    const [messageApi, contextHolder] = message.useMessage();
 
-    useEffect(() => {
-        const getTypeAppoints = async () => {
-            setTypeAppoint((await typeAppointmentService.get()).data)
-        }
-        getTypeAppoints();
-    }, []);
     useEffect(() => {
         const getBoPhan = async () => {
             setBoPhan((await boPhanService.get()).data)
         }
-        getBoPhan();
-    }, []);
-    const arrTypeAppoint = typeAppoint.map((value) => {
-        return ({ value: value.ten, label: value.ten })
+        const getType = async () => {
+            setType((await typeAppointment.get()).data)
+        }
+        getBoPhan()
+        getType()
+    }, [])
+    const handleChangeBoPhan = async(value) => {
+        setStaff((await userService.getByBoPhan(value)).data)
+    }
+    const arrType = type.map((value) => {
+        return ({ value: value._id, label: value.ten})
     })
-    const arrBoPhan = boPhan.map((value) => {
+    const arrBP = boPhan.map((value) => {
         return ({ value: value._id, label: value.ten_bo_phan })
     })
-
-    const handleChangeBoPhan = async (value) => {
-        setUsers((await userService.getByBoPhan(value)).data)
-    }
-    const arrUser = users.map((value) => {
+    const arrStaff = staff.map((value) => {
         return ({ value: value._id, label: value.ho_ten })
     })
-    const onFinish = async (values) => {
-        console.log(values);
+    const onFinish = async(values) => {
         const data = {
             tieu_de: values.tieu_de,
             bo_phan: values.bo_phan,
@@ -74,7 +64,6 @@ function ModalCalendar(props) {
                 end: values.thoi_gian[1]
             },
             nhan_vien: values.nhan_vien,
-            phieu_bao_gia: quote._id,
             khach_hang: {
                 ho_ten: values.name,
                 sdt: values.sdt,
@@ -83,66 +72,27 @@ function ModalCalendar(props) {
         }
         try {
             await timeAppointmentService.create(data);
-            await quoteService.update(quote._id, {
-                status: 2
-            })
-            navigate(`/admin/calendar`);
+            messageApi.open({
+                type: 'success',
+                content: 'Thêm lịch thành công!',
+            });
+            setTimeout(()=> props.onCancel(false), 1000);
         }
         catch (error) {
+            messageApi.open({
+                type: 'error',
+                content: 'Nhân viên này đã có lịch vào thời gian này!',
+            });
             console.log(error);
         }
     }
-
     return (
-        <Modal
-            title="Thêm công việc"
-            width={1000}
-            {...props}
-            footer={null}
-        >
+        <>
+        <Modal title="Thêm công việc" width={1000} {...props}
+            footer={null}>
             <Form
                 {...formItemLayout}
-                form={form}
-                onFinish={onFinish}
-                fields={[
-                    {
-                        name: ['name'],
-                        value: khach_hang.ho_ten
-                    },
-                    {
-                        name: ['email'],
-                        value: khach_hang.email
-                    },
-                    {
-                        name: ['sdt'],
-                        value: khach_hang.sdt
-                    },
-                    {
-                        name: ['dich_vu'],
-                        value: dich_vu.ten_dv
-                    },
-                    {
-                        name: ['linh_vuc'],
-                        value: linh_vuc.ten_linh_vuc
-                    },
-                    {
-                        name: ['price'],
-                        value: quote.tong_gia_du_kien
-                    },
-                    {
-                        name: ['pay_time'],
-                        value: quote.dieu_khoan_thanh_toan
-                    },
-                    {
-                        name: ['van_de'],
-                        value: quote.van_de
-                    },
-                    {
-                        name: ['ghi_chu_bao_gia'],
-                        value: quote.ghi_chu
-                    },
-                ]}
-            >
+                onFinish={onFinish}>
                 <Row>
                     <Col span={24} pull={4}>
                         <Form.Item
@@ -156,7 +106,7 @@ function ModalCalendar(props) {
                     <Form.Item
                         label="Tính chất"
                         name='loai_lich'>
-                        <Select options={arrTypeAppoint} />
+                        <Select options={arrType}/>
                     </Form.Item>
                 </Col>
                 <Divider />
@@ -188,59 +138,17 @@ function ModalCalendar(props) {
                                                 name='sdt'>
                                                 <Input />
                                             </Form.Item>
+                                            <Form.Item
+                                                label="Vấn đề"
+                                                name='van_de'>
+                                                <TextArea />
+                                            </Form.Item>
                                         </Col>
                                     </Row>
                                 </>
                         },
                         {
                             key: '2',
-                            label: `Hồ sơ liên quan`,
-                            children:
-                                <>
-                                    <br />
-                                    <Row>
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label="Dịch vụ"
-                                                name='dich_vu'>
-                                                <Input />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label="Lĩnh vực"
-                                                name='linh_vuc'>
-                                                <Input />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label="Giá dự kiến"
-                                                name='price'>
-                                                <InputNumber
-                                                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                                    parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
-                                                    addonAfter='VNĐ' />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label="Điều khoản thanh toán"
-                                                name='pay_time'>
-                                                <Input />
-                                            </Form.Item>
-                                        </Col>
-                                        <Col span={12}>
-                                            <Form.Item
-                                                label="Vấn đề của khách hàng"
-                                                name='van_de'>
-                                                <TextArea />
-                                            </Form.Item>
-                                            <Form.Item
-                                                label="Ghi chú"
-                                                name='ghi_chu_bao_gia'>
-                                                <TextArea />
-                                            </Form.Item>
-                                        </Col>
-                                    </Row>
-                                </>
-                        },
-                        {
-                            key: '3',
                             label: `Thông tin chi tiết`,
                             children:
                                 <>
@@ -249,10 +157,8 @@ function ModalCalendar(props) {
                                             <Form.Item
                                                 label="Thời gian"
                                                 name='thoi_gian'>
-                                                <RangePicker 
-                                                    showTime={{ format: 'HH:mm' }}
-                                                    format="YYYY-MM-DD HH:mm" 
-                                                />
+                                                <RangePicker showTime={{ format: 'HH:mm' }}
+                                                    format="YYYY-MM-DD HH:mm" />
                                             </Form.Item>
                                             <Form.Item
                                                 label="Mô tả"
@@ -276,7 +182,7 @@ function ModalCalendar(props) {
                                                         width: '100%',
                                                     }}
                                                     placeholder="Please select"
-                                                    options={arrBoPhan}
+                                                    options={arrBP}
                                                     onChange={handleChangeBoPhan}
                                                 />
                                             </Form.Item>
@@ -288,7 +194,7 @@ function ModalCalendar(props) {
                                                         width: '100%',
                                                     }}
                                                     placeholder="Please select"
-                                                    options={arrUser}
+                                                    options={arrStaff}
                                                 />
                                             </Form.Item>
                                         </Col>
@@ -299,15 +205,18 @@ function ModalCalendar(props) {
                 />
                 <Form.Item
                     wrapperCol={{
-                        offset: 20,
-                        span: 6
-                    }}>
-                    <Button htmlType="submit">Lưu</Button>
+                        offset: 16,
+                        span: 6,
+                    }}
+                >
+                    <Button htmlType="submit">Submit</Button>
                 </Form.Item>
             </Form>
-        </Modal>
+        </Modal >
+        {contextHolder}
+        </>
     );
 
 }
 
-export default ModalCalendar;
+export default ModalAdd;

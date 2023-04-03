@@ -119,7 +119,6 @@ function FormQuotes({ quote }) {
         return arrCustomer
     })
     const handleAdd = async (data) => {
-        console.log(data);
         try {
             const result = await quoteService.create(data);
             setisSubmit(1);

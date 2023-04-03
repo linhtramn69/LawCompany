@@ -86,7 +86,7 @@ function FormAddTask() {
                 </Space>)
         },
     ];
-    console.log(edit);
+    
     return (
         <>
             <Button type="primary" onClick={() => {
