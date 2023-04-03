@@ -19,7 +19,8 @@ class Matter {
             cong_viec: payload.cong_viec,
             tai_lieu: payload.tai_lieu,
             chi_phi: payload.chi_phi,
-            lien_he: payload.lien_he
+            lien_he: payload.lien_he,
+            status: payload.status
         };
 
         Object.keys(matter).forEach(
@@ -39,6 +40,12 @@ class Matter {
         };
         const result = await this.Matter.findOne(id);
         return result;
+    }
+
+    // lay vu viec theo trang thai
+    async findByStatus(statusP){
+        const result = await this.Matter.find({status: statusP});
+        return result.toArray();
     }
 
     async create(payload){

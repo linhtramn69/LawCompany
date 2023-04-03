@@ -40,8 +40,25 @@ class TimeAppointment {
 
     async create(payload){
         const timeAppointment = this.extractConactData(payload);
-        const result = await this.TimeAppointment.insertOne(timeAppointment);
-        return result;
+        const isExist = await this.TimeAppointment.find({ 
+            nhan_vien: { 
+                $eq: timeAppointment.nhan_vien 
+            },
+            "thoi_gian.start": { 
+                $gte: timeAppointment.thoi_gian.start,
+                $lte: timeAppointment.thoi_gian.end
+            },
+            "thoi_gian.end": { 
+                $gte: timeAppointment.thoi_gian.start,
+                $lte: timeAppointment.thoi_gian.end
+            },
+        }).toArray();
+
+        if(isExist.length == 0){
+            const result = await this.TimeAppointment.insertOne(timeAppointment);
+            return result;
+        }
+        return Error;
     }
 
     async update(id, payload){

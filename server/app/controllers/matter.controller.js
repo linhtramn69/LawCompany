@@ -29,6 +29,19 @@ exports.findById = async (req, res, next) => {
     }
 };
 
+exports.findByStatus = async (req, res, next) => {
+    try{
+        const matter = new Matter(MongoDB.client);
+        const document = await matter.findByStatus(req.params.id);
+        return res.send(document);
+    }
+    catch(error){
+        return next(
+            new ApiError(500, "An error occured while find matter by status")
+        );
+    }
+}
+
 exports.create = async (req, res, next) => {
     try{
         const matter = new Matter(MongoDB.client);
