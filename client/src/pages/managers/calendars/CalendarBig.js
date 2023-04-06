@@ -48,7 +48,6 @@ function CalendarBig({ dateSelect, onNhan }) {
         setIsModalOpen(false);
     };
     const handleEvent = async (data) => {
-        console.log(data);
         setIsModalOpen(true)
         setEvent((await timeAppointmentService.getById(data.id)).data)
     }

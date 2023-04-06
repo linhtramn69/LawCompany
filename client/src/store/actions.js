@@ -4,9 +4,7 @@ import {
     SET_TYPE_SERVICES,
     SET_SERVICES,
     SET_QUOTES,
-    SET_QUOTE_BY_ID,
-    SET_TIME_PAY,
-    SET_TYPE_APPOINTMENT,
+    SET_MATTER,
 } from './constants'
 
 export const setUsers = payload => (
@@ -39,21 +37,9 @@ export const setQuotes = payload => (
         payload
     }
 )
-export const setQuoteById = payload => (
+export const setMatter = payload => (
     {
-        type: SET_QUOTE_BY_ID,
-        payload
-    }
-)
-export const setTimePay = payload => (
-    {
-        type: SET_TIME_PAY, 
-        payload
-    }
-)
-export const setTypeAppointment = payload => (
-    {
-        type: SET_TYPE_APPOINTMENT,
+        type: SET_MATTER,
         payload
     }
 )

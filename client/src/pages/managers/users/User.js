@@ -73,7 +73,6 @@ function User({props, columns}) {
 
     return (
         <>
-            
             <Filter seg={seg} />
             <br />
             {tab === 'Kanban' ?

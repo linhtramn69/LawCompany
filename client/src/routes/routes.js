@@ -18,6 +18,9 @@ import UserLayout from "~/layouts/UserLayout/UserLayout"
 import QuoteDetail from "~/pages/managers/quotes/QuoteDetail"
 import QuoteEdit from "~/pages/managers/quotes/QuoteEdit"
 import CalendarManager from "~/pages/managers/calendars/CalendarManager"
+import MatterList from "~/pages/managers/matters/MatterList"
+import MatterDetail from "~/pages/managers/matters/MatterDetail"
+import MatterEdit from "~/pages/managers/matters/MatterEdit"
 
 const publicRoutes = [
     {path: config.routes.user.home, component: HomePage,  layout: UserLayout},
@@ -38,7 +41,10 @@ const privateRoutes = [
     { path: config.routes.admin.staffAdd, component: StaffAdd, layout: LayoutAdmin },
     // Matter
     { path: config.routes.admin.matterManager, component: Matter, layout: LayoutAdmin },
-    { path: config.routes.admin.matetrAdd, component: MatterAdd, layout: LayoutAdmin },
+    { path: config.routes.admin.matterAdd, component: MatterAdd, layout: LayoutAdmin },
+    { path: config.routes.admin.matterList, component: MatterList, layout: LayoutAdmin },
+    { path: config.routes.admin.matterDetail, component: MatterDetail, layout: LayoutAdmin },
+    { path: config.routes.admin.matterEdit, component: MatterEdit, layout: LayoutAdmin },
     //Quotes
     { path: config.routes.admin.quotesManager, component: QuotesManager, layout: LayoutAdmin },
     { path: config.routes.admin.quotesAdd, component: QuotesAdd, layout: LayoutAdmin },

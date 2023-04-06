@@ -1,71 +1,105 @@
-import { Button, Form, Modal, Popconfirm, Select, Table, DatePicker, Space, Divider } from "antd";
+import { Button, Form, Modal, Popconfirm, Select, Table, DatePicker, Space, Divider, Input } from "antd";
 import { useState } from "react";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
 import Title from "antd/es/typography/Title";
+import { useStore } from "~/store";
+import { userService } from "~/services";
+import { useEffect } from "react";
 
 dayjs.extend(customParseFormat);
-const dateFormat = 'YYYY-MM-DD';
+const dateFormat = 'YYYY-MM-DD hh:mm A';
 
 function FormAddTask() {
+    const [state, dispatch] = useStore()
+    const [staff, setStaff] = useState([]);
     const [dataSource, setDataSource] = useState([]);
     const [open, setOpen] = useState(false);
-    const [edit, setEdit] = useState(null);
+    const [edit, setEdit] = useState();
     const [date, setDate] = useState();
-    const arr = [
-        {
-            label: '123',
-            value: '123'
-        },
-        {
-            label: '456',
-            value: '456'
+    const [phuTrach, setPhuTrach] = useState();
+    const arrStaff = state.matter.truy_cap.nhan_vien.map((value) => {
+        return (value)
+    })
+    const [leng, setLeng] = useState(arrStaff.length - 1)
+
+    useEffect(() => {
+        const getStaff = async () => {
+            setStaff((await userService.getByMatter(state.matter.truy_cap.nhan_vien)).data)
         }
-    ]
+        getStaff();
+    }, [])
+    console.log(staff);
+    const arrStaffDetail = staff.map((value) => {
+        return ({
+            value: value._id,
+            label: value.ho_ten
+        })
+    })
+
     const handleDelete = (key) => {
         const newData = dataSource.filter((item) => item.key !== key);
         setDataSource(newData);
     };
-    const handleAdd = (values) => {
+    const handleAdd = (values, data) => {
         setOpen(false);
+        // setEdit(data);
         console.log(values);
-        setDataSource([...dataSource, values])
+        setDataSource([...dataSource, {
+            ...values,
+            nguoi_phu_trach: values.nguoi_phu_trach.ho_ten
+        }])
     }
-    const handleUpdate = (newVal) => {
+    const handleFormat = (date, dateString) => {
+        setDate(dateString);
+    }
+    const handleChangePhuTrach = async(value) => {
+        setPhuTrach((await userService.getById(value)).data)
+        console.log(phuTrach);
+    }
+    const handleUpdate = (value, key) => {
+        const newVal = {
+            ...value,
+            key: key
+        }
+        const index = dataSource.findIndex((item) => key === item.key);
+        const item = dataSource[index];
+        dataSource.splice(index, 1, {
+            ...item,
+            ...newVal
+        });
+        setDataSource([...dataSource]);
         setOpen(false);
     }
-    const handleFormatDate = (date, dateString) => {
-        setDate(dateString)
-    }
+
     const onFinish = (values) => {
         const newVal = {
-            key: 3,
-            name: values.name,
-            phancong: values.phancong,
-            timeend: date
+            key: dataSource.length == 0 ? 0 : dataSource.length,
+            ten_cong_viec: values.ten_cong_viec,
+            han_chot_cong_viec: date,
+            nguoi_phu_trach: {
+                _id: phuTrach._id,
+                ho_ten: phuTrach.ho_ten
+            },
+            vu_viec: state.matter._id
         }
-        edit ? handleUpdate(newVal) : handleAdd(newVal)
-
+        edit ? handleUpdate(newVal, edit.key) : handleAdd(newVal)
     };
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
     const columns = [
         {
-            title: 'STT',
-            dataIndex: 'index',
-        },
-        {
             title: 'Tên công việc',
-            dataIndex: 'name',
+            dataIndex: 'ten_cong_viec',
         },
         {
             title: 'Phân công cho',
-            dataIndex: 'phancong',
+            dataIndex: 'nguoi_phu_trach',
         },
         {
             title: 'Hạn chót',
-            dataIndex: 'timeend',
+            dataIndex: 'han_chot_cong_viec',
         },
         {
             title: 'Trạng thái',
@@ -77,7 +111,10 @@ function FormAddTask() {
             render: (_, record) => (
                 <Space split={<Divider type="vertical" />}>
                     <Button onClick={() => {
-                        setEdit(record)
+                        setEdit({
+                            ...record,
+                            han_chot_cong_viec: dayjs(record.han_chot_cong_viec, dateFormat)
+                        })
                         setOpen(true)
                     }}>Edit</Button>
                     <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
@@ -86,7 +123,7 @@ function FormAddTask() {
                 </Space>)
         },
     ];
-    
+
     return (
         <>
             <Button type="primary" onClick={() => {
@@ -124,61 +161,55 @@ function FormAddTask() {
                     fields={
                         edit ? [
                             {
-                                name: ["name"],
-                                value: edit.name,
+                                name: ["ten_cong_viec"],
+                                value: edit.ten_cong_viec,
                             },
                             {
-                                name: ["phancong"],
-                                value: edit.phancong,
+                                name: ["nguoi_phu_trach"],
+                                value: edit.nguoi_phu_trach,
                             },
                             {
-                                name: ["timeend"],
-                                value: dayjs(edit.timeend),
+                                name: ["han_chot_cong_viec"],
+                                value: dayjs(edit.han_chot_cong_viec, dateFormat),
+
                             }
                         ] : null
                     }
-
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
                     autoComplete="off"
                 >
                     <Form.Item
                         label="Tên công việc"
-                        name="name"
+                        name="ten_cong_viec"
                         rules={[
                             {
                                 required: true,
-                                message: 'Please input your username!',
+                                message: 'Vui lòng nhập tên công việc!',
                             },
                         ]}
                     >
-                        <Select options={arr} />
+                        <Input />
                     </Form.Item>
 
                     <Form.Item
                         label="Phân công cho"
-                        name="phancong"
+                        name="nguoi_phu_trach"
                         rules={[
                             {
                                 required: true,
-                                message: 'Please input your password!',
+                                message: 'Vui lòng chọn nhân viên phụ trách',
                             },
                         ]}
+                        
                     >
-                        <Select options={arr} />
+                        <Select options={arrStaffDetail} onChange={handleChangePhuTrach}/>
                     </Form.Item>
                     <Form.Item
                         label="Hạn chót"
-                        name="timeend"
-
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Please input your password!',
-                            },
-                        ]}
+                        name="han_chot_cong_viec"
                     >
-                        <DatePicker format={dateFormat} onChange={handleFormatDate} />
+                        <DatePicker showTime format={dateFormat} onChange={handleFormat} />
                     </Form.Item>
                     <Form.Item
                         wrapperCol={{

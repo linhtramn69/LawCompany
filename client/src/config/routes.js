@@ -19,7 +19,10 @@ const routes = {
         staffAdd: '/staff/add',
         // Matter
         matterManager: '/matter',
-        matetrAdd: '/matter/add',
+        matterAdd: '/matter/add',
+        matterList: '/matters',
+        matterDetail: '/matters/:id',
+        matterEdit: '/matters/edit/:id',
         
         //Quotes
         quotesManager: '/quotes',

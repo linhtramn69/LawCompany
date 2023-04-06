@@ -41,7 +41,7 @@ function MatterManager() {
                         </Col>
                         <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
                             <Row gutter={8}>
-                                <CardMatter title="Đang thực hiện" total={0} />
+                                <CardMatter title="Đang thực hiện" total={0} url={'/admin/matters'} />
                                 <CardMatter title="Tạm ngưng" total={6} />
                                 <CardMatter title="Đã đóng" total={0} />
                             </Row>

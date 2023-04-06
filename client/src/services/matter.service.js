@@ -7,6 +7,9 @@ class MatterService {
     async getById(id){
         return (await API.get(`/matter/${id}`));
     }
+    async getByStatus(status){
+        return (await API.get(`/matter/findByStatus/${status}`));
+    }
     async create(data){
         return (await API.post(`matter`, data));
     }

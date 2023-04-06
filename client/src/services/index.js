@@ -8,5 +8,6 @@ export { default as quoteService } from './quote.service';
 export { default as timePayService } from './timePay.service';
 export { default as typeAppointmentService } from './typeAppointment.service';
 export { default as timeAppointmentService } from './timeAppointment.service';
+export { default as taskService } from './task.service';
 
 

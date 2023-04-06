@@ -10,6 +10,9 @@ class UserService {
     async getByBoPhan(id){
         return (await API.get(`/user/findByBoPhan/${id}`));
     }
+    async getByMatter(data){
+        return (await API.post(`/user/findByMatter`, data));
+    }
     async create(data){
         return (await API.post(`user`, data));
     }
