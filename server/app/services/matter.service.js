@@ -3,12 +3,16 @@ const { ObjectId } = require("mongodb");
 class Matter {
     constructor(client){
         this.Matter = client.db().collection("matter");
+        
     }
 
     // define csdl
     extractConactData(payload){
         const matter = {
             ten_vu_viec: payload.ten_vu_viec,
+            dieu_khoan_thanh_toan: payload.dieu_khoan_thanh_toan,
+            phuong_thuc_tinh_phi: payload.phuong_thuc_tinh_phi,
+            chiet_khau_hoa_hong: payload.chiet_khau_hoa_hong,
             mo_ta_vu_viec: payload.mo_ta_vu_viec,
             linh_vuc: payload.linh_vuc,
             dich_vu: payload.dich_vu,
@@ -16,7 +20,6 @@ class Matter {
             khach_hang: payload.khach_hang,
             truy_cap: payload.truy_cap,
             quy_trinh: payload.quy_trinh,
-            cong_viec: payload.cong_viec,
             tai_lieu: payload.tai_lieu,
             chi_phi: payload.chi_phi,
             lien_he: payload.lien_he,
@@ -42,9 +45,10 @@ class Matter {
         return result;
     }
 
+
     // lay vu viec theo trang thai
     async findByStatus(statusP){
-        const result = await this.Matter.find({status: statusP});
+        const result = await this.Matter.find({status: Number (statusP)});
         return result.toArray();
     }
 

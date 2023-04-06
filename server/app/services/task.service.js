@@ -10,10 +10,11 @@ class Task {
         const task = {
             ten_cong_viec: payload.ten_cong_viec,
             han_chot_cong_viec: payload.han_chot_cong_viec,
-            tien_do_cong_viec: payload.tien_do_cong_viec,
+            status: payload.status,
             lich: payload.lich,
             giai_doan: payload.giai_doan,
             nguoi_phu_trach: payload.nguoi_phu_trach,
+            vu_viec: payload.vu_viec
         };
 
         Object.keys(task).forEach(

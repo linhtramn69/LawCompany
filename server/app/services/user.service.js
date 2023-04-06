@@ -1,11 +1,11 @@
 const { ObjectId } = require("mongodb");
 
 class User {
-    constructor(client){
+    constructor(client) {
         this.User = client.db().collection("user");
     }
 
-    extractConactData(payload){
+    extractConactData(payload) {
         const user = {
             ho_ten: payload.ho_ten,
             email: payload.email,
@@ -33,12 +33,12 @@ class User {
         return user;
     }
 
-    async findAll(){
+    async findAll() {
         const result = await this.User.find();
         return result.toArray();
     }
 
-    async findById(id){
+    async findById(id) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
@@ -47,22 +47,29 @@ class User {
     }
 
     // tim tat ca nhan vien theo bo phan
-    async findAllByBoPhan(id_bo_phan){
+    async findAllByBoPhan(id_bo_phan) {
         const result = await this.User.find({ "bo_phan.id": id_bo_phan });
         return result.toArray();
     }
-
-    async create(payload){
+    async findByMatter(array) {
+        const oids = [];
+        array.forEach(function (item) {
+            oids.push(new ObjectId(item));
+        });
+        const result = await this.User.find({ _id: {$in : oids}});
+        return result.toArray();
+    }
+    async create(payload) {
         const user = this.extractConactData(payload);
         const isExist = await this.User.findOne({ "account.sdt": user.account.sdt })
-        if(!isExist){
+        if (!isExist) {
             const result = await this.User.insertOne(user);
             return result;
         }
-        return Error ;
+        return Error;
     }
 
-    async update(id, payload){
+    async update(id, payload) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
@@ -75,7 +82,7 @@ class User {
         return result.value;
     }
 
-    async delete(id){
+    async delete(id) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
@@ -83,7 +90,7 @@ class User {
         return result;
     }
 
-    async login(payload){
+    async login(payload) {
         const result = await this.User.findOne({
             "account.sdt": payload.sdt,
             "account.mat_khau": payload.mat_khau
