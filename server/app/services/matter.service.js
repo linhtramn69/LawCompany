@@ -1,13 +1,17 @@
 const { ObjectId } = require("mongodb");
 
 class Matter {
-    constructor(client){
+    constructor(client) {
         this.Matter = client.db().collection("matter");
-        
+        this.TypeService = client.db().collection("typeService");
+        this.Service = client.db().collection("service");
+        this.User = client.db().collection("user");
+        this.TypePay = client.db().collection("typePay");
+        this.TimePay = client.db().collection("timePay");
     }
 
     // define csdl
-    extractConactData(payload){
+    extractConactData(payload) {
         const matter = {
             ten_vu_viec: payload.ten_vu_viec,
             dieu_khoan_thanh_toan: payload.dieu_khoan_thanh_toan,
@@ -32,12 +36,12 @@ class Matter {
         return matter;
     }
 
-    async findAll(){
+    async findAll() {
         const result = await this.Matter.find();
         return result.toArray();
     }
 
-    async findById(id){
+    async findById(id) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
@@ -45,20 +49,34 @@ class Matter {
         return result;
     }
 
-
     // lay vu viec theo trang thai
-    async findByStatus(statusP){
-        const result = await this.Matter.find({status: Number (statusP)});
+    async findByStatus(statusP) {
+        const result = await this.Matter.find({ status: Number(statusP) });
         return result.toArray();
     }
 
-    async create(payload){
-        const matter = this.extractConactData(payload);
+    async create(payload) {
+        const linh_vuc = await this.TypeService.findOne({ _id: payload.linh_vuc });
+        const dich_vu = await this.Service.findOne({ _id: new ObjectId(payload.dich_vu) });
+        const luat_su = await this.User.findOne({ _id: new ObjectId(payload.luat_su) });
+        const khach_hang = await this.User.findOne({ _id: new ObjectId(payload.khach_hang) });
+        const phuong_thuc_tinh_phi = await this.TypePay.findOne({ _id: new ObjectId(payload.phuong_thuc_tinh_phi) });
+        const dieu_khoan_thanh_toan = await this.TimePay.findOne({ _id: new ObjectId(payload.dieu_khoan_thanh_toan) });
+        const vu_viec = {
+            ...payload,
+            linh_vuc: linh_vuc,
+            dich_vu: dich_vu,
+            luat_su: luat_su,
+            khach_hang: khach_hang,
+            phuong_thuc_tinh_phi: phuong_thuc_tinh_phi,
+            dieu_khoan_thanh_toan: dieu_khoan_thanh_toan
+        }
+        const matter = this.extractConactData(vu_viec);
         const result = await this.Matter.insertOne(matter);
         return result;
     }
 
-    async update(id, payload){
+    async update(id, payload) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
@@ -71,7 +89,7 @@ class Matter {
         return result.value;
     }
 
-    async delete(id){
+    async delete(id) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
