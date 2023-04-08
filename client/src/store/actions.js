@@ -5,6 +5,9 @@ import {
     SET_SERVICES,
     SET_QUOTES,
     SET_MATTER,
+    SET_TASKS,
+    SET_STEP,
+    SET_STEPS,
 } from './constants'
 
 export const setUsers = payload => (
@@ -40,6 +43,24 @@ export const setQuotes = payload => (
 export const setMatter = payload => (
     {
         type: SET_MATTER,
+        payload
+    }
+)
+export const setTasks = payload => (
+    {
+        type: SET_TASKS,
+        payload
+    }
+)
+export const setStep = payload => (
+    {
+        type: SET_STEP,
+        payload
+    }
+)
+export const setSteps = payload => (
+    {
+        type: SET_STEPS,
         payload
     }
 )

@@ -1,65 +1,95 @@
-import { Button, Form, Modal, Popconfirm, Select, Table, Space, Divider, InputNumber} from "antd";
+import { Button, Form, Modal, Popconfirm, Select, Table, Space, Divider, InputNumber, Input, Tooltip } from "antd";
 import Title from "antd/es/typography/Title";
-import { useState } from "react";
-function FormAddPeriod() {
+import { useEffect, useState } from "react";
+import { stepService } from "~/services";
+import { actions, useStore } from "~/store";
+
+function FormAddPeriod({ props }) {
+
+    const [form] = Form.useForm();
+    const [state, dispatch] = useStore();
     const [dataSource, setDataSource] = useState([]);
+    const [dataTemp, setDataTemp] = useState([]);
     const [open, setOpen] = useState(false);
-    const [edit, setEdit] = useState(null);
-    const arr = [
-        {
-            label: '123',
-            value: '123'
-        },
-        {
-            label: '456',
-            value: '456'
+    const [steps, setSteps] = useState([])
+    const [priceStep, setPriceStep] = useState(0);
+    const [unitStep, setUnitStep] = useState();
+
+    useEffect(() => {
+        dispatch(actions.setSteps([...dataTemp]));
+    }, [dataTemp])
+    useEffect(() => {
+        const getSteps = async () => {
+            setSteps((await stepService.getByIdService(state.matter.dich_vu._id)).data)
         }
-    ]
+        getSteps();
+    }, [])
+    // lay qui trinh dua theo id chi phi co dinh
+    useEffect(() => {
+        const showDataSource = async () => {
+            const rs = (await stepService.getByIdChiPhiCoDinh(props ? props : [])).data
+            const dataShow = rs.map((value) => {
+                return {
+                    _id: value._id,
+                    periodName: value.ten_qt,
+                    price: value.don_gia_qt,
+                    unit: value.don_vi_tinh
+                }
+            })
+            setDataSource(dataShow);
+            setDataTemp(props ? props : []);
+        }
+        showDataSource();
+    }, [])
+
+    const arrStep = steps.map((value) => {
+        return ({
+            value: value._id,
+            label: value.ten_qt
+        })
+    })
+    const handleChangeStep = async (value) => {
+        dispatch(actions.setStep((await stepService.getById(value)).data))
+        setPriceStep(state.step.don_gia_qt);
+        setUnitStep(state.step.don_vi_tinh);
+    }
     const handleDelete = (key) => {
-        const newData = dataSource.filter((item) => item.key !== key);
+        const newData = dataSource.filter((item) => item._id !== key);
+        const data = dataTemp.filter((item) => item !== key);
         setDataSource(newData);
+        setDataTemp(data)
     };
     const handleAdd = (values) => {
         setOpen(false);
-        console.log(values);
-        setDataSource([...dataSource, values])
-    }
-    const handleUpdate = (newVal) => {
-        setOpen(false);
+        setDataSource([...dataSource, {
+            ...values,
+            periodName: state.step.ten_qt,
+            price: state.step.don_gia_qt,
+            unit: state.step.don_vi_tinh
+        }]);
+        setDataTemp([...dataTemp, values]);
     }
     const onFinish = (values) => {
-        const newVal = {
-            key: values.periodID,
-            periodID: values.periodID,
-            periodName: values.periodName,
-            amount: values.amount,
-            unit: 'Giờ',
-            price: 100000,
-            discount: values.discount,
-            vat: values.vat
-        }
-        edit ? handleUpdate(newVal) : handleAdd(newVal)
-
+        const newVal = values.periodName;
+        form.resetFields();
+        handleAdd(newVal);
     };
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
     };
     const columns = [
         {
-            title: 'STT',
-            dataIndex: 'index',
-        },
-        {
-            title: 'Mã quy trình',
-            dataIndex: 'periodID',
-        },
-        {
             title: 'Tên quy trình',
             dataIndex: 'periodName',
-        },
-        {
-            title: 'Số lượng',
-            dataIndex: 'amount',
+            width: 650,
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (step) => (
+                <Tooltip placement="topLeft" title={step}>
+                    {step}
+                </Tooltip>
+            ),
         },
         {
             title: 'Đơn vị tính',
@@ -70,34 +100,20 @@ function FormAddPeriod() {
             dataIndex: 'price',
         },
         {
-            title: 'Chiết khấu',
-            dataIndex: 'discount',
-        },
-        {
-            title: 'Thuế',
-            dataIndex: 'vat',
-        },
-        {
             title: 'Thao tác',
             dataIndex: 'operation',
             render: (_, record) => (
                 <Space split={<Divider type="vertical" />}>
-                    <Button onClick={() => {
-                        setEdit(record)
-                        setOpen(true)
-                    }}>Edit</Button>
-                    <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
+                    <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record._id)}>
                         <Button>Delete</Button>
                     </Popconfirm>
                 </Space>)
         },
     ];
-    console.log(edit);
+
     return (
         <>
             <Button type="primary" onClick={() => {
-                setEdit(null)
-                console.log(edit);
                 setOpen(true)
             }}
             >
@@ -118,6 +134,7 @@ function FormAddPeriod() {
             >
                 <Form
                     name="basic"
+                    form={form}
                     labelCol={{
                         span: 8,
                     }}
@@ -127,34 +144,16 @@ function FormAddPeriod() {
                     style={{
                         maxWidth: 600,
                     }}
-                    fields={
-                        edit ? [
-                            {
-                                name: ["periodName"],
-                                value: edit.periodName,
-                            },
-                            {
-                                name: ["periodID"],
-                                value: edit.periodID
-                            },
-                            {
-                                name: ["amount"],
-                                value: edit.amount
-                            },
-                            {
-                                name: ["price"],
-                                value: edit.price
-                            },
-                            {
-                                name: ["discount"],
-                                value: edit.discount
-                            },
-                            {
-                                name: ["vat"],
-                                value: edit.vat
-                            }
-                        ] : null
-                    }
+                    fields={[
+                        {
+                            name: ["price"],
+                            value: priceStep
+                        },
+                        {
+                            name: ["unit"],
+                            value: unitStep
+                        }
+                    ]}
 
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
@@ -170,39 +169,26 @@ function FormAddPeriod() {
                             },
                         ]}
                     >
-                        <Select options={arr} />
-                    </Form.Item>  
-                    <Form.Item
-                        label="Mã quy trình"
-                        name="periodID"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Please input your username!',
-                            },
-                        ]}
-                    >
-                        <Select options={arr} />
-                    </Form.Item>
-
-                                      
-                    <Form.Item
-                        label="Số lượng"
-                        name="amount"
-                    >
-                        <InputNumber min={1} max={10}/>
+                        <Select options={arrStep} onChange={handleChangeStep} />
                     </Form.Item>
                     <Form.Item
-                        label="Chiết khấu"
-                        name="discount"
+                        label="Đơn giá"
+                        name="price"
                     >
-                        <InputNumber min={0} max={10}/>
+                        <InputNumber
+                            style={{
+                                width: 400,
+                            }}
+                            formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                            parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+                            addonAfter='VNĐ'
+                        />
                     </Form.Item>
                     <Form.Item
-                        label="Thuế"
-                        name="vat"
+                        label="Đơn vị tính"
+                        name="unit"
                     >
-                        <Select options={arr}/>
+                        <Input />
                     </Form.Item>
                     <Form.Item
                         wrapperCol={{

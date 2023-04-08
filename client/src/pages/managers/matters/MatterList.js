@@ -46,6 +46,7 @@ const columns = [
 
 ]
 function MatterList() {
+    
     const [matters, setMatters] = useState([]);
     useEffect(() => {
         const getMatters = async () => {
@@ -53,6 +54,7 @@ function MatterList() {
         }
         getMatters()
     }, [])
+
     const data = matters.map((value, index) => {
         return {
             index: index + 1,
@@ -64,7 +66,7 @@ function MatterList() {
             law: value.luat_su.ho_ten
         }
     })
-
+    
     return (
         <>
             <TableComponent columns={columns} data={data} />

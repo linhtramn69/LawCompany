@@ -5,9 +5,10 @@ import Description from "../Description";
 import FormAddTask from "./FormAddTask";
 import FormAddPeriod from "./FormAddPeriod";
 import FormAddFee from "./FormAddFee";
-import { matterService, serviceService, typeServiceService, userService } from '~/services/index';
+import { matterService, serviceService, timePayService, typePayService, typeServiceService, userService } from '~/services/index';
 import { useNavigate } from "react-router-dom";
 import { useStore } from "~/store";
+
 const formItemLayout = {
     labelCol: {
         xs: {
@@ -30,33 +31,11 @@ const label = [
     'Nội bộ được phép truy cập',
     'Khách hàng được phép truy cập'
 ]
-const pttp = [
-    {
-        value: 0,
-        label: 'Chi phí cố định',
-    },
-    {
-        value: 1,
-        label: 'Tính phí theo thời gian',
-    },
-]
-const dktt = [
-    {
-        value: 0,
-        label: 'Thanh toán ngay'
-    },
-    {
-        value: 1,
-        label: 'Thanh toán khi kết thúc'
-    },
-    {
-        value: 2,
-        label: 'Cọc trước 50%'
-    }
-]
+
 function FormMatter({ props }) {
+
     const matter = { ...props }
-    console.log(matter);
+    const [state, dispatch] = useStore();
     const arrCustomer = [];
     const arrStaff = [];
     const arrCustomerAccess = [];
@@ -64,9 +43,21 @@ function FormMatter({ props }) {
     const [users, setUsers] = useState([]);
     const [value, setValue] = useState(matter ? 1 : 0);
     const [typeServices, setTypeServices] = useState([]);
-    const [services, setServices] = useState([]);
+    const [services, setServices] = useState([{ ...matter.dich_vu }]);
     const [access, setAccess] = useState([]);
+    const [typePay, setTypePay] = useState([]);
+    const [timePay, setTimePay] = useState([]);
+    const [type, setType] = useState(
+        matter._id ? matter.linh_vuc._id : null
+    );
     let navigate = useNavigate();
+
+    useEffect(() => {
+        const getService = async () => {
+            setServices((await serviceService.getByType(type)).data)
+        }
+        getService()
+    }, [type])
     useEffect(() => {
         const getTypeServices = async () => {
             setTypeServices((await typeServiceService.get()).data)
@@ -75,51 +66,69 @@ function FormMatter({ props }) {
             setUsers((await userService.get()).data)
         }
         const getAccess = async () => {
-            setAccess((await userService.getByMatter(
-                [
-                    ...matter.truy_cap.nhan_vien, 
-                    matter.truy_cap.khach_hang ? {...matter.truy_cap.khach_hang} : null
-                ])).data)
+            if (matter.truy_cap) {
+                const arr1 = matter.truy_cap.nhan_vien;
+                const arr2 = matter.truy_cap.khach_hang;
+                setAccess((await userService.getByMatter(arr1.concat(arr2))).data)
+            }
         }
+        const getTypePay = async () => {
+            setTypePay((await typePayService.get()).data)
+        };
+        const getTimePay = async () => {
+            setTimePay((await timePayService.get()).data)
+        };
+        getTimePay();
+        getTypePay();
         getAccess();
         getUser();
         getTypeServices();
     }, []);
-    console.log(access);
+
     users.map((value) => {
         if (value.account.quyen === 0) {
             arrCustomer.push({
-                value: JSON.stringify(value),
+                value: value._id,
                 label: value.ho_ten
             })
         }
         else arrStaff.push({
-            value: JSON.stringify(value),
+            value: value._id,
             label: value.ho_ten
         })
-
     })
     const arrTypeService = typeServices.map((value) => {
         return ({
-            value: JSON.stringify(value),
+            value: value._id,
             label: value.ten_linh_vuc
         })
     })
     const arrService = services.map((value) => {
         return ({
-            value: JSON.stringify(value),
+            value: value._id,
             label: value.ten_dv
         })
     })
-    access.map((value) => {
-       if(value.account.quyen !== 0){
-        arrStaffAccess.push(value.ho_ten)
-       } else arrCustomerAccess.push(value.ho_ten)
+    const arrTypePay = typePay.map((value) => {
+        return ({
+            value: value._id,
+            label: value.ten
+        })
     })
-    console.log(arrStaffAccess);
+    const arrTimePay = timePay.map((value) => {
+        return ({
+            value: value._id,
+            label: value.ten
+        })
+    })
+    access.map((value) => {
+        if (value.account.quyen !== 0) {
+            arrStaffAccess.push(value._id)
+        } else arrCustomerAccess.push(value._id)
+    })
     const handleChangeTypeService = async (value) => {
-        const id = JSON.parse(value)._id
-        setServices((await serviceService.getByType(id)).data)
+        setType(value)
+        matter._id ? matter.linh_vuc._id = value : matter = null
     };
     const onAccessChange = (e) => {
         setValue(e.target.value);
@@ -133,42 +142,42 @@ function FormMatter({ props }) {
             console.log(error);
         }
     }
-    const onFinish = (values) => {
+    const handleUpdate = async (data) => {
         const newData = {
-            ten_vu_viec: values.ten_vu_viec,
-            linh_vuc: {
-                _id: JSON.parse(values.linh_vuc)._id,
-                ten_linh_vuc: JSON.parse(values.linh_vuc).ten_linh_vuc
-            },
-            dich_vu: {
-                _id: JSON.parse(values.dich_vu)._id,
-                ten_dv: JSON.parse(values.dich_vu).ten_dv,
-            },
-            khach_hang: {
-                _id: JSON.parse(values.khach_hang)._id,
-                ho_ten: JSON.parse(values.khach_hang).ho_ten,
-                sdt: JSON.parse(values.khach_hang).account.sdt,
-                email: JSON.parse(values.khach_hang).email
-            },
-            luat_su: {
-                _id: JSON.parse(values.luat_su)._id,
-                ho_ten: JSON.parse(values.luat_su).ho_ten,
-                sdt: JSON.parse(values.luat_su).account.sdt,
-                email: JSON.parse(values.luat_su).email
-            },
+            ...data,
             truy_cap: {
-                khach_hang: values.customerAccess ? [...values.customerAccess.map((value) => {
-                    return (JSON.parse(value)._id)})] : null,
-                nhan_vien: values.staffAccess ? [...values.staffAccess.map((value) => {
-                    return (JSON.parse(value)._id)})] : null
-            },
-            dieu_khoan_thanh_toan: values.dieu_khoan_thanh_toan,
-            phuong_thuc_tinh_phi: values.phuong_thuc_tinh_phi,
-            chiet_khau_hoa_hong: values.chiet_khau_hoa_hong,
-            status: 0
+                khach_hang: data.customerAccess,
+                nhan_vien: data.staffAccess,
+            }
         }
-        // console.log(newData);
-        handleAdd(newData)
+        try {
+            if (window.confirm(`Bạn muốn cập nhật lại vụ việc ${matter.ten_vu_viec} ?`)) {
+                await matterService.update(matter._id, newData);
+                navigate(`/admin/matters/${matter._id}`);
+            }
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+    const onFinish = (values) => {
+
+        const newData = {
+            ...values,
+            chiet_khau_hoa_hong: values.chiet_khau_hoa_hong
+                ? values.chiet_khau_hoa_hong : 0,
+            truy_cap: {
+                khach_hang: values.customerAccess,
+                nhan_vien: values.staffAccess
+            },
+            status: 0,
+            cong_viec: matter._id ? state.tasks : null,
+            phi_co_dinh: matter._id ? state.steps : null
+        }
+        
+        console.log(newData);
+        matter._id ? handleUpdate(newData) :
+            handleAdd(newData)
     }
 
 
@@ -184,27 +193,27 @@ function FormMatter({ props }) {
                     },
                     {
                         name: ['linh_vuc'],
-                        value: matter.linh_vuc.ten_linh_vuc
+                        value: matter.linh_vuc._id
                     },
                     {
                         name: ['dich_vu'],
-                        value: matter.dich_vu.ten_dv
+                        value: matter.dich_vu._id
                     },
                     {
                         name: ['khach_hang'],
-                        value: matter.khach_hang.ho_ten
+                        value: matter.khach_hang._id
                     },
                     {
                         name: ['luat_su'],
-                        value: matter.luat_su.ho_ten
+                        value: matter.luat_su._id,
                     },
                     {
                         name: ['dieu_khoan_thanh_toan'],
-                        value: dktt[matter.dieu_khoan_thanh_toan]
+                        value: matter.dieu_khoan_thanh_toan._id
                     },
                     {
                         name: ['phuong_thuc_tinh_phi'],
-                        value: pttp[matter.phuong_thuc_tinh_phi]
+                        value: matter.phuong_thuc_tinh_phi._id
                     },
                     {
                         name: ['chiet_khau_hoa_hong'],
@@ -311,19 +320,18 @@ function FormMatter({ props }) {
                                 <Form.Item
                                     name='dieu_khoan_thanh_toan'
                                     label="Điều khoản thanh toán">
-                                    <Select options={dktt} />
+                                    <Select options={arrTimePay} />
                                 </Form.Item>
                                 <Form.Item
                                     name='phuong_thuc_tinh_phi'
                                     label="Phương thức tính phí">
-                                    <Select options={pttp} />
+                                    <Select options={arrTypePay} />
                                 </Form.Item>
                                 <Form.Item
                                     name='chiet_khau_hoa_hong'
                                     label="Chiết khấu hoa hồng">
                                     <InputNumber
                                         bordered='false'
-                                        defaultValue={0}
                                         min={0}
                                         max={100}
                                         formatter={(value) => `${value}%`}
@@ -401,13 +409,13 @@ function FormMatter({ props }) {
                     {
                         key: '4',
                         label: `Công việc`,
-                        children: <FormAddTask />,
+                        children: <FormAddTask props={matter.cong_viec}/>,
                         disabled: matter ? false : true
                     },
                     {
                         key: '5',
                         label: `Phí cố định`,
-                        children: <FormAddPeriod />,
+                        children: <FormAddPeriod props={matter.phi_co_dinh}/>,
                         disabled: matter ? false : true
                     },
                     {

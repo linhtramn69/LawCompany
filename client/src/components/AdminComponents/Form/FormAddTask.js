@@ -1,65 +1,97 @@
 import { Button, Form, Modal, Popconfirm, Select, Table, DatePicker, Space, Divider, Input } from "antd";
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
 import Title from "antd/es/typography/Title";
-import { useStore } from "~/store";
+import { actions, useStore } from "~/store";
 import { userService } from "~/services";
 import { useEffect } from "react";
+import moment from "moment";
 
 dayjs.extend(customParseFormat);
-const dateFormat = 'YYYY-MM-DD hh:mm A';
+const dateFormat = 'DD-MM-YYYY hh:mm A';
+function FormAddTask({ props }) {
 
-function FormAddTask() {
     const [state, dispatch] = useStore()
+    const [form] = Form.useForm();
+    const [dataTemp, setDataTemp] = useState(props ? [...props] : [])
     const [staff, setStaff] = useState([]);
     const [dataSource, setDataSource] = useState([]);
     const [open, setOpen] = useState(false);
     const [edit, setEdit] = useState();
     const [date, setDate] = useState();
     const [phuTrach, setPhuTrach] = useState();
-    const arrStaff = state.matter.truy_cap.nhan_vien.map((value) => {
-        return (value)
-    })
-    const [leng, setLeng] = useState(arrStaff.length - 1)
-
+    const [idPhuTrach, setIdPhuTrach] = useState();
+    useEffect(() => {
+        dispatch(actions.setTasks([...dataTemp]));
+    }, [dataTemp])
     useEffect(() => {
         const getStaff = async () => {
             setStaff((await userService.getByMatter(state.matter.truy_cap.nhan_vien)).data)
         }
         getStaff();
     }, [])
-    console.log(staff);
+    useEffect(() => {
+        const getPhuTrachById = async () => {
+            setPhuTrach((await userService.getById(idPhuTrach)).data);
+        }
+        getPhuTrachById()
+    }, [idPhuTrach])
+    useEffect(() => {
+        setEdit(edit ? {
+            ...edit,
+            han_chot_cong_viec: date ? date : edit.han_chot_cong_viec,
+            nguoi_phu_trach: phuTrach.ho_ten
+        } : null)
+    }, [phuTrach, date])
+    useEffect(() => {
+        const data = props ? props.map((value) => {
+            return ({
+                key: value.key,
+                ten_cong_viec: value.ten_cong_viec,
+                nguoi_phu_trach: value.nguoi_phu_trach.ho_ten,
+                han_chot_cong_viec: moment(value.han_chot_cong_viec).format('DD-MM-YYYY LT')
+            })
+
+        }) : []
+        setDataSource(data)
+    }, [])
+
+
     const arrStaffDetail = staff.map((value) => {
         return ({
             value: value._id,
             label: value.ho_ten
         })
     })
-
+    const handleChangePhuTrach = (value) => {
+        setIdPhuTrach(value);
+    }
     const handleDelete = (key) => {
         const newData = dataSource.filter((item) => item.key !== key);
+        const data = dataTemp.filter((item) => item.key !== key);
+        setDataTemp(data)
         setDataSource(newData);
     };
     const handleAdd = (values, data) => {
         setOpen(false);
-        // setEdit(data);
-        console.log(values);
+        setDataTemp([...dataTemp, {
+            ...values,
+            nguoi_phu_trach: phuTrach
+        }]);
         setDataSource([...dataSource, {
             ...values,
-            nguoi_phu_trach: values.nguoi_phu_trach.ho_ten
+            nguoi_phu_trach: phuTrach.ho_ten,
+            han_chot_cong_viec: date
         }])
     }
-    const handleFormat = (date, dateString) => {
-        setDate(dateString);
-    }
-    const handleChangePhuTrach = async(value) => {
-        setPhuTrach((await userService.getById(value)).data)
-        console.log(phuTrach);
-    }
     const handleUpdate = (value, key) => {
+        /** Update dataSoure Table */
         const newVal = {
             ...value,
+            han_chot_cong_viec: date ? date :
+                moment(edit.han_chot_cong_viec.$d).format('DD-MM-YYYY LT'),
+            nguoi_phu_trach: edit.nguoi_phu_trach,
             key: key
         }
         const index = dataSource.findIndex((item) => key === item.key);
@@ -68,21 +100,29 @@ function FormAddTask() {
             ...item,
             ...newVal
         });
+        /* Update data in MongoDB*/
+        dataTemp.splice(index, 1, {
+            ...dataTemp[index],
+            key: key,
+            ...value,
+            han_chot_cong_viec: dayjs(value.han_chot_cong_viec, dateFormat),
+            nguoi_phu_trach: phuTrach
+        })
+        setDataTemp([...dataTemp])
         setDataSource([...dataSource]);
+        form.resetFields()
         setOpen(false);
     }
-
-    const onFinish = (values) => {
-        const newVal = {
-            key: dataSource.length == 0 ? 0 : dataSource.length,
+    const onSubmit = (values) => {
+        console.log(values);
+        const newVal = edit ? { ...edit } : {
             ten_cong_viec: values.ten_cong_viec,
-            han_chot_cong_viec: date,
-            nguoi_phu_trach: {
-                _id: phuTrach._id,
-                ho_ten: phuTrach.ho_ten
-            },
-            vu_viec: state.matter._id
+            key: Math.floor(Math.random() * 100000),
+            nguoi_phu_trach: values.nguoi_phu_trach,
+            vu_viec: state.matter._id,
+            han_chot_cong_viec: values.han_chot_cong_viec
         }
+        form.resetFields();
         edit ? handleUpdate(newVal, edit.key) : handleAdd(newVal)
     };
     const onFinishFailed = (errorInfo) => {
@@ -144,9 +184,13 @@ function FormAddTask() {
                 open={open}
                 footer={null}
                 width={1000}
-                onCancel={() => setOpen(false)}
+                onCancel={() => {
+                    form.resetFields()
+                    setOpen(false)
+                }}
             >
                 <Form
+                    form={form}
                     name="basic"
                     labelCol={{
                         span: 8,
@@ -175,7 +219,7 @@ function FormAddTask() {
                             }
                         ] : null
                     }
-                    onFinish={onFinish}
+                    onFinish={onSubmit}
                     onFinishFailed={onFinishFailed}
                     autoComplete="off"
                 >
@@ -201,15 +245,14 @@ function FormAddTask() {
                                 message: 'Vui lòng chọn nhân viên phụ trách',
                             },
                         ]}
-                        
                     >
-                        <Select options={arrStaffDetail} onChange={handleChangePhuTrach}/>
+                        <Select options={arrStaffDetail} onChange={handleChangePhuTrach} />
                     </Form.Item>
                     <Form.Item
                         label="Hạn chót"
                         name="han_chot_cong_viec"
                     >
-                        <DatePicker showTime format={dateFormat} onChange={handleFormat} />
+                        <DatePicker showTime format={dateFormat} onChange={(date, dateString) => setDate(dateString)} />
                     </Form.Item>
                     <Form.Item
                         wrapperCol={{
@@ -227,5 +270,4 @@ function FormAddTask() {
         </>
     );
 }
-
 export default FormAddTask;

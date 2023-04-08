@@ -4,3 +4,7 @@ export const SET_TYPE_SERVICES = 'set_type_services'
 export const SET_SERVICES = 'set_services'
 export const SET_QUOTES = 'set_quotes'
 export const SET_MATTER = 'set_matter'
+export const SET_TASKS = 'set_tasks'
+export const SET_STEP = 'set_step'
+export const SET_STEPS = 'set_steps'
+
