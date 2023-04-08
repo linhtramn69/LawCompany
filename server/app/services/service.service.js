@@ -14,7 +14,6 @@ class Service {
             don_gia_dv: payload.don_gia_dv,
             status: payload.status,
             linh_vuc: payload.linh_vuc,
-            quy_trinh: payload.quy_trinh,
         };
 
         Object.keys(service).forEach(

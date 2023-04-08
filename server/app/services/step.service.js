@@ -1,17 +1,18 @@
 const { ObjectId } = require("mongodb");
 
 class Step {
-    constructor(client){
+    constructor(client) {
         this.Step = client.db().collection("step");
     }
 
     // define csdl
-    extractConactData(payload){
+    extractConactData(payload) {
         const step = {
             ten_qt: payload.ten_qt,
             mo_ta_qt: payload.mo_ta_qt,
             don_gia_qt: payload.don_gia_qt,
             don_vi_tinh: payload.don_vi_tinh,
+            dich_vu: payload.dich_vu
         };
 
         Object.keys(step).forEach(
@@ -20,12 +21,12 @@ class Step {
         return step;
     }
 
-    async findAll(){
+    async findAll() {
         const result = await this.Step.find();
         return result.toArray();
     }
 
-    async findById(id){
+    async findById(id) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
@@ -33,13 +34,29 @@ class Step {
         return result;
     }
 
-    async create(payload){
+    // lay tat ca quy trinh theo id dich vu
+    async findByIdService(id) {
+        const result = await this.Step.find({ dich_vu: id });
+        return result.toArray();
+    }
+
+    // lay ra theo chi phi co dinh 
+    async findByChiPhiCoDinh(array) {
+        const arrNew = [];
+        array.forEach(function (item) {
+            arrNew.push(new ObjectId(item))
+        })
+        const result = await this.Step.find({ _id: { $in: arrNew } })
+        return result.toArray();
+    }
+
+    async create(payload) {
         const step = this.extractConactData(payload);
         const result = await this.Step.insertOne(step);
         return result;
     }
 
-    async update(id, payload){
+    async update(id, payload) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
@@ -52,7 +69,7 @@ class Step {
         return result.value;
     }
 
-    async delete(id){
+    async delete(id) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };

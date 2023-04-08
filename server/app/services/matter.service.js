@@ -23,8 +23,9 @@ class Matter {
             luat_su: payload.luat_su,
             khach_hang: payload.khach_hang,
             truy_cap: payload.truy_cap,
-            quy_trinh: payload.quy_trinh,
+            cong_viec: payload.cong_viec,
             tai_lieu: payload.tai_lieu,
+            phi_co_dinh: payload.phi_co_dinh,
             chi_phi: payload.chi_phi,
             lien_he: payload.lien_he,
             status: payload.status
@@ -71,6 +72,7 @@ class Matter {
             phuong_thuc_tinh_phi: phuong_thuc_tinh_phi,
             dieu_khoan_thanh_toan: dieu_khoan_thanh_toan
         }
+        
         const matter = this.extractConactData(vu_viec);
         const result = await this.Matter.insertOne(matter);
         return result;
@@ -80,7 +82,22 @@ class Matter {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
-        const matter = this.extractConactData(payload);
+        const linh_vuc = await this.TypeService.findOne({ _id: payload.linh_vuc });
+        const dich_vu = await this.Service.findOne({ _id: new ObjectId(payload.dich_vu) });
+        const luat_su = await this.User.findOne({ _id: new ObjectId(payload.luat_su) });
+        const khach_hang = await this.User.findOne({ _id: new ObjectId(payload.khach_hang) });
+        const phuong_thuc_tinh_phi = await this.TypePay.findOne({ _id: new ObjectId(payload.phuong_thuc_tinh_phi) });
+        const dieu_khoan_thanh_toan = await this.TimePay.findOne({ _id: new ObjectId(payload.dieu_khoan_thanh_toan) });
+        const vu_viec = {
+            ...payload,
+            linh_vuc: linh_vuc,
+            dich_vu: dich_vu,
+            luat_su: luat_su,
+            khach_hang: khach_hang,
+            phuong_thuc_tinh_phi: phuong_thuc_tinh_phi,
+            dieu_khoan_thanh_toan: dieu_khoan_thanh_toan,
+        }
+        const matter = this.extractConactData(vu_viec);
         const result = await this.Matter.findOneAndUpdate(
             id,
             { $set: matter },

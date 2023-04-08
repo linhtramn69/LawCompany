@@ -12,4 +12,10 @@ router.route("/:id")
     .delete(step.delete)
     .get(step.findById);
 
+router.route("/findByIdService/:id")
+    .get(step.findByIdService)
+
+router.route("/findByChiPhiCoDinh")
+    .post(step.findByChiPhiCoDinh)
+
 module.exports = router;
