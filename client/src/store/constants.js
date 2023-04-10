@@ -7,4 +7,6 @@ export const SET_MATTER = 'set_matter'
 export const SET_TASKS = 'set_tasks'
 export const SET_STEP = 'set_step'
 export const SET_STEPS = 'set_steps'
-
+export const SET_FILES = 'set_files'
+export const SET_FEES = 'set_fees'
+export const SET_USER = 'set_user'

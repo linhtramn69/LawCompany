@@ -6,33 +6,36 @@ const routes = {
         service: '/service',
     },
     admin: {
-        dashboard: '/',
+        dashboard: '',
         // Customer
-        customerManager: '/customer',
-        customerDetail: '/customer/:id',
-        customerEdit: '/customer/edit/:id',
-        customerAdd: '/customer/add',
+        customerManager: 'customer',
+        customerDetail: 'customer/:id',
+        customerEdit: 'customer/edit/:id',
+        customerAdd: 'customer/add',
         // Staff
-        staffManager: '/staff',
-        staffDetail: '/staff/:id',
-        staffEdit: '/staff/edit/:id',
-        staffAdd: '/staff/add',
+        staffManager: 'staff',
+        staffDetail: 'staff/:id',
+        staffEdit: 'staff/edit/:id',
+        staffAdd: 'staff/add',
         // Matter
-        matterManager: '/matter',
-        matterAdd: '/matter/add',
-        matterList: '/matters',
-        matterDetail: '/matters/:id',
-        matterEdit: '/matters/edit/:id',
+        matterManager: 'matter',
+        matterAdd: 'matter/add',
+        matterList: 'matters',
+        matterDetail: 'matters/:id',
+        matterEdit: 'matters/edit/:id',
         
         //Quotes
-        quotesManager: '/quotes',
-        quotesAdd: '/quotes/add',
-        quoteDetail: '/quotes/:id',
-        quoteEdit: '/quotes/edit/:id',
+        quotesManager: 'quotes',
+        quotesAdd: 'quotes/add',
+        quoteDetail: 'quotes/:id',
+        quoteEdit: 'quotes/edit/:id',
 
         //Calendar
-        calendarManager: '/calendar'
+        calendarManager: 'calendar'
 
+    },
+    staff: {
+        dashboard: ''
     }
 }
 export default routes;

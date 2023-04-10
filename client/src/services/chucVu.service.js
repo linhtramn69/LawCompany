@@ -18,5 +18,5 @@ class ChucVuService {
     }
 }
 
-let userService = new ChucVuService();
-export default userService;
+let chucVuService = new ChucVuService();
+export default chucVuService;

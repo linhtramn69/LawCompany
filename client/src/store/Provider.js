@@ -10,5 +10,4 @@ function Provider({children}) {
         </Context.Provider>
      );
 }
-
 export default Provider;

@@ -12,5 +12,6 @@ export { default as timeAppointmentService } from './timeAppointment.service';
 export { default as taskService } from './task.service';
 export { default as stepService } from './step.service';
 export { default as periodService } from './period.service';
+export { default as typeFeeService } from './typeFee.service';
 
 

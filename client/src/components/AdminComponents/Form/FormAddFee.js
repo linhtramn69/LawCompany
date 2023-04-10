@@ -1,47 +1,104 @@
-import { Button, Form, Modal, Popconfirm, Select, Table, DatePicker, Space, Divider, InputNumber, Input, Row, Col, Checkbox } from "antd";
-import { useState } from "react";
+import { Button, Form, Modal, Popconfirm, Select, Table, Space, Divider, InputNumber, Input, Row, Col, Checkbox } from "antd";
+import { useEffect, useState } from "react";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
 import Title from "antd/es/typography/Title";
-dayjs.extend(customParseFormat);
-const dateFormat = 'YYYY-MM-DD';
+import moment from "moment";
+import { actions, useStore } from "~/store";
 
-function FormAddFee() {
+dayjs.extend(customParseFormat);
+
+function FormAddFee({props}) {
+    
+    const [form] = Form.useForm();
+    const [state, dispatch] = useStore();
     const [dataSource, setDataSource] = useState([]);
+    const [dataTemp, setDataTemp] = useState(props ? [...props] : []);
     const [open, setOpen] = useState(false);
     const [edit, setEdit] = useState(null);
     const [date, setDate] = useState();
 
-    const arr = [
-        {
-            label: '123',
-            value: '123'
-        },
-        {
-            label: '456',
-            value: '456'
-        }
-    ]
+    useEffect(() => {
+        dispatch(actions.setFees([...dataTemp]));
+    }, [dataTemp])
+    useEffect(() => {
+        const data = props ? props.map((value) => {
+            return ({
+                key: value.key,
+                ngay_lap: value.ngay_lap,
+                mo_ta: value.mo_ta,
+                staff: value.nhan_vien,
+                don_gia: `${value.don_gia}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'
+            })
+
+        }) : []
+        setDataSource(data)
+    }, [])
+
     const handleDelete = (key) => {
         const newData = dataSource.filter((item) => item.key !== key);
+        const newDataTemp = dataTemp.filter((item) => item.key !== key);
         setDataSource(newData);
+        setDataTemp(newDataTemp);
     };
     const handleAdd = (values) => {
+        const key =  moment(values.ngay_lap).format('DDMMYYYYhhmmss')
         setOpen(false);
-        console.log(values);
-        setDataSource([...dataSource, values])
+        setDataSource([...dataSource, {
+            ...values,
+            key: key,
+            staff: values.nhan_vien,
+            don_gia: `${values.don_gia}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ',
+        }])
+        setDataTemp([
+            ...dataTemp,
+            {
+                ...values,
+                key: key,
+            }
+        ])
     }
-    const handleUpdate = (newVal) => {
+    const handleUpdate = (value, key) => {
+        /** Update dataSoure Table */
+        const newVal = {
+            ...value,
+            key: key,
+            staff: value.nhan_vien,
+            don_gia: `${value.don_gia}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'
+        }
+        const index = dataSource.findIndex((item) => key === item.key);
+        const item = dataSource[index];
+        dataSource.splice(index, 1, {
+            ...item,
+            ...newVal,
+        });
+        /* Update data in MongoDB*/
+        dataTemp.splice(index, 1, {
+            ...dataTemp[index],
+            key: key,
+            ...value,
+           
+        })
+        setDataTemp([...dataTemp])
+        setDataSource([...dataSource]);
+        form.resetFields()
         setOpen(false);
-    }
-    const handleFormatDate = (date, dateString) => {
-        setDate(dateString)
     }
     const onFinish = (values) => {
         const newVal = {
+            key: Math.floor(Math.random() * 100000),
+            ngay_lap: moment(new Date()).format('DD-MM-YYYY LTS'),
+            mo_ta: values.mo_ta,
+            don_gia: values.don_gia,
+            so_hoa_don: values.idHD,
+            hinh_anh: values.hinh_anh,
+            vu_viec: state.matter._id,
+            nhan_vien: state.matter.luat_su.ho_ten,
+            khach_hang: values.customer,
         }
-        edit ? handleUpdate(newVal) : handleAdd(newVal)
-
+        // console.log(newVal);
+        form.resetFields();
+        edit ? handleUpdate(newVal, edit.key) : handleAdd(newVal)
     };
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
@@ -49,22 +106,26 @@ function FormAddFee() {
     const columns = [
         {
             title: 'Ngày lập',
-            dataIndex: 'date',
+            dataIndex: 'ngay_lap',
+            width: 200
         },
         {
             title: 'Mô tả',
-            dataIndex: 'description',
+            dataIndex: 'mo_ta',
+            width: 350
         },
         {
             title: 'Nhân viên',
             dataIndex: 'staff',
+            width: 250
         },
         {
             title: 'Tổng',
-            dataIndex: 'total',
+            dataIndex: 'don_gia',
+            width: 200
         },
         {
-            title: 'Tình trạng hóa đơn',
+            title: 'Trạng thái',
             dataIndex: 'status',
         },
         {
@@ -82,11 +143,11 @@ function FormAddFee() {
                 </Space>)
         },
     ];
+
     return (
         <>
             <Button type="primary" onClick={() => {
                 setEdit(null)
-                console.log(edit);
                 setOpen(true)
             }}
             >
@@ -116,15 +177,49 @@ function FormAddFee() {
                     style={{
                         maxWidth: 1000,
                     }}
+                    form={form}
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
                     autoComplete="off"
+                    fields={
+                        edit ? [
+                            {
+                                name: ["mo_ta"],
+                                value: edit.mo_ta,
+                            },
+                            {
+                                name: ["idHD"],
+                                value: edit.so_hoa_don
+                            },
+                            {
+                                name: ["don_gia"],
+                                value:(edit.don_gia).replace(/đ|(,*)/g, ''),
+                            },
+                            {
+                                name: ["staff"],
+                                value: edit.nhan_vien,
+                            },
+                            {
+                                name: ["matter"],
+                                value: edit.vu_viec,
+                            },
+                        ] : [
+                            {
+                                name: ['matter'],
+                                value: state.matter.ten_vu_viec
+                            },
+                            {
+                                name: ['staff'],
+                                value: state.matter.luat_su.ho_ten
+                            }
+                        ]
+                    }
                 >
                     <Row>
                         <Col span={24} pull={4}>
                             <Form.Item
                                 label="Mô tả"
-                                name="description"
+                                name="mo_ta"
                             >
                                 <Input placeholder="VD: Ăn trưa với khách hàng A" />
                             </Form.Item>
@@ -133,41 +228,8 @@ function FormAddFee() {
                     <Row>
                         <Col span={10} push={1}>
                             <Form.Item
-                                label="Loại chi chí"
-                                name="typeFee"
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Vui lòng chọn loại chi phí !',
-                                    },
-                                ]}
-                            >
-                                <Select
-                                    style={{
-                                        width: 250
-                                    }}
-                                    options={arr} />
-                            </Form.Item>
-                            <Form.Item
-                                label="Ngày lên chi phí"
-                                name="timeCreate"
-
-                                rules={[
-                                    {
-                                        required: true,
-                                        message: 'Please input your password!',
-                                    },
-                                ]}
-                            >
-                                <DatePicker
-                                    style={{
-                                        width: 250
-                                    }}
-                                    format={dateFormat} onChange={handleFormatDate} />
-                            </Form.Item>
-                            <Form.Item
                                 label="Tổng tiền"
-                                name="total"
+                                name="don_gia"
                             >
                                 <InputNumber
                                     style={{
@@ -179,17 +241,27 @@ function FormAddFee() {
                                     addonAfter="đ"
                                 />
                             </Form.Item>
-
-                        </Col>
-                        <Col span={10} push={2}>
                             <Form.Item
                                 label="Mã / Số hóa đơn"
-                                name="total"
+                                name="idHD"
                             >
                                 <Input
                                     style={{
                                         width: 250,
                                     }}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col span={10} push={2}>
+                            <Form.Item
+                                label="Vụ việc"
+                                name="matter"
+                            >
+                                <Input
+                                    style={{
+                                        width: 250,
+                                    }}
+                                    disabled='true'
                                 />
                             </Form.Item>
                             <Form.Item
@@ -200,16 +272,7 @@ function FormAddFee() {
                                     style={{
                                         width: 250,
                                     }}
-                                />
-                            </Form.Item>
-                            <Form.Item
-                                label="Vụ việc"
-                                name="matter"
-                            >
-                                <Input
-                                    style={{
-                                        width: 250,
-                                    }}
+                                    disabled='true'
                                 />
                             </Form.Item>
                         </Col>
@@ -217,10 +280,10 @@ function FormAddFee() {
                     <Divider />
                     <Row>
                         <Col span={10} push={1}>
-                        <Form.Item>
-                               <Checkbox>
-                               <Title level={5}>Thêm vào hóa đơn khách hàng</Title>
-                               </Checkbox>
+                            <Form.Item>
+                                <Checkbox>
+                                    <Title level={5}>Thêm vào hóa đơn khách hàng</Title>
+                                </Checkbox>
                             </Form.Item>
                             <Form.Item
                                 label="Khách hàng"
@@ -231,17 +294,17 @@ function FormAddFee() {
                                         width: 250,
                                     }}
                                 />
-                            </Form.Item>    
+                            </Form.Item>
                         </Col>
                         <Col span={10} push={2}>
-                        <Form.Item>
-                               <Title level={5}>Tài khoản bồi hoàn</Title>
+                            <Form.Item>
+                                <Title level={5}>Tài khoản bồi hoàn</Title>
                             </Form.Item>
                             <Form.Item
                                 label="Ngân hàng"
                                 name="nameCreditCard"
                             >
-                                <Select options={arr}/>
+                                <Select  />
                             </Form.Item>
                             <Form.Item
                                 label="Tên tài khoản"
@@ -265,7 +328,7 @@ function FormAddFee() {
                             </Form.Item>
                         </Col>
                     </Row>
-                    <Divider/>
+                    <Divider />
                     <Form.Item
                         wrapperCol={{
                             offset: 18,

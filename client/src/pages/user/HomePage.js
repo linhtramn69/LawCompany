@@ -16,7 +16,7 @@ import moment from 'moment';
 const { Text } = Typography;
 
 function HomePage() {
-
+    console.log('ok');
     const lawyer = [
         {
             name: 'Nguyễn Linh Trâm',

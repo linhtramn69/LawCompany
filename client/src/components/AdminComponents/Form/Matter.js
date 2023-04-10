@@ -8,6 +8,7 @@ import FormAddFee from "./FormAddFee";
 import { matterService, serviceService, timePayService, typePayService, typeServiceService, userService } from '~/services/index';
 import { useNavigate } from "react-router-dom";
 import { useStore } from "~/store";
+import FormAddFile from "./FormAddFile";
 
 const formItemLayout = {
     labelCol: {
@@ -172,7 +173,8 @@ function FormMatter({ props }) {
             },
             status: 0,
             cong_viec: matter._id ? state.tasks : null,
-            phi_co_dinh: matter._id ? state.steps : null
+            phi_co_dinh: matter._id ? state.steps : null,
+            chi_phi_phat_sinh: matter._id ? state.fees : null
         }
         
         console.log(newData);
@@ -397,7 +399,7 @@ function FormMatter({ props }) {
                     {
                         key: '2',
                         label: `Giấy tờ`,
-                        children: <TableAddFile />,
+                        children: <FormAddFile />,
                         disabled: matter ? false : true
                     },
                     {
@@ -421,7 +423,7 @@ function FormMatter({ props }) {
                     {
                         key: '6',
                         label: `Chi phí`,
-                        children: <FormAddFee />,
+                        children: <FormAddFee props={matter.chi_phi_phat_sinh}/>,
                         disabled: matter ? false : true
                     }
                 ]} />

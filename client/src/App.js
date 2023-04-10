@@ -1,55 +1,62 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { privateRoutes, publicRoutes } from "./routes/routes";
-import 'antd/dist/reset.css';
+import * as React from "react";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { privateRoutes, publicRoutes, staffRouter } from "./routes/routes";
 import "~/assets/GlobalStyle.scss"
-import '../node_modules/react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
-import "../node_modules/react-big-calendar/lib/css/react-big-calendar.css";
-import "../node_modules/react-big-calendar/lib/addons/dragAndDrop/styles.css";
 
-function App() {
+import HomePage from "./pages/user/HomePage";
+import LoginPage from "./pages/auth/LoginPage";
+import { RequireAuth } from "./pages/auth/RequireAuth";
+import LayoutAdmin from "./layouts/LayoutAdmin";
+import UserLayout from "./layouts/UserLayout/UserLayout";
+import { useStore } from "./store";
+import Dashboard from "./pages/managers/dashboard";
 
-  let role = 1;
-  let routes = publicRoutes;
-  let path = '';
 
-  if (role !== 0) {
-    routes = privateRoutes;
-  }
-  switch (role) {
-    case 1: {
-      path = '/admin';
-      break;
-    }
-    case 2: {
-      path = '/law';
-      break;
-    }
-    default:
-      path = ''
-  }
-
+export default function App() {
   return (
-    <Router>
-      <div className="wrapper">
+    <div className="wrapper">
+      <Router>
         <Routes>
-          {routes.map((route, index) => {
-            let Layout = route.layout;
+          {publicRoutes.map((route, index) => {
+            let Layout = route.layout
             return (
-              <Route
-                key={index}
-                path={path + route.path}
-                element={
-                  <Layout>
-                    <route.component role={role} />
-                  </Layout>
-                } />
+              <Route key={index} path={route.path} element={
+                <Layout>
+                  <route.component />
+                </Layout>
+              } />
             )
           })}
-        </Routes>
-      </div>
-    </Router>
+          {privateRoutes.map((route, index) => {
+            let Layout = route.layout
+            return (
+              <Route key={index} path={'/admin/' + route.path} element={
+                <RequireAuth>
+                  <Layout>
+                    <route.component />
+                  </Layout>
+                </RequireAuth>
 
+              } />
+            )
+          })}
+          {staffRouter.map((route, index) => {
+            let Layout = route.layout
+            return (
+              <Route key={index} path={'staff' + route.path} element={
+                <RequireAuth>
+                <Layout>
+                  <route.component />
+                </Layout>
+              </RequireAuth>
+
+              } />
+            )
+          })}
+
+        </Routes>
+      </Router>
+
+    </div>
   );
 }
-
-export default App;

@@ -22,6 +22,7 @@ function FormAddTask({ props }) {
     const [date, setDate] = useState();
     const [phuTrach, setPhuTrach] = useState();
     const [idPhuTrach, setIdPhuTrach] = useState();
+
     useEffect(() => {
         dispatch(actions.setTasks([...dataTemp]));
     }, [dataTemp])
@@ -56,7 +57,6 @@ function FormAddTask({ props }) {
         }) : []
         setDataSource(data)
     }, [])
-
 
     const arrStaffDetail = staff.map((value) => {
         return ({
@@ -114,8 +114,7 @@ function FormAddTask({ props }) {
         setOpen(false);
     }
     const onSubmit = (values) => {
-        console.log(values);
-        const newVal = edit ? { ...edit } : {
+        const newVal = {
             ten_cong_viec: values.ten_cong_viec,
             key: Math.floor(Math.random() * 100000),
             nguoi_phu_trach: values.nguoi_phu_trach,
@@ -223,18 +222,7 @@ function FormAddTask({ props }) {
                     onFinishFailed={onFinishFailed}
                     autoComplete="off"
                 >
-                    <Form.Item
-                        label="Tên công việc"
-                        name="ten_cong_viec"
-                        rules={[
-                            {
-                                required: true,
-                                message: 'Vui lòng nhập tên công việc!',
-                            },
-                        ]}
-                    >
-                        <Input />
-                    </Form.Item>
+                   
 
                     <Form.Item
                         label="Phân công cho"
@@ -247,6 +235,18 @@ function FormAddTask({ props }) {
                         ]}
                     >
                         <Select options={arrStaffDetail} onChange={handleChangePhuTrach} />
+                    </Form.Item>
+                    <Form.Item
+                        label="Tên công việc"
+                        name="ten_cong_viec"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Vui lòng nhập tên công việc!',
+                            },
+                        ]}
+                    >
+                        <Input />
                     </Form.Item>
                     <Form.Item
                         label="Hạn chót"

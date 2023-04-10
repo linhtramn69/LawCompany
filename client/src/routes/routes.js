@@ -21,8 +21,10 @@ import CalendarManager from "~/pages/managers/calendars/CalendarManager"
 import MatterList from "~/pages/managers/matters/MatterList"
 import MatterDetail from "~/pages/managers/matters/MatterDetail"
 import MatterEdit from "~/pages/managers/matters/MatterEdit"
+import LoginPage from "~/pages/auth/LoginPage"
 
 const publicRoutes = [
+    {path: config.routes.login, component: LoginPage, layout: UserLayout},
     {path: config.routes.user.home, component: HomePage,  layout: UserLayout},
 ]
 
@@ -53,7 +55,10 @@ const privateRoutes = [
     //Calendar
     { path: config.routes.admin.calendarManager, component: CalendarManager, layout: LayoutAdmin },
 
-
+   
+]
+const staffRouter = [
+    { path: config.routes.staff.dashboard, component: CalendarManager, layout: LayoutAdmin },
 ]
 
-export { privateRoutes, publicRoutes }
+export { privateRoutes, publicRoutes, staffRouter }

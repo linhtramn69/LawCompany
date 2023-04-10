@@ -1,21 +1,31 @@
 import { Menu, Checkbox, Form, Input, Space } from "antd";
-import { Link } from "react-router-dom";
-import "~/assets/style/AuthPage.scss"
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { actions, useStore } from "~/store";
+import { userService } from "~/services";
 function LoginPage() {
-
-    const [status, setStatus] = useState("");
-    const onFinish = (values) => {
-        setStatus("success");
-        console.log(status);
-    };
-    const onFinishFailed = (errorInfo) => {
-        setStatus("error");
-        console.log(status);
-    };
-    
+    const [state, dispatch] = useStore();
+    const navigate = useNavigate();
+    const onFinish = async(values) => {
+       try{
+        const rs = (await userService.login(values)).data
+        dispatch(actions.setUser(rs))
+        if(rs.account.quyen == 1)
+            navigate('/admin')
+        else if(rs.account.quyen == 0)
+            navigate('/')
+        else navigate('/staff')
+       }
+       catch(error){
+        console.log(error);
+       }
+    }
+    // const handleLogin = () => {
+    //     navigate('/admin')
+    // }
     return (
         <>
+
             <div className="auth-page">
                 <div className="auth-header" >
                     <h1>Đăng nhập</h1>
@@ -49,13 +59,12 @@ function LoginPage() {
                             remember: true,
                         }}
                         onFinish={onFinish}
-                        onFinishFailed={onFinishFailed}
                         autoComplete="off"
                     >
                         <Form.Item
                         className="login-form-item"
-                            label="Username"
-                            name="username"
+                            label="Số điện thoại"
+                            name="sdt"
                             rules={[
                                 {
                                     required: true,
@@ -70,7 +79,7 @@ function LoginPage() {
                         <Form.Item
                         className="login-form-item"
                             label="Mật khẩu"
-                            name="password"
+                            name="mat_khau"
                             rules={[
                                 {
                                     required: true,
