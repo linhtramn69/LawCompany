@@ -97,6 +97,7 @@ function MatterDetail() {
     const [dataStep, setDataStep] = useState([]);
     const [dataFee, setDataFee] = useState([]);
 
+    
     useEffect(() => {
         const getMatter = async () => {
             const result = (await matterService.getById(id)).data
@@ -137,18 +138,6 @@ function MatterDetail() {
             })
             setDataStep(dataShow);
         }
-        // const showDataSource = state.steps ? async () => {
-        //     const rs = (await stepService.getByIdChiPhiCoDinh(state.steps)).data
-        //     const dataShow = rs.map((value) => {
-        //         return {
-        //             _id: value._id,
-        //             periodName: value.ten_qt,
-        //             price: value.don_gia_qt,
-        //             unit: value.don_vi_tinh
-        //         }
-        //     })
-        //     setDataStep(dataShow);
-        // } : []
         const dataFee = state.fees ? state.fees.map((value) => {
             return ({
                 key: value.key,
@@ -162,6 +151,7 @@ function MatterDetail() {
         showDataSource();
         setDataFee(dataFee);
     }, [state.tasks, state.steps, state.fees])
+
     
     return (
         <>

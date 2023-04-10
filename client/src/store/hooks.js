@@ -5,27 +5,24 @@ export const useStore = () => {
     const [state, dispatch] = useContext(Context)
     return [state, dispatch]
 }
+export function useToken() {
+    const getToken = () => {
+      const tokenString = sessionStorage.getItem('token');
+      const userToken = JSON.parse(tokenString);
+      return userToken?.token
+    };
+  
+    const [token, setToken] = useState(getToken());
+  
+    const saveToken = userToken => {
+        console.log(userToken);
+      sessionStorage.setItem('token', JSON.stringify(userToken));
+      setToken(userToken.token);
+      console.log(userToken.token);
 
-export function useAuth() {
-  const [state, dispatch] = useStore()
-  const [authed, setAuthed] = useState(
-    state.user._id
-  );
-  console.log(authed);
-
-  // return {
-  //   authed,
-  //   login() {
-  //     return new Promise((res) => {
-  //       setAuthed(true);
-  //       res();
-  //     });
-  //   },
-    // logout() {
-    //   return new Promise((res) => {
-    //     setAuthed(false);
-    //     res();
-    //   });
-    // },
-  // };
-}
+    };
+    return {
+      setToken: saveToken,
+      token
+    }
+  }

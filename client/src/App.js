@@ -2,22 +2,22 @@ import * as React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { privateRoutes, publicRoutes, staffRouter } from "./routes/routes";
 import "~/assets/GlobalStyle.scss"
-
-import HomePage from "./pages/user/HomePage";
-import LoginPage from "./pages/auth/LoginPage";
 import { RequireAuth } from "./pages/auth/RequireAuth";
-import LayoutAdmin from "./layouts/LayoutAdmin";
+import LoginPage from "./pages/auth/LoginPage";
+import { useToken } from "./store";
+import HomePage from "./pages/user/HomePage";
 import UserLayout from "./layouts/UserLayout/UserLayout";
-import { useStore } from "./store";
-import Dashboard from "./pages/managers/dashboard";
 
-
-export default function App() {
+function App() {
+  const {token, setToken} = useToken()
   return (
+    <>
     <div className="wrapper">
       <Router>
-        <Routes>
-          {publicRoutes.map((route, index) => {
+      <Routes>
+        {
+          !token ? 
+          publicRoutes.map((route, index) => {
             let Layout = route.layout
             return (
               <Route key={index} path={route.path} element={
@@ -26,21 +26,21 @@ export default function App() {
                 </Layout>
               } />
             )
-          })}
-          {privateRoutes.map((route, index) => {
+          })
+          : token && token.account.quyen == 1 ?
+            privateRoutes.map((route, index) => {
             let Layout = route.layout
             return (
               <Route key={index} path={'/admin/' + route.path} element={
-                <RequireAuth>
                   <Layout>
                     <route.component />
                   </Layout>
-                </RequireAuth>
-
+  
               } />
             )
-          })}
-          {staffRouter.map((route, index) => {
+          })
+          : token && token.account.quyen == 2 ?
+          staffRouter.map((route, index) => {
             let Layout = route.layout
             return (
               <Route key={index} path={'staff' + route.path} element={
@@ -49,14 +49,25 @@ export default function App() {
                   <route.component />
                 </Layout>
               </RequireAuth>
-
               } />
             )
-          })}
+          })
+          :
+          <Route  path='/' element={
+            <UserLayout>
+              <HomePage/>
+            </UserLayout>
 
-        </Routes>
-      </Router>
+        } />
+        }
+      </Routes>
+      
+    </Router>
 
     </div>
+    </>
+    
+    
   );
 }
+export default App;

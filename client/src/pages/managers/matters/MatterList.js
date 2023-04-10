@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { TableComponent } from "~/components";
 import { matterService } from "~/services";
+import { useStore } from "~/store";
 const columns = [
     {
         title: 'STT',
@@ -66,7 +67,7 @@ function MatterList() {
             law: value.luat_su.ho_ten
         }
     })
-    
+
     return (
         <>
             <TableComponent columns={columns} data={data} />

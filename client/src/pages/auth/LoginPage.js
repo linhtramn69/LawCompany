@@ -1,18 +1,19 @@
 import { Menu, Checkbox, Form, Input, Space } from "antd";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { actions, useStore } from "~/store";
+import { Link, useNavigate } from "react-router-dom";
+import { actions, useStore, useToken } from "~/store";
+import PropTypes from 'prop-types';
 import { userService } from "~/services";
+
 function LoginPage() {
-    const [state, dispatch] = useStore();
-    const navigate = useNavigate();
+    const {token, setToken} = useToken();
+    const navigate = useNavigate()
     const onFinish = async(values) => {
        try{
-        const rs = (await userService.login(values)).data
-        dispatch(actions.setUser(rs))
-        if(rs.account.quyen == 1)
+        const token = (await userService.login(values)).data
+        setToken(token)
+        if(token.token.account.quyen === 1)
             navigate('/admin')
-        else if(rs.account.quyen == 0)
+        else if(token.token.account.quyen === 0)
             navigate('/')
         else navigate('/staff')
        }
@@ -20,12 +21,9 @@ function LoginPage() {
         console.log(error);
        }
     }
-    // const handleLogin = () => {
-    //     navigate('/admin')
-    // }
+
     return (
         <>
-
             <div className="auth-page">
                 <div className="auth-header" >
                     <h1>Đăng nhập</h1>
@@ -127,5 +125,7 @@ function LoginPage() {
         </>
     );
 }
-
+LoginPage.propTypes = {
+    setToken: PropTypes.func.isRequired
+  };
 export default LoginPage;

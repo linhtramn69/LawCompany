@@ -71,10 +71,11 @@ function reducer(state, action) {
                 ...state,
                 fees: action.payload
             }
-            case SET_USER:
-                return {
-                    user: action.payload
-                }
+        case SET_USER:
+            return {
+                ...state,
+                user: action.payload
+            }
         default:
             throw new Error('Invalid action')
     }

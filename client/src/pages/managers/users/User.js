@@ -70,7 +70,7 @@ function User({props, columns}) {
         ]}
         onChange={(e) => setTab(e)}
     />
-
+    
     return (
         <>
             <Filter seg={seg} />
