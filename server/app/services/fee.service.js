@@ -8,14 +8,15 @@ class Fee {
     // define csdl
     extractConactData(payload){
         const fee = {
-            mo_ta_cpps: payload.mo_ta_cpps,
-            don_gia_cpps: payload.don_gia_cpps,
-            so_hoa_don_cpps: payload.so_hoa_don_cpps,
-            hinh_anh_cpps: payload.hinh_anh_cpps,
-            ngay_lap_cpps: payload.ngay_lap_cpps,
+            mo_ta: payload.mo_ta,
+            don_gia: payload.don_gia,
+            so_hoa_don: payload.so_hoa_don,
+            hinh_anh: payload.hinh_anh,
+            ngay_lap: payload.ngay_lap,
+            vu_viec: payload.vu_viec,
+            nhan_vien: payload.nhan_vien,
+            khach_hang: payload.khach_hang,
             status: payload.status,
-            loai_chi_phi_phat_sinh: payload.loai_chi_phi_phat_sinh,
-            cong_viec: payload.cong_viec,
         };
 
         Object.keys(fee).forEach(

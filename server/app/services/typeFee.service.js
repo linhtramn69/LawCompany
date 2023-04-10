@@ -8,7 +8,7 @@ class TypeFee {
     // define csdl
     extractConactData(payload){
         const typeFee = {
-            ten_chi_phi_phat_sinh: payload.ten_chi_phi_phat_sinh,
+            loai_chi_phi: payload.loai_chi_phi,
         };
 
         Object.keys(typeFee).forEach(

@@ -26,7 +26,7 @@ class Matter {
             cong_viec: payload.cong_viec,
             tai_lieu: payload.tai_lieu,
             phi_co_dinh: payload.phi_co_dinh,
-            chi_phi: payload.chi_phi,
+            chi_phi_phat_sinh: payload.chi_phi_phat_sinh,
             lien_he: payload.lien_he,
             status: payload.status
         };
