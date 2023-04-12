@@ -2,16 +2,19 @@ import API from './api.service'
 
 class MatterService {
     async get(){
-        return (await API.get(`/matter`));
+        return (await API.get('/matter'));
     }
     async getById(id){
         return (await API.get(`/matter/${id}`));
     }
     async getByStatus(status){
-        return (await API.get(`/matter/findByStatus/${status}`));
+        return ((await API.post(`matter/findByStatus/${status}`)))
+    }
+    async findByIdAccess(data){
+        return (await API.post(`matter/findByIdAccess`, data))
     }
     async create(data){
-        return (await API.post(`matter`, data));
+        return (await API.post('matter', data));
     }
     async update(id, data){
         return (await API.put(`matter/${id}`, data));

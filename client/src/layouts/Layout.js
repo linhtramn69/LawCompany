@@ -1,4 +1,4 @@
-import HeaderAdmin from "~/components/AdminComponents/Header";
+import HeaderAdmin from "~/components/AdminComponents/LayoutComponent/Header";
 
 function Layout({children}) {
     return ( 

@@ -7,6 +7,9 @@ class TaskService {
     async getById(id){
         return (await API.get(`/task/${id}`));
     }
+    async findByMatter(data) {
+        return (await API.post(`/task/findByMatter`, data));
+    }
     async create(data){
         return (await API.post(`task`, data));
     }

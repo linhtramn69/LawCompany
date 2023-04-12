@@ -1,4 +1,3 @@
-import BreadcrumpAdmin from "~/components/AdminComponents/Breadcump";
 import User from "./User";
 const columnsCustomer = [
     {
@@ -32,9 +31,7 @@ const columnsCustomer = [
 ];
 function CustomerManager() {
     return ( 
-
         <>
-            <BreadcrumpAdmin />
             <User props={0} columns={columnsCustomer}/>
         </>
      );

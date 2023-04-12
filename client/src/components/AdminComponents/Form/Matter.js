@@ -129,7 +129,7 @@ function FormMatter({ props }) {
     })
     const handleChangeTypeService = async (value) => {
         setType(value)
-        matter._id ? matter.linh_vuc._id = value : matter = null
+        matter._id ? matter.linh_vuc._id = value : matter.linh_vuc = null
     };
     const onAccessChange = (e) => {
         setValue(e.target.value);
@@ -234,7 +234,6 @@ function FormMatter({ props }) {
                         value: arrCustomerAccess
                     },
                 ] : null}
-
             >
                 <Row>
                     <Col span={12} pull={2}>

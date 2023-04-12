@@ -4,8 +4,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, useParams } from "react-router-dom";
 import Title from "antd/es/typography/Title";
 import { useEffect, useState } from "react";
-import { matterService, stepService, userService } from "~/services";
-import { actions, useStore } from "~/store";
+import { matterService, stepService, taskService, userService } from "~/services";
+import { actions, useStore, useToken } from "~/store";
 import { avatar } from "~/assets/images";
 import moment from "moment";
 import FormAddFile from "~/components/AdminComponents/Form/FormAddFile";
@@ -28,6 +28,10 @@ const columnsTask = [
     {
         title: 'Phân công cho',
         dataIndex: 'nguoi_phu_trach',
+    },
+    {
+        title: 'Ngày giao',
+        dataIndex: 'ngay_giao',
     },
     {
         title: 'Hạn chót',
@@ -87,6 +91,7 @@ const columnsFees = [
         dataIndex: 'status',
     },
 ];
+const url = ['', 'admin', 'staff']
 
 function MatterDetail() {
 
@@ -96,14 +101,20 @@ function MatterDetail() {
     const [dataTask, setDataTask] = useState([]);
     const [dataStep, setDataStep] = useState([]);
     const [dataFee, setDataFee] = useState([]);
+    const { token } = useToken();
 
-    
     useEffect(() => {
         const getMatter = async () => {
             const result = (await matterService.getById(id)).data
             dispatch(actions.setMatter(result))
         }
+        const getTask = async () => {
+            const result = (await taskService.findByMatter({id: id})).data
+            console.log(result);
+            dispatch(actions.setTasks(result))
+        }
         getMatter()
+        getTask()
     }, [id, dispatch])
     useEffect(() => {
         const getAccess = async () => {
@@ -111,19 +122,21 @@ function MatterDetail() {
             const arr2 = state.matter.truy_cap.khach_hang;
             setAccess((await userService.getByMatter(arr1.concat(arr2))).data)
         }
-        dispatch(actions.setTasks(state.matter.cong_viec))
+        
+        // dispatch(actions.setTasks(state.tasks))
         dispatch(actions.setFiles(state.matter.tai_lieu))
         dispatch(actions.setSteps(state.matter.phi_co_dinh))
-        dispatch(actions.setFees(state.matter.chi_phi_phat_sinh))
+        dispatch(actions.setFees(state.fees))
         getAccess();
     }, [state.matter])
     useEffect(() => {
-        const data = state.tasks ? state.tasks.map((value) => {
+        const dataTask = state.tasks ? state.tasks.map((value) => {
             return ({
                 key: value.key,
                 ten_cong_viec: value.ten_cong_viec,
                 nguoi_phu_trach: value.nguoi_phu_trach.ho_ten,
-                han_chot_cong_viec: moment(value.han_chot_cong_viec).format('DD-MM-YYYY LT')
+                han_chot_cong_viec: moment(value.han_chot_cong_viec).format('DD-MM-YYYY LT'),
+                ngay_giao: moment(value.ngay_giao).format('DD-MM-YYYY LT'),
             })
         }) : []
         const showDataSource = async () => {
@@ -147,12 +160,11 @@ function MatterDetail() {
                 don_gia: `${value.don_gia}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'
             })
         }) : []
-        setDataTask(data);
+        setDataTask(dataTask);
         showDataSource();
         setDataFee(dataFee);
     }, [state.tasks, state.steps, state.fees])
 
-    
     return (
         <>
             {state.matter._id ?
@@ -294,7 +306,7 @@ function MatterDetail() {
                         }
                     ]} />
 
-                    <Link to={`/admin/matters/edit/${id}`}>
+                    <Link to={`/${url[token.account.quyen]}/matter/edit/${id}`}>
                         <Button type="primary" className="btn-primary">Chỉnh sửa</Button>
                     </Link>
                 </Card>

@@ -1,4 +1,4 @@
-import { Calendar, momentLocalizer } from 'react-big-calendar'
+import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment'
 import { useState } from 'react';
 import { useEffect } from 'react';

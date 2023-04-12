@@ -1,4 +1,3 @@
-import BreadcrumpAdmin from "~/components/AdminComponents/Breadcump";
 import User from "./User";
 
 const columnsStaff = [
@@ -35,7 +34,6 @@ const columnsStaff = [
 function StaffManager() {
     return ( 
         <>
-            <BreadcrumpAdmin />
             <User props={2} columns={columnsStaff}/>
         </>
      );

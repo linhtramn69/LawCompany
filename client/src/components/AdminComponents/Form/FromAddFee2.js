@@ -1,91 +1,104 @@
-import { Button, Form, Modal, Popconfirm, Select, Table, Space, Divider, InputNumber, Input, Row, Col, Checkbox, Badge, Tag } from "antd";
+import { Button, Form, Modal, Popconfirm, Select, Table, Space, Divider, InputNumber, Input, Row, Col, Checkbox } from "antd";
 import { useEffect, useState } from "react";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
 import Title from "antd/es/typography/Title";
 import moment from "moment";
-import { useStore, useToken } from "~/store";
-import axios from "axios";
-import { Option } from "antd/es/mentions";
-import { feeService } from "~/services";
+import { actions, useStore } from "~/store";
 
 dayjs.extend(customParseFormat);
-const statusText = ['Đã trình', 'Đã duyệt', 'Đã kết toán']
-function FormAddFee() {
 
+function FormAddFee({props}) {
+    
     const [form] = Form.useForm();
-    const { token } = useToken()
     const [state, dispatch] = useStore();
     const [dataSource, setDataSource] = useState([]);
-    const [fee, setFee] = useState([])
-    const [bank, setBank] = useState([]);
+    const [dataTemp, setDataTemp] = useState(props ? [...props] : []);
     const [open, setOpen] = useState(false);
+    const [edit, setEdit] = useState(null);
+    const [date, setDate] = useState();
 
     useEffect(() => {
-        axios('https://api.vietqr.io/v2/banks')
-            .then(rs => {
-                setBank(rs.data.data);
+        dispatch(actions.setFees([...dataTemp]));
+    }, [dataTemp])
+    useEffect(() => {
+        const data = props ? props.map((value) => {
+            return ({
+                key: value.key,
+                ngay_lap: value.ngay_lap,
+                mo_ta: value.mo_ta,
+                staff: value.nhan_vien,
+                don_gia: `${value.don_gia}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'
             })
-            .catch(err => {
-                console.log(err);
-            })
-        const getChiPhiPhatSinh = async () => {
-            setFee((await feeService.findByMatter({ id: state.matter._id })).data)
-        }
-        getChiPhiPhatSinh()
+
+        }) : []
+        setDataSource(data)
     }, [])
-    useEffect(() => {
-        if(fee.length > 0){
-           fee.map((value, index) => {
-            setDataSource([
-                ...dataSource,
-                {
-                    key: index,
-                    _id: value._id,
-                    ngay_lap: value.ngay_lap,
-                    mo_ta: value.mo_ta,
-                    staff: value.nhan_vien.ho_ten,
-                    status: value.status,
-                    don_gia: `${value.don_gia}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'
-                }
-            ])
-        }) 
-        }
-    }, [fee])
 
-    const handleDelete = async (value) => {
-        try {
-            let rs = (await feeService.delete(value)).data
-        } catch (err) {
-            console.log(err);
-        }
+    const handleDelete = (key) => {
+        const newData = dataSource.filter((item) => item.key !== key);
+        const newDataTemp = dataTemp.filter((item) => item.key !== key);
+        setDataSource(newData);
+        setDataTemp(newDataTemp);
+    };
+    const handleAdd = (values) => {
+        const key =  moment(values.ngay_lap).format('DDMMYYYYhhmmss')
+        setOpen(false);
+        setDataSource([...dataSource, {
+            ...values,
+            key: key,
+            staff: values.nhan_vien,
+            don_gia: `${values.don_gia}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ',
+        }])
+        setDataTemp([
+            ...dataTemp,
+            {
+                ...values,
+                key: key,
+            }
+        ])
     }
-    const handleAdd = async (values) => {
-        try {
-            let result = (await feeService.create(values)).data;
+    const handleUpdate = (value, key) => {
+        /** Update dataSoure Table */
+        const newVal = {
+            ...value,
+            key: key,
+            staff: value.nhan_vien,
+            don_gia: `${value.don_gia}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'
         }
-        catch (err) {
-            console.log(err);
-        }
+        const index = dataSource.findIndex((item) => key === item.key);
+        const item = dataSource[index];
+        dataSource.splice(index, 1, {
+            ...item,
+            ...newVal,
+        });
+        /* Update data in MongoDB*/
+        dataTemp.splice(index, 1, {
+            ...dataTemp[index],
+            key: key,
+            ...value,
+           
+        })
+        setDataTemp([...dataTemp])
+        setDataSource([...dataSource]);
+        form.resetFields()
+        setOpen(false);
     }
     const onFinish = (values) => {
         const newVal = {
+            key: Math.floor(Math.random() * 100000),
             ngay_lap: moment(new Date()).format('DD-MM-YYYY LTS'),
             mo_ta: values.mo_ta,
             don_gia: values.don_gia,
             so_hoa_don: values.idHD,
+            hinh_anh: values.hinh_anh,
             vu_viec: state.matter._id,
-            nhan_vien: token._id,
-            status: 0,
-            tai_khoan: {
-                ngan_hang: values.nameBank,
-                chu_tai_khoan: values.nameCreditCard,
-                so_tai_khoan: values.numberCreditCard
-            }
+            nhan_vien: state.matter.luat_su.ho_ten,
+            khach_hang: values.customer,
         }
+        // console.log(newVal);
         form.resetFields();
-        handleAdd(newVal)
-        // edit ? handleUpdate(newVal, edit.key) : 
+        edit ? handleUpdate(newVal, edit.key) : handleAdd(newVal)
     };
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
@@ -99,36 +112,33 @@ function FormAddFee() {
         {
             title: 'Mô tả',
             dataIndex: 'mo_ta',
-            width: 200
+            width: 350
         },
         {
             title: 'Nhân viên',
             dataIndex: 'staff',
-            width: 200
+            width: 250
         },
         {
             title: 'Tổng',
             dataIndex: 'don_gia',
-            width: 150
+            width: 200
         },
         {
             title: 'Trạng thái',
             dataIndex: 'status',
-            render: (status) => (
-                <Tag
-                    color={status === 0 ? 'volcano' : status === 1 ? 'geekblue' : 'success'}
-                >
-                    {statusText[status]}
-                </Tag>
-            ),
         },
         {
             title: 'Thao tác',
             dataIndex: 'operation',
             render: (_, record) => (
                 <Space split={<Divider type="vertical" />}>
-                    <Popconfirm title="Sure to delete?">
-                        <Button onClick={() => handleDelete(record._id)}>Delete</Button>
+                    <Button onClick={() => {
+                        setEdit(record)
+                        setOpen(true)
+                    }}>Edit</Button>
+                    <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
+                        <Button>Delete</Button>
                     </Popconfirm>
                 </Space>)
         },
@@ -136,7 +146,10 @@ function FormAddFee() {
 
     return (
         <>
-            <Button type="primary" onClick={() => { setOpen(true) }}
+            <Button type="primary" onClick={() => {
+                setEdit(null)
+                setOpen(true)
+            }}
             >
                 Thêm mới
             </Button>
@@ -168,20 +181,38 @@ function FormAddFee() {
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
                     autoComplete="off"
-                    fields={[
-                        {
-                            name: ['matter'],
-                            value: state.matter.ten_vu_viec
-                        },
-                        {
-                            name: ['staff'],
-                            value: state.matter.luat_su.ho_ten
-                        },
-                        {
-                            name: ['customer'],
-                            value: state.matter.khach_hang.ho_ten
-                        }
-                    ]
+                    fields={
+                        edit ? [
+                            {
+                                name: ["mo_ta"],
+                                value: edit.mo_ta,
+                            },
+                            {
+                                name: ["idHD"],
+                                value: edit.so_hoa_don
+                            },
+                            {
+                                name: ["don_gia"],
+                                value:(edit.don_gia).replace(/đ|(,*)/g, ''),
+                            },
+                            {
+                                name: ["staff"],
+                                value: edit.nhan_vien,
+                            },
+                            {
+                                name: ["matter"],
+                                value: edit.vu_viec,
+                            },
+                        ] : [
+                            {
+                                name: ['matter'],
+                                value: state.matter.ten_vu_viec
+                            },
+                            {
+                                name: ['staff'],
+                                value: state.matter.luat_su.ho_ten
+                            }
+                        ]
                     }
                 >
                     <Row>
@@ -257,10 +288,8 @@ function FormAddFee() {
                             <Form.Item
                                 label="Khách hàng"
                                 name="customer"
-
                             >
                                 <Input
-                                    disabled
                                     style={{
                                         width: 250,
                                     }}
@@ -273,19 +302,9 @@ function FormAddFee() {
                             </Form.Item>
                             <Form.Item
                                 label="Ngân hàng"
-                                name="nameBank"
+                                name="nameCreditCard"
                             >
-                                <Select>
-                                    {bank.map((value, index) => {
-                                        return (
-                                            <Option
-                                                value={value.code + ' - ' + value.name}
-                                                key={index}>
-                                                {value.code + ' - ' + value.name}
-                                            </Option>
-                                        )
-                                    })}
-                                </Select>
+                                <Select  />
                             </Form.Item>
                             <Form.Item
                                 label="Tên tài khoản"

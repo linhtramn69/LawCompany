@@ -2,8 +2,8 @@ import { Tooltip } from "antd";
 import { useEffect } from "react";
 import { useState } from "react";
 import { TableComponent } from "~/components";
-import { matterService } from "~/services";
-import { useStore } from "~/store";
+import { matterService, typeServiceService } from "~/services";
+import { useToken } from "~/store";
 const columns = [
     {
         title: 'STT',
@@ -44,22 +44,24 @@ const columns = [
         dataIndex: 'law',
         key: 'law',
     },
-
 ]
 function MatterList() {
-    
+    const { token } = useToken()
     const [matters, setMatters] = useState([]);
     useEffect(() => {
         const getMatters = async () => {
-            setMatters((await matterService.get()).data)
+            token.account.quyen === 1 ?
+                setMatters((await matterService.get()).data)
+                : setMatters((await matterService.findByIdAccess({
+                    id: token._id
+                })).data)
         }
         getMatters()
     }, [])
-
     const data = matters.map((value, index) => {
         return {
-            index: index + 1,
             _id: value._id,
+            index: index + 1,
             nameMatter: value.ten_vu_viec,
             typeService: value.linh_vuc.ten_linh_vuc,
             service: value.dich_vu.ten_dv,
@@ -67,7 +69,6 @@ function MatterList() {
             law: value.luat_su.ho_ten
         }
     })
-
     return (
         <>
             <TableComponent columns={columns} data={data} />

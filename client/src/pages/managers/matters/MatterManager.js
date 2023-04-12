@@ -1,4 +1,4 @@
-import { Avatar, Button, Col, Divider, Progress, Row, Space, } from "antd";
+import { Avatar, Button, Col, Divider, Progress, Row, Segmented, Space, } from "antd";
 import {
     ReconciliationFilled,
     CreditCardFilled,
@@ -6,22 +6,22 @@ import {
     CalendarFilled,
     TeamOutlined,
 } from '@ant-design/icons';
-import BreadcrumpAdmin from "~/components/AdminComponents/Breadcump";
 import Title from "antd/es/typography/Title";
 import CardMatter from "../../../components/AdminComponents/Card/CardMatter";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useToken } from "~/store";
 const styleCol = {
     textAlign: 'center'
 }
-
+const url = ['', 'admin', 'staff']
 function MatterManager() {
+    const { token } = useToken();
     return (
         <>
-            <BreadcrumpAdmin />
             <Space wrap direction="horizontal">
-              <Link to="add">
-              <Button className="btn-cyan" icon={<ReconciliationFilled />} block>Vụ việc mới</Button>
-              </Link>  
+                <Link to="add">
+                    <Button className="btn-cyan" icon={<ReconciliationFilled />} block>Vụ việc mới</Button>
+                </Link>
                 <Button className="btn-cyan" icon={<CreditCardFilled />} block >Công việc mới</Button>
                 <Button className="btn-cyan" icon={<UsbFilled />} block>Chi phí mới</Button>
                 <Button className="btn-cyan" icon={<CalendarFilled />} block>Tạo nhật ký làm việc</Button>
@@ -41,9 +41,9 @@ function MatterManager() {
                         </Col>
                         <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
                             <Row gutter={8}>
-                                <CardMatter title="Đang thực hiện" total={0} url={'/admin/matters'} />
+                                <CardMatter title="Đang thực hiện" total={0} url={`/${url[token.account.quyen]}/matters/`} />
                                 <CardMatter title="Tạm ngưng" total={6} />
-                                <CardMatter title="Đã đóng" total={0} />
+                                <CardMatter title="Hoàn thành" total={0} />
                             </Row>
                         </Col>
                     </Row>
@@ -60,12 +60,11 @@ function MatterManager() {
                         </Col>
                         <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
                             <Row gutter={[8, 8]}>
-                                <CardMatter title="Hạn trong tuần" total={0} />
+                                <CardMatter title="Được giao" total={0} />
+                                <CardMatter title="Hoàn thành" total={0} />
+                                <CardMatter title="Tạm ngưng" total={6} />
                                 <CardMatter title="Hạn hôm nay" total={0} />
                                 <CardMatter title="Quá hạn" total={6} />
-                                <CardMatter title="Không thời hạn" total={0} />
-                                <CardMatter title="Chưa chỉ định" total={0} />
-                                <CardMatter title="Đã lưu" total={0} />
                             </Row>
                         </Col>
                     </Row>
@@ -78,7 +77,7 @@ function MatterManager() {
                                 icon={
                                     <TeamOutlined />
                                 } />
-                            <Title level={5}>Sự kiện</Title>
+                            <Title level={5}>Lịch hẹn</Title>
                         </Col>
                         <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
                             <Row gutter={[8, 8]}>
@@ -88,26 +87,6 @@ function MatterManager() {
                             </Row>
                         </Col>
                     </Row>
-                    <Divider />
-                    <Row>
-                        <Col style={{ ...styleCol }} xs={{ span: 4 }}>
-                            <Avatar
-                                style={{ backgroundColor: `var(--grey)` }}
-                                size={50}
-                                icon={
-                                    <CalendarFilled />
-                                } />
-                            <Title level={5}>Cuộc gặp</Title>
-                        </Col>
-                        <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
-                            <Row gutter={[8, 8]}>
-                                <CardMatter title="Hôm nay" total={0} />
-                                <CardMatter title="Tuần này" total={0} />
-                                <CardMatter title="Tháng này" total={6} />
-                            </Row>
-                        </Col>
-                    </Row>
-
                 </Col>
                 <Col md={{ span: 10, push: 1 }} xs={{ span: 24 }}>
                     <Divider>
@@ -141,7 +120,7 @@ function MatterManager() {
                             />
                         </Col>
                     </Row>
-                    <Divider/>
+                    <Divider />
                     <Divider>
                         <Title level={4}>Tổng vụ việc tính phí</Title>
                     </Divider>

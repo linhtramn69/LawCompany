@@ -54,11 +54,14 @@ const privateRoutes = [
     { path: config.routes.admin.quoteEdit, component: QuoteEdit, layout: LayoutAdmin },
     //Calendar
     { path: config.routes.admin.calendarManager, component: CalendarManager, layout: LayoutAdmin },
-
-   
 ]
 const staffRouter = [
-    { path: config.routes.staff.dashboard, component: CalendarManager, layout: LayoutAdmin },
+    {path: config.routes.staff.matetrList, component: MatterList, layout: LayoutAdmin},
+    {path: config.routes.staff.matterManager, component: Matter, layout: LayoutAdmin},
+    {path: config.routes.staff.matterDetail, component: MatterDetail, layout: LayoutAdmin},
+    {path: config.routes.staff.matetrEdit, component: MatterEdit, layout: LayoutAdmin},
+    { path: config.routes.staff.calendarManager, component: CalendarManager, layout: LayoutAdmin },
+
 ]
 
 export { privateRoutes, publicRoutes, staffRouter }
