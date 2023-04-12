@@ -100,7 +100,9 @@ exports.login = async (req, res, next) => {
         const user = new User(MongoDB.client);
         const document = await user.login(req.body);
         if (document != null) {
-            return res.send(document);
+            return res.send({
+                token: {...document}
+            });
         } else {
             return res.send({ error: true });
         }

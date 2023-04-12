@@ -56,6 +56,12 @@ class Matter {
         return result.toArray();
     }
 
+    // lay vu viec theo id truy cap
+    async findByIdAccess(payload){
+        const result = await this.Matter.find({ 'truy_cap.nhan_vien': payload.id})
+        return result.toArray();
+    }
+
     async create(payload) {
         const linh_vuc = await this.TypeService.findOne({ _id: payload.linh_vuc });
         const dich_vu = await this.Service.findOne({ _id: new ObjectId(payload.dich_vu) });

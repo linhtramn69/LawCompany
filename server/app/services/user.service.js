@@ -51,6 +51,8 @@ class User {
         const result = await this.User.find({ "bo_phan.id": id_bo_phan });
         return result.toArray();
     }
+
+    // tim nhan vien theo vu viec, lay ra doi tuong nhan vien
     async findByMatter(array) {
         const oids = [];
         array.forEach(function (item) {
@@ -59,6 +61,7 @@ class User {
         const result = await this.User.find({ _id: {$in : oids}});
         return result.toArray();
     }
+
     async create(payload) {
         const user = this.extractConactData(payload);
         const isExist = await this.User.findOne({ "account.sdt": user.account.sdt })

@@ -11,5 +11,8 @@ router.route("/:id")
     .get(fee.findById)
     .put(fee.update)
     .delete(fee.delete);
+    
+router.route("/findByMatter")
+    .post(fee.findByMatter)
 
 module.exports = router;

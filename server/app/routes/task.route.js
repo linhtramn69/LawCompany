@@ -12,4 +12,7 @@ router.route("/:id")
     .put(task.update)
     .delete(task.delete);
 
+router.route("/findByMatter")
+    .post(task.findByMatter)
+
 module.exports = router;

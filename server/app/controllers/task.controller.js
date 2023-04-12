@@ -29,6 +29,19 @@ exports.findById = async (req, res, next) => {
     }
 };
 
+exports.findByMatter = async (req, res, next) => {
+    try {
+        const task = new Task(MongoDB.client);
+        const documents = await task.findByMatter(req.body);
+        return res.send(documents);
+    }
+    catch (error) {
+        return next(
+            new ApiError(500, "An error occured while find task by id matter")
+        );
+    }
+};
+
 exports.create = async (req, res, next) => {
     try{
         const task = new Task(MongoDB.client);

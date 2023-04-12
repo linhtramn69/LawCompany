@@ -3,18 +3,18 @@ const { ObjectId } = require("mongodb");
 class Task {
     constructor(client){
         this.Task = client.db().collection("task");
+        this.User = client.db().collection("user");
     }
 
     // define csdl
     extractConactData(payload){
         const task = {
             ten_cong_viec: payload.ten_cong_viec,
-            han_chot_cong_viec: payload.han_chot_cong_viec,
-            status: payload.status,
-            lich: payload.lich,
-            giai_doan: payload.giai_doan,
             nguoi_phu_trach: payload.nguoi_phu_trach,
-            vu_viec: payload.vu_viec
+            vu_viec: payload.vu_viec,
+            han_chot_cong_viec: payload.han_chot_cong_viec,
+            ngay_giao: payload.ngay_giao,
+            status: payload.status
         };
 
         Object.keys(task).forEach(
@@ -36,9 +36,20 @@ class Task {
         return result;
     }
 
+    async findByMatter(payload){
+        const result = await this.Task.find({
+            vu_viec :  payload.id
+        });
+        return result.toArray();
+    }
+
     async create(payload){
         const task = this.extractConactData(payload);
-        const result = await this.Task.insertOne(task);
+        const newVal = {
+            ...task,
+            nguoi_phu_trach: await this.User.findOne({ _id: new ObjectId(payload.nguoi_phu_trach) })
+        }
+        const result = await this.Task.insertOne(newVal);
         return result;
     }
 
