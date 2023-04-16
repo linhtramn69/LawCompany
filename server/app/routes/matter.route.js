@@ -12,9 +12,12 @@ router.route("/:id")
     .put(matter.update)
     .delete(matter.delete);
 
-router.route("/findByStatus")
-    .post(matter.findByStatus);
+router.route("/findByStatus/:id")
+    .get(matter.findByStatus);
 
+router.route("/setStatus/:id")
+    .patch(matter.setStatus);
+    
 router.route("/findByIdAccess")
     .post(matter.findByIdAccess);
     

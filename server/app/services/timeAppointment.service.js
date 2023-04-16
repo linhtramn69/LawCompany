@@ -29,6 +29,12 @@ class TimeAppointment {
         const result = await this.TimeAppointment.find();
         return result.toArray();
     }
+    async findByStaff(payload){
+        const result = await this.TimeAppointment.find({
+            nhan_vien: payload.id
+        });
+        return result.toArray();
+    }
 
     async findById(id){
         id = {

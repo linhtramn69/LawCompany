@@ -46,6 +46,12 @@ class Fee {
         return result.toArray();
     }
 
+    // lay chi phi phat sinh theo trang thai
+    async findByStatus(statusP) {
+        const result = await this.Fee.find({ status: Number(statusP) });
+        return result.toArray();
+    }
+
     async create(payload){
         const fee = this.extractConactData(payload);
         const newVal = {

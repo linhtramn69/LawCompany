@@ -15,7 +15,18 @@ exports.findAll = async (req, res, next) => {
         );
     }
 }
-
+exports.findByStaff = async (req, res, next) => {
+    try{
+        const timeAppointment = new TimeAppointment(MongoDB.client);
+        const documents = await timeAppointment.findByStaff(req.body);
+        return res.send(documents);
+    }
+    catch(error){
+        return next(
+            new ApiError(500, "An error occured while find time appointments by id")
+        );
+    }
+};
 exports.findById = async (req, res, next) => {
     try{
         const timeAppointment = new TimeAppointment(MongoDB.client);

@@ -21,11 +21,14 @@ class BoPhan {
         const result = await this.BoPhan.find();
         return result.toArray();
     }
-
     async findById(id){
-        const result = await this.BoPhan.findOne({ _id: id });
-        return result;
+        const result = await this.BoPhan.find({ _id: id });
+        return result.toArray();
     }
+    // async findById(id){
+    //     const result = await this.BoPhan.findOne({ _id: id });
+    //     return result;
+    // }
 
     async create(payload){
         const boPhan = this.extractConactData(payload);

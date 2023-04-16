@@ -15,4 +15,10 @@ router.route("/:id")
 router.route("/findByMatter")
     .post(task.findByMatter)
 
+router.route("/findByStaff")
+    .post(task.findByStaff)
+
+router.route("/findByStatus")
+    .post(task.findByStatus);
+
 module.exports = router;

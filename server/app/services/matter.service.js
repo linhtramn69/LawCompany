@@ -57,8 +57,8 @@ class Matter {
     }
 
     // lay vu viec theo id truy cap
-    async findByIdAccess(payload){
-        const result = await this.Matter.find({ 'truy_cap.nhan_vien': payload.id})
+    async findByIdAccess(payload) {
+        const result = await this.Matter.find({ 'truy_cap.nhan_vien': payload.id })
         return result.toArray();
     }
 
@@ -78,7 +78,7 @@ class Matter {
             phuong_thuc_tinh_phi: phuong_thuc_tinh_phi,
             dieu_khoan_thanh_toan: dieu_khoan_thanh_toan
         }
-        
+
         const matter = this.extractConactData(vu_viec);
         const result = await this.Matter.insertOne(matter);
         return result;
@@ -112,6 +112,20 @@ class Matter {
         return result.value;
     }
 
+
+    async setStatus(id, payload) {
+        id = {
+            _id: ObjectId.isValid(id) ? new ObjectId(id) : null
+        };
+        const matter = this.extractConactData(payload);
+        const rs = await this.Matter.findOneAndUpdate(
+            id,
+            { $set: matter },
+            { returnDocument: "after" }
+        );
+        return rs.value;
+
+    }
     async delete(id) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null

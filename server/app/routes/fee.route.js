@@ -9,10 +9,13 @@ router.route("/")
 
 router.route("/:id")
     .get(fee.findById)
-    .put(fee.update)
+    .patch(fee.update)
     .delete(fee.delete);
-    
+
 router.route("/findByMatter")
     .post(fee.findByMatter)
+
+router.route("/findByStatus")
+    .post(fee.findByStatus);
 
 module.exports = router;

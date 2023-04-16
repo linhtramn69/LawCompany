@@ -43,6 +43,20 @@ class Task {
         return result.toArray();
     }
 
+    //lay cong viec theo nvien
+    async findByStaff(payload){
+        const result = await this.Task.find({
+            "nguoi_phu_trach._id":  new ObjectId(payload.id) 
+        });
+        return result.toArray();
+    }
+
+    // lay cong viec theo trang thai
+    async findByStatus(statusP) {
+        const result = await this.Task.find({ status: Number(statusP) });
+        return result.toArray();
+    }
+
     async create(payload){
         const task = this.extractConactData(payload);
         const newVal = {
@@ -58,9 +72,13 @@ class Task {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
         const task = this.extractConactData(payload);
+        const newVal = {
+            ...task,
+            nguoi_phu_trach: await this.User.findOne({ _id: new ObjectId(payload.nguoi_phu_trach) })
+        }
         const result = await this.Task.findOneAndUpdate(
             id,
-            { $set: task },
+            { $set: newVal },
             { returnDocument: "after" }
         );
         return result.value;
