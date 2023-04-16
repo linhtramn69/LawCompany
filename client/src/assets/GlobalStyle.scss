@@ -36,6 +36,13 @@
         color: #fff !important;
     }
 }
+.btn-status{
+    &:hover{
+        background-color: #eeeeee;
+        border: 0.5px solid #c4c4c4 !important;
+    color: #000 !important;
+    }
+}
 h1{
     font-size: 1.6rem;
 }

@@ -1,16 +1,17 @@
-import { Button, Form, Modal, Popconfirm, Select, Table, Space, Divider, InputNumber, Input, Row, Col, Checkbox, Badge, Tag } from "antd";
+import { Button, Form, Modal, Popconfirm, Select, Table, Divider, InputNumber, Input, Row, Col, Tag, Descriptions } from "antd";
 import { useEffect, useState } from "react";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
 import Title from "antd/es/typography/Title";
-import moment from "moment";
 import { useStore, useToken } from "~/store";
 import axios from "axios";
 import { Option } from "antd/es/mentions";
 import { feeService } from "~/services";
-
+import { DeleteOutlined } from '@ant-design/icons';
+import moment from "moment";
 dayjs.extend(customParseFormat);
-const statusText = ['Đã trình', 'Đã duyệt', 'Đã kết toán']
+const statusText = ['Đã trình', 'Đã duyệt', 'Đã kết toán'];
+
 function FormAddFee() {
 
     const [form] = Form.useForm();
@@ -20,6 +21,7 @@ function FormAddFee() {
     const [fee, setFee] = useState([])
     const [bank, setBank] = useState([]);
     const [open, setOpen] = useState(false);
+    let data = [];
 
     useEffect(() => {
         axios('https://api.vietqr.io/v2/banks')
@@ -35,27 +37,31 @@ function FormAddFee() {
         getChiPhiPhatSinh()
     }, [])
     useEffect(() => {
-        if(fee.length > 0){
-           fee.map((value, index) => {
-            setDataSource([
-                ...dataSource,
-                {
+        if (fee.length > 0) {
+            data = fee.map((value, index) => {
+                return {
                     key: index,
                     _id: value._id,
-                    ngay_lap: value.ngay_lap,
+                    ngay_lap: moment(value.ngay_lap).format('DD-MM-YYYY LTS'),
                     mo_ta: value.mo_ta,
+                    idHD: value.so_hoa_don,
                     staff: value.nhan_vien.ho_ten,
                     status: value.status,
-                    don_gia: `${value.don_gia}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'
+                    don_gia: `${value.don_gia}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ',
+                    nameBank: value.tai_khoan.ngan_hang,
+                    nameCreditCard: value.tai_khoan.chu_tai_khoan,
+                    numberCreditCard: value.tai_khoan.so_tai_khoan
                 }
-            ])
-        }) 
+            })
         }
+        setDataSource(data);
     }, [fee])
 
     const handleDelete = async (value) => {
         try {
-            let rs = (await feeService.delete(value)).data
+            (await feeService.delete(value));
+            const newData = dataSource.filter((item) => item._id !== value);
+            setDataSource(newData);
         } catch (err) {
             console.log(err);
         }
@@ -63,6 +69,9 @@ function FormAddFee() {
     const handleAdd = async (values) => {
         try {
             let result = (await feeService.create(values)).data;
+            const feeNew = (await feeService.getById(result.insertedId)).data;
+            setFee([...fee, feeNew]);
+            setOpen(false);
         }
         catch (err) {
             console.log(err);
@@ -70,7 +79,7 @@ function FormAddFee() {
     }
     const onFinish = (values) => {
         const newVal = {
-            ngay_lap: moment(new Date()).format('DD-MM-YYYY LTS'),
+            ngay_lap: new Date(),
             mo_ta: values.mo_ta,
             don_gia: values.don_gia,
             so_hoa_don: values.idHD,
@@ -84,8 +93,7 @@ function FormAddFee() {
             }
         }
         form.resetFields();
-        handleAdd(newVal)
-        // edit ? handleUpdate(newVal, edit.key) : 
+        handleAdd(newVal);
     };
     const onFinishFailed = (errorInfo) => {
         console.log('Failed:', errorInfo);
@@ -99,17 +107,17 @@ function FormAddFee() {
         {
             title: 'Mô tả',
             dataIndex: 'mo_ta',
-            width: 200
+            width: 400
         },
         {
             title: 'Nhân viên',
             dataIndex: 'staff',
-            width: 200
+            width: 300
         },
         {
             title: 'Tổng',
             dataIndex: 'don_gia',
-            width: 150
+            width: 200
         },
         {
             title: 'Trạng thái',
@@ -125,14 +133,55 @@ function FormAddFee() {
         {
             title: 'Thao tác',
             dataIndex: 'operation',
+            width: 100,
             render: (_, record) => (
-                <Space split={<Divider type="vertical" />}>
-                    <Popconfirm title="Sure to delete?">
-                        <Button onClick={() => handleDelete(record._id)}>Delete</Button>
+                    <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record._id)}>
+                        <Button><DeleteOutlined /></Button>
                     </Popconfirm>
-                </Space>)
+            )
+        },
+        {
+            title: '',
+            dataIndex: '',
+            width: 130,
+            render: (_, record) => (
+                <p 
+                onClick={() => detail(record)}
+                style={{
+                    color: "#1677ff",
+                    cursor: 'pointer'
+                }}
+                >
+                    Xem chi tiết</p>
+            )
         },
     ];
+    const detail = (data) => Modal.info({
+        title: 'Chi tiết hoá đơn',
+        content: (
+            <>
+                <Descriptions
+                    column={{
+                        lg: 4,
+                        md: 4,
+                        sm: 2,
+                    }}
+                    title={detail.loai_lich}
+                >
+                    <Descriptions.Item span={4} label="Mô tả">{data.mo_ta}</Descriptions.Item>
+                    <Descriptions.Item span={4} label="Đơn giá">{data.don_gia}</Descriptions.Item>
+                    <Descriptions.Item span={4} label="Mã số hoá đơn">{data.idHD}</Descriptions.Item>
+                    <Descriptions.Item span={4} label="Ngày lập hoá đơn">{data.ngay_lap}</Descriptions.Item>
+                    <Descriptions.Item span={4} label="Trạng thái">{statusText[data.status]}</Descriptions.Item>
+                    <Descriptions.Item span={4} label="Ngân hàng">{data.nameBank}</Descriptions.Item>
+                    <Descriptions.Item span={4} label="Tên tài khoản">{data.nameCreditCard}</Descriptions.Item>
+                    <Descriptions.Item span={4} label="Số tài khoản">{data.numberCreditCard}</Descriptions.Item>
+                </Descriptions>
+                <Divider />
+            </>
+        ),
+        onOk() { },
+    })
 
     return (
         <>
@@ -181,8 +230,7 @@ function FormAddFee() {
                             name: ['customer'],
                             value: state.matter.khach_hang.ho_ten
                         }
-                    ]
-                    }
+                    ]}
                 >
                     <Row>
                         <Col span={24} pull={4}>
@@ -248,25 +296,6 @@ function FormAddFee() {
                     </Row>
                     <Divider />
                     <Row>
-                        <Col span={10} push={1}>
-                            <Form.Item>
-                                <Checkbox>
-                                    <Title level={5}>Thêm vào hóa đơn khách hàng</Title>
-                                </Checkbox>
-                            </Form.Item>
-                            <Form.Item
-                                label="Khách hàng"
-                                name="customer"
-
-                            >
-                                <Input
-                                    disabled
-                                    style={{
-                                        width: 250,
-                                    }}
-                                />
-                            </Form.Item>
-                        </Col>
                         <Col span={10} push={2}>
                             <Form.Item>
                                 <Title level={5}>Tài khoản bồi hoàn</Title>

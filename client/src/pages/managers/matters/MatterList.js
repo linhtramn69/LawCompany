@@ -1,62 +1,47 @@
-import { Tooltip } from "antd";
-import { useEffect } from "react";
-import { useState } from "react";
-import { TableComponent } from "~/components";
-import { matterService, typeServiceService } from "~/services";
+import { useEffect, useState, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { matterService, serviceService, typeServiceService, userService } from "~/services";
 import { useToken } from "~/store";
-const columns = [
-    {
-        title: 'STT',
-        dataIndex: 'index',
-        key: 'index',
-        width: 60
-    },
-    {
-        title: 'Tên vụ việc',
-        dataIndex: 'nameMatter',
-        key: 'nameMatter',
-    },
-    {
-        title: 'Lĩnh vực',
-        dataIndex: 'typeService',
-        key: 'typeService',
-    },
-    {
-        title: 'Dịch vụ',
-        dataIndex: 'service',
-        key: 'service',
-        ellipsis: {
-            showTitle: false,
-        },
-        render: (service) => (
-            <Tooltip placement="topLeft" title={service}>
-                {service}
-            </Tooltip>
-        ),
-    },
-    {
-        title: 'Khách hàng',
-        dataIndex: 'customer',
-        key: 'customer',
-    },
-    {
-        title: 'Luật sư phụ trách',
-        dataIndex: 'law',
-        key: 'law',
-    },
-]
+import { Button, Input, Space, Table, Tooltip } from "antd";
+import Highlighter from 'react-highlight-words';
+import { SearchOutlined } from '@ant-design/icons';
+const url = ['', 'admin', 'staff']
+
 function MatterList() {
-    const { token } = useToken()
+
+    let { id } = useParams();
+    let navigate = useNavigate();
+    const { token } = useToken();
     const [matters, setMatters] = useState([]);
+    const [type, setType] = useState([]);
+    const [service, setService] = useState([]);
+    const [law, setLaw] = useState([]);
+    const [searchText, setSearchText] = useState('');
+    const [searchedColumn, setSearchedColumn] = useState('');
+    const searchInput = useRef(null);
+
     useEffect(() => {
-        const getMatters = async () => {
-            token.account.quyen === 1 ?
-                setMatters((await matterService.get()).data)
-                : setMatters((await matterService.findByIdAccess({
-                    id: token._id
-                })).data)
+        const getMatter = async () => {
+            const result =
+                token.account.quyen === 1 ?
+                    ((await matterService.get()).data)
+                    : ((await matterService.findByIdAccess({ id: token._id })).data)
+            const arr = result.filter(item => item.status == id)
+            setMatters(arr)
         }
-        getMatters()
+        const getType = async () => {
+            setType((await typeServiceService.get()).data)
+        }
+        const getService = async () => {
+            setService((await serviceService.get()).data)
+        }
+        const getLaw = async () => {
+            setLaw((await userService.getByBoPhan('LS')).data)
+        }
+        getMatter()
+        getType()
+        getService()
+        getLaw()
     }, [])
     const data = matters.map((value, index) => {
         return {
@@ -66,12 +51,191 @@ function MatterList() {
             typeService: value.linh_vuc.ten_linh_vuc,
             service: value.dich_vu.ten_dv,
             customer: value.khach_hang.ho_ten,
+            phoneCus: value.khach_hang.account.sdt,
             law: value.luat_su.ho_ten
         }
     })
+    const arrType = type.map((value) => {
+        return {
+            value: value.ten_linh_vuc,
+            text: value.ten_linh_vuc
+        }
+    })
+    const arrService = service.map((value) => {
+        return {
+            value: value.ten_dv,
+            text: value.ten_dv
+        }
+    })
+    const arrLaw = law.map((value) => {
+        return {
+            value: value.ho_ten,
+            text: value.ho_ten
+        }
+    })
+
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+        confirm();
+        setSearchText(selectedKeys[0]);
+        setSearchedColumn(dataIndex);
+    };
+    const handleReset = (clearFilters) => {
+        clearFilters();
+        setSearchText('');
+    };
+    const getColumnSearchProps = (dataIndex) => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+            <div
+                style={{
+                    padding: 8,
+                }}
+                onKeyDown={(e) => e.stopPropagation()}
+            >
+                <Input
+                    ref={searchInput}
+                    placeholder={`Tìm kiếm theo số điện thoại khách hàng`}
+                    value={selectedKeys[0]}
+                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                    onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                    style={{
+                        marginBottom: 8,
+                        display: 'block',
+                    }}
+                />
+                <Space>
+                    <Button
+                        type="primary"
+                        onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                        icon={<SearchOutlined />}
+                        size="small"
+                        style={{
+                            width: 90,
+                        }}
+                    >
+                        Search
+                    </Button>
+                    <Button
+                        onClick={() => clearFilters && handleReset(clearFilters)}
+                        size="small"
+                        style={{
+                            width: 90,
+                        }}
+                    >
+                        Reset
+                    </Button>
+                </Space>
+            </div>
+        ),
+        filterIcon: (filtered) => (
+            <SearchOutlined
+                style={{
+                    color: filtered ? '#1890ff' : undefined,
+                }}
+            />
+        ),
+        onFilter: (value, record) =>
+            record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownOpenChange: (visible) => {
+            if (visible) {
+                setTimeout(() => searchInput.current?.select(), 100);
+            }
+        },
+        render: (text) =>
+            searchedColumn === dataIndex ? (
+                <Highlighter
+                    highlightStyle={{
+                        backgroundColor: '#ffc069',
+                        padding: 0,
+                    }}
+                    searchWords={[searchText]}
+                    autoEscape
+                    textToHighlight={text ? text.toString() : ''}
+                />
+            ) : (
+                text
+            ),
+    });
+    const columns = [
+        {
+            title: 'STT',
+            dataIndex: 'index',
+            key: 'index',
+            width: 60
+        },
+        {
+            title: 'Tên vụ việc',
+            dataIndex: 'nameMatter',
+            key: 'nameMatter',
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (nameMatter) => (
+                <Tooltip placement="topLeft" title={nameMatter}>
+                    {nameMatter}
+                </Tooltip>
+            ),
+        },
+        {
+            title: 'Lĩnh vực',
+            dataIndex: 'typeService',
+            key: 'typeService',
+            filters: arrType,
+            onFilter: (value, record) => record.typeService.startsWith(value),
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (typeService) => (
+                <Tooltip placement="topLeft" title={typeService}>
+                    {typeService}
+                </Tooltip>
+            ),
+        },
+        {
+            title: 'Dịch vụ',
+            dataIndex: 'service',
+            key: 'service',
+            filters: arrService,
+            onFilter: (value, record) => record.service.startsWith(value),
+            filterSearch: true,
+            ellipsis: {
+                showTitle: false,
+            },
+            render: (service) => (
+                <Tooltip placement="topLeft" title={service}>
+                    {service}
+                </Tooltip>
+            ),
+        },
+        {
+            title: 'Luật sư phụ trách',
+            dataIndex: 'law',
+            key: 'law',
+            filters: arrLaw,
+            onFilter: (value, record) => record.law.startsWith(value),
+            filterSearch: true,
+        },
+        {
+            title: 'Khách hàng',
+            dataIndex: 'customer',
+            key: 'customer',
+        },
+        {
+            title: 'Số điện thoại khách hàng',
+            dataIndex: 'phoneCus',
+            key: 'phoneCus',
+            ...getColumnSearchProps('phoneCus'),
+        },
+    ]
     return (
         <>
-            <TableComponent columns={columns} data={data} />
+            <Table columns={columns} dataSource={data}
+                onRow={(record, rowIndex) => {
+                    return {
+                        onClick: (event) => {
+                            navigate(`/${url[token.account.quyen]}/matter/${record._id}`)
+                        }, // click row
+                    }
+                }} />
         </>
     );
 }

@@ -10,11 +10,14 @@ class FeeService {
     async findByMatter(data) {
         return (await API.post(`/fee/findByMatter`, data));
     }
+    async getByStatus(status){
+        return (await API.post(`fee/findByStatus`, status));
+    }
     async create(data) {
         return (await API.post(`fee`, data));
     }
     async update(id, data) {
-        return (await API.put(`fee/${id}`, data));
+        return (await API.patch(`fee/${id}`, data));
     }
     async delete(id) {
         return (await API.delete(`fee/${id}`));

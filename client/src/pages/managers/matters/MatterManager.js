@@ -1,4 +1,4 @@
-import { Avatar, Button, Col, Divider, Progress, Row, Segmented, Space, } from "antd";
+import { Avatar, Button, Col, Divider, Progress, Row, Space, } from "antd";
 import {
     ReconciliationFilled,
     CreditCardFilled,
@@ -8,14 +8,47 @@ import {
 } from '@ant-design/icons';
 import Title from "antd/es/typography/Title";
 import CardMatter from "../../../components/AdminComponents/Card/CardMatter";
-import { Link, useNavigate } from "react-router-dom";
-import { useToken } from "~/store";
+import { Link } from "react-router-dom";
+import { actions, useStore, useToken } from "~/store";
+import { useEffect } from "react";
+import { matterService, taskService } from "~/services";
 const styleCol = {
     textAlign: 'center'
 }
 const url = ['', 'admin', 'staff']
 function MatterManager() {
+
     const { token } = useToken();
+    const [state, dispatch] = useStore();
+
+    useEffect(() => {
+        const getMatters = async () => {
+            if (token.account.quyen === 1) {
+                const matter = (await matterService.get()).data;
+                const task = (await taskService.get()).data;
+                dispatch(actions.setMatters(matter));
+                dispatch(actions.setTasks(task));
+            }
+            else {
+                const matter = (await matterService.findByIdAccess({ id: token._id })).data;
+                const task = (await taskService.getByStaff({ id: token._id })).data;
+                dispatch(actions.setMatters(matter));
+                dispatch(actions.setTasks(task));
+            }
+        }
+        getMatters();
+    }, [])
+
+    const handleTotalMatter = (value) => {
+        const arr = state.matters.filter(vl => vl.status === value)
+        return arr.length
+    }
+    const handleTotalTask = (value) => {
+        const arr = state.tasks.filter(vl => vl.status === value)
+        return arr.length
+    }
+
+
     return (
         <>
             <Space wrap direction="horizontal">
@@ -41,9 +74,9 @@ function MatterManager() {
                         </Col>
                         <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
                             <Row gutter={8}>
-                                <CardMatter title="Đang thực hiện" total={0} url={`/${url[token.account.quyen]}/matters/`} />
-                                <CardMatter title="Tạm ngưng" total={6} />
-                                <CardMatter title="Hoàn thành" total={0} />
+                                <CardMatter title="Đang thực hiện" color={0} total={handleTotalMatter(0)} url={`/${url[token.account.quyen]}/matters/0`} />
+                                <CardMatter title="Tạm ngưng" color={2} total={handleTotalMatter(1)} url={`/${url[token.account.quyen]}/matters/2`} />
+                                <CardMatter title="Hoàn thành" color={1} total={handleTotalMatter(2)} url={`/${url[token.account.quyen]}/matters/1`} />
                             </Row>
                         </Col>
                     </Row>
@@ -60,11 +93,11 @@ function MatterManager() {
                         </Col>
                         <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
                             <Row gutter={[8, 8]}>
-                                <CardMatter title="Được giao" total={0} />
-                                <CardMatter title="Hoàn thành" total={0} />
-                                <CardMatter title="Tạm ngưng" total={6} />
-                                <CardMatter title="Hạn hôm nay" total={0} />
-                                <CardMatter title="Quá hạn" total={6} />
+                                <CardMatter title="Được giao" total={handleTotalTask(0)} color={0} url={`/${url[token.account.quyen]}/tasks/0`}/>
+                                <CardMatter title="Hoàn thành" total={handleTotalTask(1)} color={1} />
+                                <CardMatter title="Tạm ngưng" total={handleTotalTask(2)} color={2} />
+                                <CardMatter title="Hạn hôm nay" total={0}  />
+                                <CardMatter title="Quá hạn" total={0}  />
                             </Row>
                         </Col>
                     </Row>
@@ -80,11 +113,11 @@ function MatterManager() {
                             <Title level={5}>Lịch hẹn</Title>
                         </Col>
                         <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
-                            <Row gutter={[8, 8]}>
+                            {/* <Row gutter={[8, 8]}>
                                 <CardMatter title="Hôm nay" total={0} />
-                                <CardMatter title="Tuần này" total={6} />
+                                <CardMatter title="Tuần này" total={handleTotalTask(0)} status={0} />
                                 <CardMatter title="Tháng này" total={0} />
-                            </Row>
+                            </Row> */}
                         </Col>
                     </Row>
                 </Col>

@@ -7,13 +7,11 @@ import { actions, useStore } from "~/store";
 function FormAddFile({ props }) {
     const [state, dispatch] = useStore();
     const [dataSource, setDataSource] = useState(state.files ? state.files : []);
-    console.log(state.files);
     useEffect(() => {
         dispatch(actions.setFiles(dataSource))
     }, [dataSource])
     const handleChange = (e) => {
-        let selected = e.target.files[0]
-        console.log(selected);
+        let selected = e.target.files[0];
         let reader = new FileReader();
         reader.readAsDataURL(selected);
         reader.onload = (e) => {
@@ -27,11 +25,8 @@ function FormAddFile({ props }) {
                 file: e.target.result
             }])
         }
-        console.log(dataSource);
-
     }
     const onButtonClick = (file, name) => {
-        console.log(file);
         let a = document.createElement("a");
         a.href = `${file}`;
         a.download = `${name}`;

@@ -1,28 +1,30 @@
-import { Col, Row, Segmented,Pagination } from "antd";
+import { Col, Row, Segmented, Pagination } from "antd";
 import { AppstoreOutlined, BarsOutlined } from '@ant-design/icons';
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useStore, actions } from "~/store";
-import { CardUser, Filter,TableComponent } from "~/components";
+import { CardUser, Filter, TableComponent } from "~/components";
 import { userService } from '../../../services';
-function User({props, columns}) {
+
+function User({ props, columns }) {
     const [state, dispatch] = useStore();
     const data = [];
     const [minValue, setMinValue] = useState(0)
     const [maxValue, setMaxValue] = useState(8)
     const [tab, setTab] = useState("Kanban");
     const numEachPage = 8
-    const getUsers = async () => {
-        dispatch(actions.setUsers((await userService.get()).data))
-    };
+    let chuc_vu = null;
+    let bo_phan = null;
     useEffect(() => {
+        const getUsers = async () => {
+            dispatch(actions.setUsers((await userService.get()).data))
+        };
         getUsers()
     }, []);
-    let chuc_vu=null;
-    let bo_phan=null;
+
     state.users.map((value, index) => {
         if (value.account.quyen === props) {
-            if(value.account.quyen !== 0){
+            if (value.account.quyen !== 0) {
                 chuc_vu = value.chuc_vu.ten_chuc_vu;
                 bo_phan = value.bo_phan.ten_bo_phan;
             }
@@ -70,7 +72,7 @@ function User({props, columns}) {
         ]}
         onChange={(e) => setTab(e)}
     />
-    
+
     return (
         <>
             <Filter seg={seg} />

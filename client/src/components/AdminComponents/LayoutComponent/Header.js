@@ -1,4 +1,4 @@
-import { Col, Menu, Row, Breadcrumb, Button } from "antd";
+import { Col, Menu, Row } from "antd";
 import {
   UserOutlined,
   BellFilled,
@@ -9,8 +9,7 @@ import {
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHouse } from '@fortawesome/free-solid-svg-icons'
-import "~/assets/style/Admin/Header.scss"
-import Search from "antd/es/transfer/search";
+import "~/assets/style/Admin/Header.scss";
 import { Link, useNavigate } from "react-router-dom";
 import { useToken } from "~/store";
 const url = ['', 'admin', 'staff']
@@ -18,12 +17,18 @@ const url = ['', 'admin', 'staff']
 function HeaderAdmin() {
   const [current, setCurrent] = useState('mail');
   const { token } = useToken();
-  let navigate = useNavigate()
+  let url = 'admin'
+  if(token.chuc_vu.id == 'LS02')
+    url = 'staff'
+  else if(token.chuc_vu.id == 'TVV02')
+    url = 'tu-van-vien'
+  else if(token.chuc_vu.id == 'KT02')
+    url = 'ke-toan'
   const items = [
     {
-      icon: <Link to={`/${url[token.account.quyen]}`}>
-        <FontAwesomeIcon icon={faHouse} />
-      </Link>,
+      icon:  <Link to={`/${url}`}>
+      <FontAwesomeIcon icon={faHouse} />
+    </Link>,
       key: 'title',
     },
     {

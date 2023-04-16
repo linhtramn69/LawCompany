@@ -7,6 +7,9 @@ class TimeAppointmentService {
     async getById(id){
         return (await API.get(`/time-appointment/${id}`));
     }
+    async findByStaff(data){
+        return (await API.post(`/time-appointment/findByStaff`, data));
+    }
     async create(data){
         return (await API.post(`time-appointment`, data));
     }

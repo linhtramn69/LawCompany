@@ -1,14 +1,17 @@
-import { Avatar, Button, Card, Col, Descriptions, Divider, List, Row, Space, Table, Tabs, Tag, Tooltip, Typography } from "antd";
+import { Avatar, Badge, Button, Card, Col, Descriptions, Divider, List, Modal, Row, Space, Table, Tabs, Tag, Tooltip, Typography } from "antd";
 import { faHouse, faReceipt, faTasks } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, useParams } from "react-router-dom";
 import Title from "antd/es/typography/Title";
 import { useEffect, useState } from "react";
-import { matterService, stepService, taskService, userService } from "~/services";
+import { feeService, matterService, stepService, taskService, userService } from "~/services";
 import { actions, useStore, useToken } from "~/store";
 import { avatar } from "~/assets/images";
 import moment from "moment";
 import FormAddFile from "~/components/AdminComponents/Form/FormAddFile";
+const url = ['', 'admin', 'staff'];
+const statusTask = ['Đã giao', 'Đã hoàn thành'];
+const statusFee = ['Đã trình', 'Đã duyệt', 'Đã kết toán'];
 const item = [
     {
         title: 'Đang thực hiện'
@@ -40,7 +43,14 @@ const columnsTask = [
     {
         title: 'Trạng thái',
         dataIndex: 'status',
-    }
+        render: (status) => (
+            <Tag
+                color={status === 0 ? 'volcano' : 'success'}
+            >
+                {statusTask[status]}
+            </Tag>
+        ),
+    },
 ];
 const columnsStep = [
     {
@@ -74,12 +84,12 @@ const columnsFees = [
     {
         title: 'Mô tả',
         dataIndex: 'mo_ta',
-        width: 350
+        width: 400
     },
     {
         title: 'Nhân viên',
         dataIndex: 'staff',
-        width: 250
+        width: 300
     },
     {
         title: 'Tổng',
@@ -89,9 +99,56 @@ const columnsFees = [
     {
         title: 'Trạng thái',
         dataIndex: 'status',
+        render: (status) => (
+            <Tag
+                color={status === 0 ? 'volcano' : status === 1 ? 'geekblue' : 'success'}
+            >
+                {statusFee[status]}
+            </Tag>
+        ),
+    },
+    {
+        title: '',
+        dataIndex: '',
+        width: 130,
+        render: (_, record) => (
+            <p
+                onClick={() => detail(record)}
+                style={{
+                    color: "#1677ff",
+                    cursor: 'pointer'
+                }}
+            >
+                Xem chi tiết</p>
+        )
     },
 ];
-const url = ['', 'admin', 'staff']
+const detail = (data) => Modal.info({
+    title: 'Chi tiết hoá đơn',
+    content: (
+        <>
+            <Descriptions
+                column={{
+                    lg: 4,
+                    md: 4,
+                    sm: 2,
+                }}
+                title={detail.loai_lich}
+            >
+                <Descriptions.Item span={4} label="Mô tả">{data.mo_ta}</Descriptions.Item>
+                <Descriptions.Item span={4} label="Đơn giá">{data.don_gia}</Descriptions.Item>
+                <Descriptions.Item span={4} label="Mã số hoá đơn">{data.idHD}</Descriptions.Item>
+                <Descriptions.Item span={4} label="Ngày lập hoá đơn">{data.ngay_lap}</Descriptions.Item>
+                <Descriptions.Item span={4} label="Trạng thái">{statusFee[data.status]}</Descriptions.Item>
+                <Descriptions.Item span={4} label="Ngân hàng">{data.nameBank}</Descriptions.Item>
+                <Descriptions.Item span={4} label="Tên tài khoản">{data.nameCreditCard}</Descriptions.Item>
+                <Descriptions.Item span={4} label="Số tài khoản">{data.numberCreditCard}</Descriptions.Item>
+            </Descriptions>
+            <Divider />
+        </>
+    ),
+    onOk() { },
+});
 
 function MatterDetail() {
 
@@ -109,12 +166,16 @@ function MatterDetail() {
             dispatch(actions.setMatter(result))
         }
         const getTask = async () => {
-            const result = (await taskService.findByMatter({id: id})).data
-            console.log(result);
+            const result = (await taskService.findByMatter({ id: id })).data
             dispatch(actions.setTasks(result))
+        }
+        const getFee = async () => {
+            const result = (await feeService.findByMatter({ id: id })).data
+            dispatch(actions.setFees(result))
         }
         getMatter()
         getTask()
+        getFee()
     }, [id, dispatch])
     useEffect(() => {
         const getAccess = async () => {
@@ -122,11 +183,8 @@ function MatterDetail() {
             const arr2 = state.matter.truy_cap.khach_hang;
             setAccess((await userService.getByMatter(arr1.concat(arr2))).data)
         }
-        
-        // dispatch(actions.setTasks(state.tasks))
         dispatch(actions.setFiles(state.matter.tai_lieu))
         dispatch(actions.setSteps(state.matter.phi_co_dinh))
-        dispatch(actions.setFees(state.fees))
         getAccess();
     }, [state.matter])
     useEffect(() => {
@@ -137,6 +195,7 @@ function MatterDetail() {
                 nguoi_phu_trach: value.nguoi_phu_trach.ho_ten,
                 han_chot_cong_viec: moment(value.han_chot_cong_viec).format('DD-MM-YYYY LT'),
                 ngay_giao: moment(value.ngay_giao).format('DD-MM-YYYY LT'),
+                status: value.status
             })
         }) : []
         const showDataSource = async () => {
@@ -154,10 +213,15 @@ function MatterDetail() {
         const dataFee = state.fees ? state.fees.map((value) => {
             return ({
                 key: value.key,
-                ngay_lap: value.ngay_lap,
+                ngay_lap: moment(value.ngay_lap).format('DD-MM-YYYY LT'),
                 mo_ta: value.mo_ta,
-                staff: value.nhan_vien,
-                don_gia: `${value.don_gia}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'
+                staff: value.nhan_vien.ho_ten,
+                don_gia: `${value.don_gia}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ',
+                status: value.status,
+                idHD: value.so_hoa_don,
+                nameBank: value.tai_khoan.ngan_hang,
+                nameCreditCard: value.tai_khoan.chu_tai_khoan,
+                numberCreditCard: value.tai_khoan.so_tai_khoan
             })
         }) : []
         setDataTask(dataTask);
@@ -169,8 +233,11 @@ function MatterDetail() {
         <>
             {state.matter._id ?
                 <Card
-
-                    title={<Title level={4} style={{ marginTop: 10 }}>Thông tin chi tiết</Title>}
+                    title={
+                        state.matter.status == 0 ? <Badge status="processing" text="Đang thực hiện" />
+                            : state.matter.status == 1 ? <Badge status="success" text="Hoàn thành" />
+                                : <Badge status="warning" text="Tạm ngưng" />
+                    }
                     extra={
                         <Space split={<Divider type="vertical" />}>
                             <Typography.Link><FontAwesomeIcon icon={faHouse} /> Vụ việc</Typography.Link>
@@ -305,10 +372,13 @@ function MatterDetail() {
                             children: <Table columns={columnsFees} dataSource={dataFee} />,
                         }
                     ]} />
-
-                    <Link to={`/${url[token.account.quyen]}/matter/edit/${id}`}>
-                        <Button type="primary" className="btn-primary">Chỉnh sửa</Button>
-                    </Link>
+                    {
+                        state.matter.status != 1 ?
+                            <Link to={`/${url[token.account.quyen]}/matter/edit/${id}`}>
+                                <Button type="primary" className="btn-primary">Chỉnh sửa</Button>
+                            </Link>
+                            : <></>
+                    }
                 </Card>
                 : null
             }

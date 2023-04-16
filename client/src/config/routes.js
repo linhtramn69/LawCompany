@@ -19,27 +19,46 @@ const routes = {
         staffAdd: '/staff/add',
         // Matter
         matterManager: '/matter',
-        matterList: '/matters',
+        matterList: '/matters/:id',
         matterAdd: '/matter/add',
-        matterDetail: '/matters/:id',
+        matterDetail: '/matter/:id',
         matterEdit: '/matter/edit/:id',
+        // Task
+        taskList: '/tasks/:id',
+
         //Quotes
-        quotesManager: '/quotes',
+        quotesManager: '/quote',
         quotesAdd: '/quotes/add',
         quoteDetail: '/quotes/:id',
         quoteDetail: '/quotes/:id',
         quoteEdit: '/quotes/edit/:id',
 
         //Calendar
-        calendarManager: '/calendar'
+        calendarManager: '/calendar',
+
+        //Fee
+        feeManager: '/fee',
+        feeList: '/fees',
+        feeDetail: '/fees/:id'
     },
     staff: {
-        matterManager: '/',
-        matetrList: '/matters',
-        matterDetail: '/matters/:id',
-        matetrEdit: '/matter/edit/:id',
+       matterManager: '/',
+        matterList: '/matters/:id',
+        matterAdd: '/matter/add',
+        matterDetail: '/matter/:id',
+        matterEdit: '/matter/edit/:id',
         calendarManager: '/calendar'
 
+    },
+    tvv: {
+        taskManager: '/',
+        taskList: '/tasks',
+        quotesManager: '/quotes',
+    },
+    keToan: {
+        feeManager: '/',
+        feeList: '/fees',
+        feeDetail: '/fees/:id'
     }
 }
 export default routes;

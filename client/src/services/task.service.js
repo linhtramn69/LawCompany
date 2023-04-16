@@ -10,6 +10,12 @@ class TaskService {
     async findByMatter(data) {
         return (await API.post(`/task/findByMatter`, data));
     }
+    async getByStaff(id){
+        return (await API.post(`task/findByStaff`, id))
+    }
+    async getByStatus(status){
+        return (await API.post(`matter/findByStatus`, status))
+    }
     async create(data){
         return (await API.post(`task`, data));
     }

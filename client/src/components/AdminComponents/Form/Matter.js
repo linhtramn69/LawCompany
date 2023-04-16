@@ -1,13 +1,12 @@
 import { Button, Col, Form, Input, Radio, Row, Space, Tabs, Select, Divider, InputNumber } from "antd";
 import { useEffect, useState } from "react";
 import { TableAddFile } from "~/components";
-import Description from "../Description";
 import FormAddTask from "./FormAddTask";
 import FormAddPeriod from "./FormAddPeriod";
 import FormAddFee from "./FormAddFee";
 import { matterService, serviceService, timePayService, typePayService, typeServiceService, userService } from '~/services/index';
 import { useNavigate } from "react-router-dom";
-import { useStore } from "~/store";
+import { useStore, useToken } from "~/store";
 import FormAddFile from "./FormAddFile";
 
 const formItemLayout = {
@@ -51,6 +50,7 @@ function FormMatter({ props }) {
     const [type, setType] = useState(
         matter._id ? matter.linh_vuc._id : null
     );
+    const {token} = useToken();
     let navigate = useNavigate();
 
     useEffect(() => {
@@ -176,7 +176,7 @@ function FormMatter({ props }) {
             phi_co_dinh: matter._id ? state.steps : null,
             chi_phi_phat_sinh: matter._id ? state.fees : null
         }
-        
+
         console.log(newData);
         matter._id ? handleUpdate(newData) :
             handleAdd(newData)
@@ -235,7 +235,15 @@ function FormMatter({ props }) {
                     },
                 ] : null}
             >
+                  <Form.Item
+                        wrapperCol={{
+                            offset: 20,
+                        }}
+                    >
+                        <Button type="primary" htmlType="submit" className="btn-primary">Lưu thông tin</Button>
+                    </Form.Item>
                 <Row>
+                  
                     <Col span={12} pull={2}>
                         <Form.Item
                             label="Tên vụ việc"
@@ -287,6 +295,7 @@ function FormMatter({ props }) {
                             name="khach_hang"
                         >
                             <Select
+                                disabled={token.account.quyen != 1}
                                 showSearch
                                 allowClear
                                 style={{
@@ -300,6 +309,7 @@ function FormMatter({ props }) {
                             name="luat_su"
                         >
                             <Select
+                                disabled={token.account.quyen != 1}
                                 showSearch
                                 allowClear
                                 style={{
@@ -312,10 +322,11 @@ function FormMatter({ props }) {
                     </Col>
                 </Row>
                 <Divider />
-                <Tabs style={{ width: '100%' }} type="card" defaultActiveKey="0" items={[
+                <Tabs style={{ width: '100%' }} type="card" defaultActiveKey={token.account.quyen == 1 ? '1' : '2'} items={[
                     {
-                        key: '0',
+                        key: '1',
                         label: `Thiết lập`,
+                        disabled: token.account.quyen != 1 ? true : false,
                         children: <Row style={{ paddingTop: 30 }}>
                             <Col md={{ span: 10 }}>
                                 <Form.Item
@@ -391,11 +402,6 @@ function FormMatter({ props }) {
                         </Row>,
                     },
                     {
-                        key: '1',
-                        label: `Mô tả`,
-                        children: <Description />,
-                    },
-                    {
                         key: '2',
                         label: `Giấy tờ`,
                         children: <FormAddFile />,
@@ -410,29 +416,22 @@ function FormMatter({ props }) {
                     {
                         key: '4',
                         label: `Công việc`,
-                        children: <FormAddTask props={matter.cong_viec}/>,
+                        children: <FormAddTask props={matter.cong_viec} />,
                         disabled: matter ? false : true
                     },
                     {
                         key: '5',
                         label: `Phí cố định`,
-                        children: <FormAddPeriod props={matter.phi_co_dinh}/>,
+                        children: <FormAddPeriod props={matter.phi_co_dinh} />,
                         disabled: matter ? false : true
                     },
                     {
                         key: '6',
                         label: `Chi phí`,
-                        children: <FormAddFee props={matter.chi_phi_phat_sinh}/>,
+                        children: <FormAddFee props={matter.chi_phi_phat_sinh} />,
                         disabled: matter ? false : true
                     }
                 ]} />
-                <Form.Item
-                    wrapperCol={{
-                        offset: 20,
-                    }}
-                >
-                    <Button type="primary" htmlType="submit" className="btn-primary">SAVE</Button>
-                </Form.Item>
             </Form>
         </>
     );

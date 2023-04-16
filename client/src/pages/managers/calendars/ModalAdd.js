@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { boPhanService, timeAppointmentService, userService } from "~/services";
 import typeAppointment from "~/services/typeAppointment.service";
+import { useToken } from "~/store";
 const { RangePicker } = DatePicker;
 const formItemLayout = {
     labelCol: {
@@ -24,7 +25,7 @@ const formItemLayout = {
     }
 };
 function ModalAdd(props) {
-
+    const {token} = useToken()
     const [type, setType] = useState([]);
     const [boPhan, setBoPhan] = useState([]);
     const [staff, setStaff] = useState([]);
@@ -32,7 +33,9 @@ function ModalAdd(props) {
 
     useEffect(() => {
         const getBoPhan = async () => {
-            setBoPhan((await boPhanService.get()).data)
+            token.bo_phan.id === 'LS' ?
+                setBoPhan((await boPhanService.getById('LS')).data)
+            : setBoPhan((await boPhanService.get()).data)
         }
         const getType = async () => {
             setType((await typeAppointment.get()).data)
