@@ -30,6 +30,12 @@ class ChucVu {
         return result;
     }
 
+    // lay chuc vu theo bo phan
+    async findByBoPhan(payload){
+        const result = await this.ChucVu.find({ 'bo_phan.id': payload.bo_phan });
+        return result.toArray();
+    }
+
     async create(payload){
         const chucVu = this.extractConactData(payload);
         const result = await this.ChucVu.insertOne(chucVu);

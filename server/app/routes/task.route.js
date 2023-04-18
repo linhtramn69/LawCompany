@@ -21,4 +21,10 @@ router.route("/findByStaff")
 router.route("/findByStatus")
     .post(task.findByStatus);
 
+router.route("/findByDate")
+    .post(task.findByDate);
+
+router.route("/setStatusPause")
+    .patch(task.setStatusPause);
+    
 module.exports = router;

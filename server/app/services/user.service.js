@@ -3,6 +3,8 @@ const { ObjectId } = require("mongodb");
 class User {
     constructor(client) {
         this.User = client.db().collection("user");
+        this.BoPhan = client.db().collection("boPhan");
+        this.ChucVu = client.db().collection("chucVu");
     }
 
     extractConactData(payload) {
@@ -25,6 +27,7 @@ class User {
             linh_vuc: payload.linh_vuc,
             bang_cap: payload.bang_cap,
             active: payload.active,
+            boss: payload.boss
         };
 
         Object.keys(user).forEach(
@@ -58,7 +61,21 @@ class User {
         array.forEach(function (item) {
             oids.push(new ObjectId(item));
         });
-        const result = await this.User.find({ _id: {$in : oids}});
+        const result = await this.User.find({
+            $or: [
+                { _id: { $in: oids } },
+                { boss: { $in: array } }
+            ]
+        })
+        return result.toArray();
+    }
+
+    async getByBoss(array) {
+        const oids = [];
+        array.forEach(function (item) {
+            oids.push(new ObjectId(item));
+        });
+        const result = await this.User.find({ boss: { $in: oids } });
         return result.toArray();
     }
 
@@ -66,7 +83,13 @@ class User {
         const user = this.extractConactData(payload);
         const isExist = await this.User.findOne({ "account.sdt": user.account.sdt })
         if (!isExist) {
-            const result = await this.User.insertOne(user);
+            const bo_phan = await this.BoPhan.findOne({ _id: payload.bo_phan });
+            const chuc_vu = await this.ChucVu.findOne({ _id: payload.chuc_vu });
+            const result = await this.User.insertOne({
+                ...payload,
+                bo_phan: bo_phan,
+                chuc_vu: chuc_vu
+            });
             return result;
         }
         return Error;

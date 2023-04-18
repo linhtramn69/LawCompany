@@ -8,6 +8,7 @@ class Matter {
         this.User = client.db().collection("user");
         this.TypePay = client.db().collection("typePay");
         this.TimePay = client.db().collection("timePay");
+        this.Task = client.db().collection("task")
     }
 
     // define csdl
@@ -112,20 +113,26 @@ class Matter {
         return result.value;
     }
 
+    // async setStatus(id, payload) {
+    //     const id_string = id;
+    //     id = {
+    //         _id: ObjectId.isValid(id) ? new ObjectId(id) : null
+    //     };
+    //     const matter = this.extractConactData(payload);
+    //     const rs = await this.Matter.findOneAndUpdate(
+    //         id,
+    //         { $set: matter },
+    //         { returnDocument: "after" }
+    //     );
+    //     if(payload.status == 2){
+    //         const result = await this.Task.updateMany(
+    //             {status: 0, vu_viec: id_string},
+    //             {$set: {status: 2}}
+    //         )
+    //     }
+    //     return rs.value;
+    // }
 
-    async setStatus(id, payload) {
-        id = {
-            _id: ObjectId.isValid(id) ? new ObjectId(id) : null
-        };
-        const matter = this.extractConactData(payload);
-        const rs = await this.Matter.findOneAndUpdate(
-            id,
-            { $set: matter },
-            { returnDocument: "after" }
-        );
-        return rs.value;
-
-    }
     async delete(id) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null

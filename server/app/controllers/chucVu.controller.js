@@ -29,6 +29,19 @@ exports.findById = async (req, res, next) => {
     }
 };
 
+exports.findByBoPhan = async (req, res, next) => {
+    try{
+        const chucVu = new ChucVu(MongoDB.client);
+        const document = await chucVu.findByBoPhan(req.body);
+        return res.send(document);
+    }
+    catch(error){
+        return next(
+            new ApiError(500, "An error occured while find chucVu by id")
+        );
+    }
+};
+
 exports.create = async (req, res, next) => {
     try{
         const chucVu = new ChucVu(MongoDB.client);

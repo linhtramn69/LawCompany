@@ -12,4 +12,7 @@ router.route("/:id")
     .put(chucVu.update)
     .delete(chucVu.delete);
 
+router.route("/findByBoPhan")
+    .post(chucVu.findByBoPhan);
+
 module.exports = router;
