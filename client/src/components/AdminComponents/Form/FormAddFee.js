@@ -10,15 +10,14 @@ import { feeService } from "~/services";
 import { DeleteOutlined } from '@ant-design/icons';
 import moment from "moment";
 dayjs.extend(customParseFormat);
-const statusText = ['Đã trình', 'Đã duyệt', 'Đã kết toán'];
+const statusText = ['Đã trình', 'Đã duyệt', 'Đã kết toán', 'Đã huỷ'];
 
 function FormAddFee() {
-
     const [form] = Form.useForm();
-    const { token } = useToken()
+    const { token } = useToken();
     const [state, dispatch] = useStore();
     const [dataSource, setDataSource] = useState([]);
-    const [fee, setFee] = useState([])
+    const [fee, setFee] = useState([]);
     const [bank, setBank] = useState([]);
     const [open, setOpen] = useState(false);
     let data = [];
@@ -124,7 +123,7 @@ function FormAddFee() {
             dataIndex: 'status',
             render: (status) => (
                 <Tag
-                    color={status === 0 ? 'volcano' : status === 1 ? 'geekblue' : 'success'}
+                    color={status === 0 ? 'volcano' : status === 1 ? 'geekblue' : status === 2 ? 'success' : 'error'}
                 >
                     {statusText[status]}
                 </Tag>
@@ -217,7 +216,8 @@ function FormAddFee() {
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
                     autoComplete="off"
-                    fields={[
+                    fields={
+                        state.matter._id ? [
                         {
                             name: ['matter'],
                             value: state.matter.ten_vu_viec
@@ -230,7 +230,7 @@ function FormAddFee() {
                             name: ['customer'],
                             value: state.matter.khach_hang.ho_ten
                         }
-                    ]}
+                    ] : null}
                 >
                     <Row>
                         <Col span={24} pull={4}>

@@ -25,8 +25,10 @@ const routes = {
         matterEdit: '/matter/edit/:id',
         // Task
         taskList: '/tasks/:id',
+        taskDetail: '/task/:id',
+        taskAdd: '/task/add',
 
-        //Quotes
+        // Quotes
         quotesManager: '/quote',
         quotesAdd: '/quotes/add',
         quoteDetail: '/quotes/:id',
@@ -42,17 +44,22 @@ const routes = {
         feeDetail: '/fees/:id'
     },
     staff: {
-       matterManager: '/',
+        // Matter
+        matterManager: '/',
         matterList: '/matters/:id',
-        matterAdd: '/matter/add',
         matterDetail: '/matter/:id',
         matterEdit: '/matter/edit/:id',
+        // Task
+        taskList: '/tasks/:id',
+        taskDetail: '/task/:id',
+        taskAdd: '/task/add',
+        // Calendar
         calendarManager: '/calendar'
 
     },
     tvv: {
         taskManager: '/',
-        taskList: '/tasks',
+        taskList: '/tasks/:id',
         quotesManager: '/quotes',
     },
     keToan: {

@@ -14,7 +14,10 @@ class TaskService {
         return (await API.post(`task/findByStaff`, id))
     }
     async getByStatus(status){
-        return (await API.post(`matter/findByStatus`, status))
+        return (await API.post(`task/findByStatus`, status))
+    }
+    async setStatusPause(data){
+        return (await API.patch(`task/setStatusPause`, data))
     }
     async create(data){
         return (await API.post(`task`, data));

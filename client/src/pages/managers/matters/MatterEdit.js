@@ -1,11 +1,12 @@
 import { Badge, Card, Button, Popconfirm, Space, message } from "antd";
 import FormMatter from "~/components/AdminComponents/Form/Matter";
-import { faCircleCheck, faCirclePause, faCirclePlay, faPlay } from "@fortawesome/free-solid-svg-icons";
+import { faCircleCheck, faCirclePause, faCirclePlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useStore } from "~/store";
-import { matterService } from "~/services";
+import { matterService, taskService } from "~/services";
 import { useNavigate } from "react-router-dom";
 import ErrorResult from "~/pages/Result/Error";
+import { useEffect } from "react";
 
 function MatterEdit() {
     
@@ -31,8 +32,8 @@ function MatterEdit() {
             setTimeout(()=> {
                 navigate(`/staff/matters/${state.matter._id}`)
             }, [500])
-        } catch(error){
-            console.log(error);
+        } catch(err){
+            console.log(err);
             error()
         }
     }

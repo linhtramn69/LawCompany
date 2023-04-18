@@ -2,11 +2,11 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { matterService, serviceService, typeServiceService, userService } from "~/services";
 import { useToken } from "~/store";
-import { Button, Input, Space, Table, Tooltip } from "antd";
+import { Button, Input, Space, Table, Tag, Tooltip } from "antd";
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
 const url = ['', 'admin', 'staff']
-
+const statusText = ['Đang thực hiện', 'Hoàn thành', 'Tạm ngưng'];
 function MatterList() {
 
     let { id } = useParams();
@@ -26,7 +26,7 @@ function MatterList() {
                 token.account.quyen === 1 ?
                     ((await matterService.get()).data)
                     : ((await matterService.findByIdAccess({ id: token._id })).data)
-            const arr = result.filter(item => item.status == id)
+            const arr = id === 'all' ? result : result.filter(item => item.status == id)
             setMatters(arr)
         }
         const getType = async () => {
@@ -42,17 +42,18 @@ function MatterList() {
         getType()
         getService()
         getLaw()
-    }, [])
+    }, [id])
     const data = matters.map((value, index) => {
         return {
             _id: value._id,
-            index: index + 1,
+            key: index + 1,
             nameMatter: value.ten_vu_viec,
             typeService: value.linh_vuc.ten_linh_vuc,
             service: value.dich_vu.ten_dv,
             customer: value.khach_hang.ho_ten,
             phoneCus: value.khach_hang.account.sdt,
-            law: value.luat_su.ho_ten
+            law: value.luat_su.ho_ten,
+            status: value.status
         }
     })
     const arrType = type.map((value) => {
@@ -158,8 +159,8 @@ function MatterList() {
     const columns = [
         {
             title: 'STT',
-            dataIndex: 'index',
-            key: 'index',
+            dataIndex: 'key',
+            key: 'key',
             width: 60
         },
         {
@@ -224,6 +225,17 @@ function MatterList() {
             dataIndex: 'phoneCus',
             key: 'phoneCus',
             ...getColumnSearchProps('phoneCus'),
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'status',
+            render: (status) => (
+                <Tag
+                    color={status === 0 ? 'geekblue' : status === 1 ?  'success' : 'volcano'}
+                >
+                    {statusText[status]}
+                </Tag>
+            ),
         },
     ]
     return (

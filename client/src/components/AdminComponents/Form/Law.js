@@ -5,6 +5,7 @@ import { avatar } from "~/assets/images";
 import { boPhanService, chucVuService, userService } from '../../../services/index';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
+import { useStore } from "~/store";
 dayjs.extend(customParseFormat);
 
 const formItemLayout = {
@@ -24,43 +25,48 @@ function FormLaw({ props }) {
     let btn = ['Thêm mới', 'Cập nhật'];
     const user = { ...props }
     const [form] = Form.useForm();
+    const [state, dispatch] = useStore()
     const [chucVu, setChucVu] = useState([]);
     const [boPhan, setBoPhan] = useState([]);
-    let selectedChucVu, selectedBoPhan;
+    const [show, setShow] = useState(false);
+    const [law, setLaw] = useState([]);
 
-    const getChucVu = async () => {
-        setChucVu((await chucVuService.get()).data)
-    };
     useEffect(() => {
-        getChucVu();
-    }, []);
-    const arrChucVu = chucVu.map((value) => {
-        return {
-            label: value.ten_chuc_vu,
-            value: value._id
-        }
-    });
-
-    const getBoPhan = async () => {
-        setBoPhan((await boPhanService.get()).data)
-    };
-    useEffect(() => {
+        const getBoPhan = async () => {
+            setBoPhan((await boPhanService.get()).data)
+        };
         getBoPhan();
     }, []);
+    const handleSelectedBoPhan = async (e) => {
+        setChucVu((await chucVuService.getByBoPhan({ bo_phan: e })).data)
+    }
     const arrBoPhan = boPhan.map((value) => {
         return {
             label: value.ten_bo_phan,
             value: value._id
         }
     });
-
-    const handleSelectedBoPhan = async (e) => {
-        selectedBoPhan = (await boPhanService.getById(e)).data
-    }
+    const arrChucVu = chucVu.map((value) => {
+        return {
+            label: value.ten_chuc_vu,
+            value: value._id
+        }
+    });
     const handleSelectedChucVu = async (e) => {
-        selectedChucVu = (await chucVuService.getById(e)).data
+        let arrLaw = [];
+        if (e === 'TL02') {
+            setShow(true)
+            state.users.map(item => {
+                if (item.account.quyen != 0 && item.chuc_vu.id === 'LS02') {
+                    arrLaw.push({
+                        label: item.ho_ten,
+                        value: item._id
+                    })
+                }
+            })
+        }
+        setLaw(arrLaw)
     }
-
     const handleUpdate = async (data) => {
         try {
             if (window.confirm(`Bạn muốn cập nhật lại người dùng ${user.ho_ten} ?`)) {
@@ -96,23 +102,16 @@ function FormLaw({ props }) {
                 quyen: 2
             },
             active: values.active,
-            chuc_vu: {
-                id: values.chucVu,
-                ten_chuc_vu: selectedChucVu.ten_chuc_vu
-            },
-            bo_phan: {
-                id: values.boPhan,
-                ten_bo_phan: selectedBoPhan.ten_bo_phan
-            }
+            chuc_vu: values.chucVu,
+            bo_phan: values.boPhan,
+            boss: values.boss
         }
         if (props)
             handleUpdate(data);
         else handleAdd(data);
     }
-
     return (
         <>
-
             <Form
                 {...formItemLayout}
                 fields={
@@ -226,11 +225,11 @@ function FormLaw({ props }) {
                 </Row>
                 <Row>
                     <Col md={{ span: 8 }}>
-                    <Form.Item 
-                        name="dateOfBirth" 
-                        label="Ngày sinh" 
-                    >
-                            <DatePicker format={'DD-MM-YYYY'}/>
+                        <Form.Item
+                            name="dateOfBirth"
+                            label="Ngày sinh"
+                        >
+                            <DatePicker format={'DD-MM-YYYY'} />
                         </Form.Item>
                     </Col>
                     <Col md={{ span: 8, push: 1 }}>
@@ -277,29 +276,32 @@ function FormLaw({ props }) {
                     </Col>
                 </Row>
                 <Row>
+
                     <Col md={{ span: 8 }}>
-                        <Form.Item
-                            label="Chức vụ"
-                            name="chucVu"
-                        >
-                            <Select
-                                defaultValue = {selectedChucVu ? user.chuc_vu.ten_chuc_vu : null}
-                                options={arrChucVu}
-                                onChange={handleSelectedChucVu}
-                            />
-                        </Form.Item>
-                    </Col>
-                    <Col md={{ span: 8, push: 1 }}>
                         <Form.Item
                             name="boPhan"
                             label="Bộ phận"
                         >
                             <Select
-                                defaultValue = {selectedBoPhan ? user.bo_phan.ten_bo_phan : null}
+                                // defaultValue={selectedBoPhan ? user.bo_phan.ten_bo_phan : null}
                                 options={arrBoPhan}
                                 onChange={handleSelectedBoPhan}
                             />
                         </Form.Item>
+                    </Col>
+                    <Col md={{ span: 8, push: 1 }}>
+                        <Form.Item
+                            label="Chức vụ"
+                            name="chucVu"
+                        >
+                            <Select
+                                // defaultValue={selectedChucVu ? user.chuc_vu.ten_chuc_vu : null}
+                                options={arrChucVu}
+                                onChange={handleSelectedChucVu}
+                            />
+                        </Form.Item>
+
+
                     </Col>
                 </Row>
 
@@ -313,6 +315,18 @@ function FormLaw({ props }) {
                         >
                             <Switch checkedChildren="Hoạt động" unCheckedChildren="Khoá" success="false" />
                         </Form.Item>
+
+                    </Col>
+                    <Col md={{ span: 8, push: 1 }}>
+                        {show
+                            ? <Form.Item
+                                label="Thuộc cấp"
+                                name="boss"
+                            >
+                                <Select
+                                    options={law}
+                                />
+                            </Form.Item> : <></>}
                     </Col>
                 </Row>
                 <Form.Item

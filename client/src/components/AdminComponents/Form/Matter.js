@@ -172,12 +172,11 @@ function FormMatter({ props }) {
                 nhan_vien: values.staffAccess
             },
             status: 0,
+            tai_lieu: matter._id ? state.files : null,
             cong_viec: matter._id ? state.tasks : null,
             phi_co_dinh: matter._id ? state.steps : null,
             chi_phi_phat_sinh: matter._id ? state.fees : null
         }
-
-        console.log(newData);
         matter._id ? handleUpdate(newData) :
             handleAdd(newData)
     }

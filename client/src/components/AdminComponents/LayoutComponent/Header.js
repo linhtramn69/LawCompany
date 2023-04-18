@@ -29,37 +29,55 @@ function HeaderAdmin() {
       icon:  <Link to={`/${url}`}>
       <FontAwesomeIcon icon={faHouse} />
     </Link>,
-      key: 'title',
+      key: 'dashboard',
     },
     {
-      label: <Link to={`/${url[token.account.quyen]}`}>
-        Quản lý vụ việc
+      label: <Link to={`/${url}/matters/all`}>
+        Vụ việc
       </Link>,
       key: 'customer-service',
     },
     {
-      label: <Link to={`/${url[token.account.quyen]}/calendar`}>
-        Quản lý lịch hẹn
+      label: <Link to={`/${url}/tasks/all`}>
+        Công việc
       </Link>,
-      key: 'dashboard',
+      key: 'task',
     },
     {
-      label: 'Search',
-      key: 'search',
+      label: <Link to={`/${url}/calendar`}>
+        Lịch hẹn
+      </Link>,
+      key: 'calendar',
     },
     {
-      label: 'Matters',
-      key: 'matters',
+      label: <Link to={`/${url}/quote`}>
+        Báo giá
+      </Link>,
+      key: 'quote',
+    },
+    {
+      label: <Link to={`/${url}/staff`}>
+        Nhân viên
+      </Link>,
+      key: 'staff',
+    },
+    {
+      label: <Link to={`/${url}/customer`}>
+        Khách hàng
+      </Link>,
+      key: 'customer',
+    },
+    {
+      label: <Link to={`/${url}/fee`}>
+       Kế toán
+      </Link>,
+      key: 'fee',
     },
   ];
   const onClick = (e) => {
     setCurrent(e.key);
   };
   const items1 = [
-    {
-      key: 'notification',
-      icon: <BellFilled />
-    },
     {
       label: token.email,
       icon: <MailOutlined />,
@@ -84,7 +102,12 @@ function HeaderAdmin() {
           icon: <SettingOutlined />
         },
         {
-          label: <button onClick={() => {
+          label: <button
+          style={{
+            border: 0,
+            backgroundColor: 'transparent'
+          }}
+          onClick={() => {
             sessionStorage.removeItem('token')
             window.location.href = '/login'
           }}>Đăng xuất</button>,
@@ -100,10 +123,10 @@ function HeaderAdmin() {
   return (
     <>
       <Row className="header-admin">
-        <Col md={{ span: 10, push: 1}}>
+        <Col md={{ span: 16, push: 1}}>
           <Menu onClick={onClick} className="menu" selectedKeys={[current]} mode="horizontal" items={items} />
         </Col>
-        <Col md={{ span: 10, push: 4 }}>
+        <Col md={{ span: 8 }}>
           <Menu onClick={onClick} className="menu" selectedKeys={[current]} mode="horizontal" items={items1} />
         </Col>
       </Row>

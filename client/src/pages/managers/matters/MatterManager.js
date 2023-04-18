@@ -12,6 +12,9 @@ import { Link } from "react-router-dom";
 import { actions, useStore, useToken } from "~/store";
 import { useEffect } from "react";
 import { matterService, taskService } from "~/services";
+import { useState } from "react";
+import ModalAddTask from "./ModalAddTask";
+import ModalAddFee from "./ModalAddFee";
 const styleCol = {
     textAlign: 'center'
 }
@@ -20,7 +23,21 @@ function MatterManager() {
 
     const { token } = useToken();
     const [state, dispatch] = useStore();
-
+    const [isModalOpenTask, setIsModalOpenTask] = useState(false);
+    const [isModalOpenFee, setIsModalOpenFee] = useState(false);
+    
+    const showModalTask = () => {
+        setIsModalOpenTask(true)
+    }
+    const handleCancelTask = () => {
+        setIsModalOpenTask(false);
+    };
+    const showModalFee = () => {
+        setIsModalOpenFee(true)
+    }
+    const handleCancelFee = () => {
+        setIsModalOpenFee(false);
+    };
     useEffect(() => {
         const getMatters = async () => {
             if (token.account.quyen === 1) {
@@ -52,11 +69,14 @@ function MatterManager() {
     return (
         <>
             <Space wrap direction="horizontal">
-                <Link to="add">
-                    <Button className="btn-cyan" icon={<ReconciliationFilled />} block>Vụ việc mới</Button>
-                </Link>
-                <Button className="btn-cyan" icon={<CreditCardFilled />} block >Công việc mới</Button>
-                <Button className="btn-cyan" icon={<UsbFilled />} block>Chi phí mới</Button>
+                { token.account.quyen === 1 ?
+                    <Link to="matter/add">
+                        <Button className="btn-cyan" icon={<ReconciliationFilled />} block>Vụ việc mới</Button>
+                    </Link>
+                    : null
+                }
+                    <Button onClick={showModalTask} className="btn-cyan" icon={<CreditCardFilled />} block >Công việc mới</Button>
+                <Button onClick={showModalFee} className="btn-cyan" icon={<UsbFilled />} block>Chi phí mới</Button>
                 <Button className="btn-cyan" icon={<CalendarFilled />} block>Tạo nhật ký làm việc</Button>
             </Space>
             <Divider />
@@ -75,8 +95,8 @@ function MatterManager() {
                         <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
                             <Row gutter={8}>
                                 <CardMatter title="Đang thực hiện" color={0} total={handleTotalMatter(0)} url={`/${url[token.account.quyen]}/matters/0`} />
-                                <CardMatter title="Tạm ngưng" color={2} total={handleTotalMatter(1)} url={`/${url[token.account.quyen]}/matters/2`} />
-                                <CardMatter title="Hoàn thành" color={1} total={handleTotalMatter(2)} url={`/${url[token.account.quyen]}/matters/1`} />
+                                <CardMatter title="Tạm ngưng" color={2} total={handleTotalMatter(2)} url={`/${url[token.account.quyen]}/matters/2`} />
+                                <CardMatter title="Hoàn thành" color={1} total={handleTotalMatter(1)} url={`/${url[token.account.quyen]}/matters/1`} />
                             </Row>
                         </Col>
                     </Row>
@@ -93,11 +113,11 @@ function MatterManager() {
                         </Col>
                         <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
                             <Row gutter={[8, 8]}>
-                                <CardMatter title="Được giao" total={handleTotalTask(0)} color={0} url={`/${url[token.account.quyen]}/tasks/0`}/>
-                                <CardMatter title="Hoàn thành" total={handleTotalTask(1)} color={1} />
-                                <CardMatter title="Tạm ngưng" total={handleTotalTask(2)} color={2} />
-                                <CardMatter title="Hạn hôm nay" total={0}  />
-                                <CardMatter title="Quá hạn" total={0}  />
+                                <CardMatter title="Được giao" total={handleTotalTask(0)} color={0} url={`/${url[token.account.quyen]}/tasks/0`} />
+                                <CardMatter title="Tạm ngưng" total={handleTotalTask(2)} color={2} url={`/${url[token.account.quyen]}/tasks/2`}/>
+                                <CardMatter title="Hoàn thành" total={handleTotalTask(1)} color={1} url={`/${url[token.account.quyen]}/tasks/1`}/>
+                                <CardMatter title="Hạn hôm nay" total={0} />
+                                <CardMatter title="Quá hạn" total={0} />
                             </Row>
                         </Col>
                     </Row>
@@ -187,6 +207,8 @@ function MatterManager() {
                     </Row>
                 </Col>
             </Row>
+            {isModalOpenTask ? <ModalAddTask open={isModalOpenTask} onCancel={handleCancelTask} /> : null}
+            {isModalOpenFee ? <ModalAddFee open={isModalOpenFee} onCancel={handleCancelFee} /> : null}
         </>
     );
 }

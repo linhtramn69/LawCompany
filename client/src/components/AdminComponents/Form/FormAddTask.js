@@ -4,15 +4,16 @@ import { useState } from "react";
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs from 'dayjs';
 import Title from "antd/es/typography/Title";
-import { useStore } from "~/store";
+import { useStore, useToken } from "~/store";
 import { taskService, userService } from "~/services";
 import { useEffect } from "react";
 import moment from "moment";
+import { Link } from "react-router-dom";
 
 dayjs.extend(customParseFormat);
 const dateFormat = 'DD-MM-YYYY hh:mm A';
-const statusText = ['Đã giao', 'Đã hoàn thành']
-
+const statusText = ['Đã giao', 'Đã hoàn thành', 'Tạm ngưng']
+const url = ['', 'admin', 'staff'];
 function FormAddTask() {
 
     const [state, dispatch] = useStore()
@@ -22,6 +23,7 @@ function FormAddTask() {
     const [edit, setEdit] = useState();
     const [staff, setStaff] = useState([]);
     const [task, setTask] = useState([]);
+    const {token} = useToken()
     let data = []
 
     useEffect(() => {
@@ -129,7 +131,7 @@ function FormAddTask() {
             dataIndex: 'status',
             render: (status) => (
                 <Tag
-                    color={status === 0 ? 'volcano' : 'success'}
+                    color={status === 0 ? 'volcano' : status===1 ? 'success' : 'warning'}
                 >
                     {statusText[status]}
                 </Tag>
@@ -148,6 +150,16 @@ function FormAddTask() {
                         <Button><DeleteOutlined /></Button>
                     </Popconfirm>
                 </Space>)
+        },
+        {
+            title: '',
+            dataIndex: '',
+            width: 130,
+            render: (_, record) => (
+                <Link to={`/${url[token.account.quyen]}/task/${record._id}`}>
+                Xem chi tiết
+                </Link>
+            )
         },
     ];
 

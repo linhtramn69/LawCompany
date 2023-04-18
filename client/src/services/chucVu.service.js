@@ -7,6 +7,9 @@ class ChucVuService {
     async getById(id){
         return (await API.get(`/chuc-vu/${id}`));
     }
+    async getByBoPhan(data){
+        return (await API.post(`/chuc-vu/findByBoPhan`, data));
+    }
     async create(data){
         return (await API.post(`chuc-vu`, data));
     }

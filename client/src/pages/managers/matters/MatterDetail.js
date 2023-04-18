@@ -2,7 +2,6 @@ import { Avatar, Badge, Button, Card, Col, Descriptions, Divider, List, Modal, R
 import { faHouse, faReceipt, faTasks } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, useParams } from "react-router-dom";
-import Title from "antd/es/typography/Title";
 import { useEffect, useState } from "react";
 import { feeService, matterService, stepService, taskService, userService } from "~/services";
 import { actions, useStore, useToken } from "~/store";
@@ -10,48 +9,9 @@ import { avatar } from "~/assets/images";
 import moment from "moment";
 import FormAddFile from "~/components/AdminComponents/Form/FormAddFile";
 const url = ['', 'admin', 'staff'];
-const statusTask = ['Đã giao', 'Đã hoàn thành'];
-const statusFee = ['Đã trình', 'Đã duyệt', 'Đã kết toán'];
-const item = [
-    {
-        title: 'Đang thực hiện'
-    },
-    {
-        title: 'Hoàn thành'
-    },
-    {
-        title: 'Đã hủy'
-    },
-]
-const columnsTask = [
-    {
-        title: 'Tên công việc',
-        dataIndex: 'ten_cong_viec',
-    },
-    {
-        title: 'Phân công cho',
-        dataIndex: 'nguoi_phu_trach',
-    },
-    {
-        title: 'Ngày giao',
-        dataIndex: 'ngay_giao',
-    },
-    {
-        title: 'Hạn chót',
-        dataIndex: 'han_chot_cong_viec',
-    },
-    {
-        title: 'Trạng thái',
-        dataIndex: 'status',
-        render: (status) => (
-            <Tag
-                color={status === 0 ? 'volcano' : 'success'}
-            >
-                {statusTask[status]}
-            </Tag>
-        ),
-    },
-];
+const statusTask = ['Đã giao', 'Đã hoàn thành', 'Tạm ngưng'];
+const statusFee = ['Đã trình', 'Đã duyệt', 'Đã kết toán', 'Đã huỷ'];
+
 const columnsStep = [
     {
         title: 'Tên quy trình',
@@ -75,6 +35,7 @@ const columnsStep = [
         dataIndex: 'price',
     },
 ];
+
 const columnsFees = [
     {
         title: 'Ngày lập',
@@ -101,7 +62,7 @@ const columnsFees = [
         dataIndex: 'status',
         render: (status) => (
             <Tag
-                color={status === 0 ? 'volcano' : status === 1 ? 'geekblue' : 'success'}
+                color={status === 0 ? 'volcano' : status === 1 ? 'geekblue' : status === 2 ? 'success' : 'error'}
             >
                 {statusFee[status]}
             </Tag>
@@ -125,26 +86,44 @@ const columnsFees = [
 ];
 const detail = (data) => Modal.info({
     title: 'Chi tiết hoá đơn',
+    width: 700,
     content: (
         <>
             <Descriptions
+                style={{ marginTop: 10 }}
                 column={{
                     lg: 4,
                     md: 4,
                     sm: 2,
                 }}
-                title={detail.loai_lich}
             >
-                <Descriptions.Item span={4} label="Mô tả">{data.mo_ta}</Descriptions.Item>
-                <Descriptions.Item span={4} label="Đơn giá">{data.don_gia}</Descriptions.Item>
-                <Descriptions.Item span={4} label="Mã số hoá đơn">{data.idHD}</Descriptions.Item>
-                <Descriptions.Item span={4} label="Ngày lập hoá đơn">{data.ngay_lap}</Descriptions.Item>
-                <Descriptions.Item span={4} label="Trạng thái">{statusFee[data.status]}</Descriptions.Item>
-                <Descriptions.Item span={4} label="Ngân hàng">{data.nameBank}</Descriptions.Item>
-                <Descriptions.Item span={4} label="Tên tài khoản">{data.nameCreditCard}</Descriptions.Item>
-                <Descriptions.Item span={4} label="Số tài khoản">{data.numberCreditCard}</Descriptions.Item>
+                <Descriptions.Item span={2} label="Mô tả">{data.mo_ta}</Descriptions.Item>
+                <Descriptions.Item span={2} label="Đơn giá">{data.don_gia}</Descriptions.Item>
+                <Descriptions.Item span={2} label="Mã số hoá đơn">{data.idHD}</Descriptions.Item>
+                <Descriptions.Item span={2} label="Ngày lập hoá đơn">{data.ngay_lap}</Descriptions.Item>
+                <Descriptions.Item span={4} label="Trạng thái"> <Badge status=
+                    {data.status === 0 ? 'warning'
+                        : data.status === 1 ? 'processing'
+                            : data.status === 2 ? 'success' : 'error'}
+                    text={statusFee[data.status]} /></Descriptions.Item>
             </Descriptions>
             <Divider />
+            <Descriptions
+                style={{ marginTop: 10 }}
+                column={{
+                    lg: 4,
+                    md: 4,
+                    sm: 2,
+                }}
+                title="Thông tin người lập"
+            >
+                <Descriptions.Item span={2} label="Họ tên">{data.staff}</Descriptions.Item>
+                <Descriptions.Item span={2} label="Số điện thoại">{data.sdt}</Descriptions.Item>
+                <Descriptions.Item span={4} label="Email">{data.email}</Descriptions.Item>
+                <Descriptions.Item span={4} label="Ngân hàng">{data.nameBank}</Descriptions.Item>
+                <Descriptions.Item span={2} label="Tên tài khoản">{data.nameCreditCard}</Descriptions.Item>
+                <Descriptions.Item span={2} label="Số tài khoản">{data.numberCreditCard}</Descriptions.Item>
+            </Descriptions>
         </>
     ),
     onOk() { },
@@ -190,6 +169,7 @@ function MatterDetail() {
     useEffect(() => {
         const dataTask = state.tasks ? state.tasks.map((value) => {
             return ({
+                _id: value._id,
                 key: value.key,
                 ten_cong_viec: value.ten_cong_viec,
                 nguoi_phu_trach: value.nguoi_phu_trach.ho_ten,
@@ -216,6 +196,9 @@ function MatterDetail() {
                 ngay_lap: moment(value.ngay_lap).format('DD-MM-YYYY LT'),
                 mo_ta: value.mo_ta,
                 staff: value.nhan_vien.ho_ten,
+                sdt: value.nhan_vien.account.sdt,
+                email: value.nhan_vien.email,
+                bo_phan: value.nhan_vien.bo_phan.ten_bo_phan,
                 don_gia: `${value.don_gia}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ',
                 status: value.status,
                 idHD: value.so_hoa_don,
@@ -229,6 +212,45 @@ function MatterDetail() {
         setDataFee(dataFee);
     }, [state.tasks, state.steps, state.fees])
 
+    const columnsTask = [
+        {
+            title: 'Tên công việc',
+            dataIndex: 'ten_cong_viec',
+        },
+        {
+            title: 'Phân công cho',
+            dataIndex: 'nguoi_phu_trach',
+        },
+        {
+            title: 'Ngày giao',
+            dataIndex: 'ngay_giao',
+        },
+        {
+            title: 'Hạn chót',
+            dataIndex: 'han_chot_cong_viec',
+        },
+        {
+            title: 'Trạng thái',
+            dataIndex: 'status',
+            render: (status) => (
+                <Tag
+                    color={status === 0 ? 'volcano' : status === 1 ? 'success' : 'warning'}
+                >
+                    {statusTask[status]}
+                </Tag>
+            ),
+        },
+        {
+            title: '',
+            dataIndex: '',
+            width: 130,
+            render: (_, record) => (
+                <Link to={`/${url[token.account.quyen]}/task/${record._id}`}>
+                Xem chi tiết
+                </Link>
+            )
+        },
+    ];
     return (
         <>
             {state.matter._id ?
