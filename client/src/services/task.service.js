@@ -13,6 +13,9 @@ class TaskService {
     async getByStaff(id){
         return (await API.post(`task/findByStaff`, id))
     }
+    async getByStaffPhanCong(id){
+        return (await API.post(`task/findByStaffPhanCong`, id))
+    }
     async getByStatus(status){
         return (await API.post(`task/findByStatus`, status))
     }

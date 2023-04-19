@@ -5,7 +5,6 @@ import { useToken } from "~/store";
 import { Button, Input, Space, Table, Tag, Tooltip } from "antd";
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
-const url = ['', 'admin', 'staff']
 const statusText = ['Đang thực hiện', 'Hoàn thành', 'Tạm ngưng'];
 function MatterList() {
 
@@ -19,6 +18,12 @@ function MatterList() {
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
     const searchInput = useRef(null);
+
+    let url = 'admin'
+    if(token.chuc_vu._id === 'LS02')
+        url = 'staff'
+    else if(token.chuc_vu._id === 'TVV02') 
+        url = 'tro-ly'
 
     useEffect(() => {
         const getMatter = async () => {
@@ -43,6 +48,7 @@ function MatterList() {
         getService()
         getLaw()
     }, [id])
+
     const data = matters.map((value, index) => {
         return {
             _id: value._id,
@@ -156,6 +162,7 @@ function MatterList() {
                 text
             ),
     });
+
     const columns = [
         {
             title: 'STT',
@@ -238,13 +245,14 @@ function MatterList() {
             ),
         },
     ]
+
     return (
         <>
             <Table columns={columns} dataSource={data}
                 onRow={(record, rowIndex) => {
                     return {
                         onClick: (event) => {
-                            navigate(`/${url[token.account.quyen]}/matter/${record._id}`)
+                            navigate(`/${url}/matter/${record._id}`)
                         }, // click row
                     }
                 }} />

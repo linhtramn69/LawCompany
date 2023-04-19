@@ -125,7 +125,7 @@ function CalendarBig({ dateSelect, onNhan, select  }) {
                         <Descriptions.Item span={2} label="Mô tả">{event.mo_ta}</Descriptions.Item>
                         <Descriptions.Item span={2} label="Ghi chú">{event.ghi_chu}</Descriptions.Item>
                         <Descriptions.Item span={2}>
-                            <Link to={`/admin/quotes/${event.phieu_bao_gia}`}>
+                            <Link to={`/admin/quote/${event.phieu_bao_gia}`}>
                                 Xem chi tiết vấn đề
                             </Link>
                         </Descriptions.Item>

@@ -18,17 +18,17 @@ function HeaderAdmin() {
   const [current, setCurrent] = useState('mail');
   const { token } = useToken();
   let url = 'admin'
-  if(token.chuc_vu.id == 'LS02')
+  if (token.chuc_vu._id == 'LS02')
     url = 'staff'
-  else if(token.chuc_vu.id == 'TVV02')
+  else if (token.chuc_vu._id == 'TVV02')
     url = 'tu-van-vien'
-  else if(token.chuc_vu.id == 'KT02')
+  else if (token.chuc_vu._id == 'KT02')
     url = 'ke-toan'
-  const items = [
+  const itemsAdmin = [
     {
-      icon:  <Link to={`/${url}`}>
-      <FontAwesomeIcon icon={faHouse} />
-    </Link>,
+      icon: <Link to={`/${url}`}>
+        <FontAwesomeIcon icon={faHouse} />
+      </Link>,
       key: 'dashboard',
     },
     {
@@ -38,19 +38,13 @@ function HeaderAdmin() {
       key: 'customer-service',
     },
     {
-      label: <Link to={`/${url}/tasks/all`}>
-        Công việc
-      </Link>,
-      key: 'task',
-    },
-    {
       label: <Link to={`/${url}/calendar`}>
         Lịch hẹn
       </Link>,
       key: 'calendar',
     },
     {
-      label: <Link to={`/${url}/quote`}>
+      label: <Link to={`/${url}/quotes/all`}>
         Báo giá
       </Link>,
       key: 'quote',
@@ -68,8 +62,68 @@ function HeaderAdmin() {
       key: 'customer',
     },
     {
+      label: <Link to={`/${url}/fees/all`}>
+        Kế toán
+      </Link>,
+      key: 'fee',
+    },
+  ];
+  const itemsLaw = [
+    {
+      icon: <Link to={`/${url}`}>
+        <FontAwesomeIcon icon={faHouse} />
+      </Link>,
+      key: 'dashboard',
+    },
+    {
+      label: <Link to={`/${url}/matters/all`}>
+        Quản lý vụ việc
+      </Link>,
+      key: 'customer-service',
+    },
+    {
+      label: <Link to={`/${url}/calendar`}>
+        Quản lý lịch hẹn
+      </Link>,
+      key: 'calendar',
+    }
+  ];
+  const itemsTuVanVien = [
+    {
+      icon: <Link to={`/${url}`}>
+        <FontAwesomeIcon icon={faHouse} />
+      </Link>,
+      key: 'dashboard',
+    },
+    {
+      label: <Link to={`/${url}/calendar`}>
+        Lịch hẹn
+      </Link>,
+      key: 'calendar',
+    },
+    {
+      label: <Link to={`/${url}/quote`}>
+        Báo giá
+      </Link>,
+      key: 'quote',
+    },
+  ];
+  const itemsKeToan = [
+    {
+      icon: <Link to={`/${url}`}>
+        <FontAwesomeIcon icon={faHouse} />
+      </Link>,
+      key: 'dashboard',
+    },
+    {
+      label: <Link to={`/${url}/calendar`}>
+        Lịch hẹn
+      </Link>,
+      key: 'calendar',
+    },
+    {
       label: <Link to={`/${url}/fee`}>
-       Kế toán
+        Kế toán
       </Link>,
       key: 'fee',
     },
@@ -103,30 +157,39 @@ function HeaderAdmin() {
         },
         {
           label: <button
-          style={{
-            border: 0,
-            backgroundColor: 'transparent'
-          }}
-          onClick={() => {
-            sessionStorage.removeItem('token')
-            window.location.href = '/login'
-          }}>Đăng xuất</button>,
+            style={{
+              border: 0,
+              backgroundColor: 'transparent'
+            }}
+            onClick={() => {
+              sessionStorage.removeItem('token')
+              window.location.href = '/login'
+            }}>Đăng xuất</button>,
           key: 'logout',
 
           icon: <LogoutOutlined />
         }
       ]
     },
-
-
   ];
   return (
     <>
       <Row className="header-admin">
-        <Col md={{ span: 16, push: 1}}>
-          <Menu onClick={onClick} className="menu" selectedKeys={[current]} mode="horizontal" items={items} />
+        <Col md={
+          token.account.quyen == 1 ? { span: 16, push: 1 }
+            : { span: 10, push: 1 }
+        }>
+          <Menu onClick={onClick} className="menu" selectedKeys={[current]} mode="horizontal" items={
+            token.account.quyen == 1 ? itemsAdmin
+              : token.chuc_vu._id == 'LS02' ? itemsLaw
+                : token.chuc_vu._id == 'TVV02' ? itemsTuVanVien
+                  : itemsKeToan
+          } />
         </Col>
-        <Col md={{ span: 8 }}>
+        <Col md={
+          token.account.quyen == 1 ? { span: 8 }
+            : { span: 8, push: 6 }
+        }>
           <Menu onClick={onClick} className="menu" selectedKeys={[current]} mode="horizontal" items={items1} />
         </Col>
       </Row>

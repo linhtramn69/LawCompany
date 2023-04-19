@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { quoteService } from "~/services";
-import { Button, Card, Col, Descriptions, Divider, Row, Space, Typography } from "antd";
+import { Button, Card, Col, Descriptions, Divider, Popconfirm, Row, Space, Typography } from "antd";
 import { TitleCardModal } from "~/components";
 import ModalCalendar from "./ModalCalendar";
+import { useToken } from "~/store";
 
 const { Text } = Typography;
 
@@ -19,12 +20,16 @@ const item = [
         title: 'Đã tạo lịch hẹn'
     },
 ]
+const url = ['', 'admin', 'tu-van-vien']
 
 function QuoteDetail() {
+
     let { id } = useParams();
     const [quote, setQuote] = useState({
         khach_hang: {},
     });
+    const { token } = useToken()
+
     useEffect(() => {
         const getQuote = async () => {
             setQuote((await quoteService.getById(id)).data)
@@ -35,11 +40,20 @@ function QuoteDetail() {
     const showModal = () => {
         setIsModalOpen(true)
     }
-    const handleOk = () => {
+    const handleCancelModal = () => {
         setIsModalOpen(false);
     };
+
+    const [openSendMail, setOpenSendMail] = useState(false);
+    const showPopconfirmSendMail = () => {
+        setOpenSendMail(true);
+    };
+    const handleOk = async () => {
+        await quoteService.sendMail({ ...quote })
+        setOpenSendMail(false);
+    };
     const handleCancel = () => {
-        setIsModalOpen(false);
+        setOpenSendMail(false);
     };
     return (
         <>
@@ -52,7 +66,7 @@ function QuoteDetail() {
                     />}>
                 <Space size={10}>
                     {quote.status < 2 ?
-                        <Link to={`/admin/quotes/edit/${id}`}>
+                        <Link to={`/${url[token.account.quyen]}/quote/edit/${id}`}>
                             <Button type="primary" className="btn-primary">
                                 {quote.status === 0 ? 'TẠO BÁO GIÁ' : 'CHỈNH SỬA'}
                             </Button>
@@ -63,6 +77,16 @@ function QuoteDetail() {
                             TẠO LỊCH HẸN
                         </Button>
                         : null}
+                    <Popconfirm
+                        title="Xác nhận"
+                        description="Bạn có muốn gửi báo giá này bằng email không?"
+                        open={openSendMail}
+                        onConfirm={handleOk}
+                        onCancel={handleCancel}
+                    >
+                        <Button type="primary" onClick={showPopconfirmSendMail} className="btn-primary">GỬI EMAIL</Button>
+                    </Popconfirm>
+                    
                 </Space>
                 <Divider />
                 <Row>
@@ -87,8 +111,8 @@ function QuoteDetail() {
                                 sm: 2,
                             }}>
                             <Descriptions.Item span={2} label="Họ tên">{quote.status > 0 ? quote.nguoi_lap_phieu.ho_ten : null}</Descriptions.Item>
-                            <Descriptions.Item span={2} label="Chức vụ">{quote.status > 0 ? quote.nguoi_lap_phieu.chuc_vu : null}</Descriptions.Item>
-                            <Descriptions.Item span={2} label="Số điện thoại">{quote.status > 0 ? quote.nguoi_lap_phieu.sdt : null}</Descriptions.Item>
+                            <Descriptions.Item span={2} label="Chức vụ">{quote.status > 0 ? quote.nguoi_lap_phieu.chuc_vu.ten_chuc_vu : null}</Descriptions.Item>
+                            <Descriptions.Item span={2} label="Số điện thoại">{quote.status > 0 ? quote.nguoi_lap_phieu.account.sdt : null}</Descriptions.Item>
                             <Descriptions.Item span={2} label="Email">{quote.status > 0 ? quote.nguoi_lap_phieu.email : null}</Descriptions.Item>
                         </Descriptions>
                     </Col>
@@ -104,7 +128,7 @@ function QuoteDetail() {
                     <Descriptions.Item span={2} label="Điều khoản thanh toán">{quote.status > 0 ? quote.dieu_khoan_thanh_toan : null}</Descriptions.Item>
                     <Descriptions.Item span={2} label="Dịch vụ">{quote.status > 0 ? quote.dich_vu.ten_dv : null}</Descriptions.Item>
                     <Descriptions.Item span={2} label="Ghi chú">{quote.status > 0 ? quote.ghi_chu : null}</Descriptions.Item>
-                    <Descriptions.Item span={2} label="Tổng giá">{quote.status > 0 ? quote.tong_gia_du_kien : null}</Descriptions.Item>
+                    <Descriptions.Item span={2} label="Tổng giá">{quote.status > 0 ? `${quote.tong_gia_du_kien}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ' : null}</Descriptions.Item>
                 </Descriptions>
                 <Divider />
                 <Text code italic>
@@ -112,7 +136,7 @@ function QuoteDetail() {
                     Để có giá thành chính xác nhất, hãy trao đổi trực tiếp cụ thể vấn đề của bạn.
                 </Text>
             </Card>
-                <ModalCalendar quote={quote} open={isModalOpen} onOk={handleOk} onCancel={handleCancel}/> 
+            <ModalCalendar quote={quote} open={isModalOpen} onCancel={handleCancelModal} />
 
         </>
     );

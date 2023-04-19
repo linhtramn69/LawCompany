@@ -3,13 +3,14 @@ import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { useState, useEffect } from "react";
 import { matterService, taskService, userService } from "~/services";
-import { actions, useStore } from "~/store";
+import { actions, useStore, useToken } from "~/store";
 
 dayjs.extend(customParseFormat);
 const dateFormat = 'DD-MM-YYYY hh:mm A';
 
 function ModalAddTask(props) {
 
+    const {token} = useToken();
     const [form] = Form.useForm();
     const [state, dispatch] = useStore();
     const [staff, setStaff] = useState([]);
@@ -49,6 +50,7 @@ function ModalAddTask(props) {
         const newVal = {
             ten_cong_viec: values.nameTask,
             nguoi_phu_trach: values.staff,
+            nguoi_phan_cong: token._id,
             vu_viec: values.matter,
             han_chot_cong_viec: values.dateEnd,
             ngay_giao: new Date(),

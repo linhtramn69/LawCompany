@@ -16,9 +16,9 @@ function LoginPage() {
             else if (token.token.account.quyen === 0)
                 window.location.href = '/'
             else if (token.token.account.quyen === 2) {
-                if (token.token.chuc_vu.id === 'LS02')
+                if (token.token.chuc_vu._id === 'LS02')
                     window.location.href = '/staff'
-                else if (token.token.chuc_vu.id === 'TVV02')
+                else if (token.token.chuc_vu._id === 'TVV02')
                     window.location.href = '/tu-van-vien'
                 else
                     window.location.href = '/ke-toan'

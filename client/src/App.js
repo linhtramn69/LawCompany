@@ -37,7 +37,7 @@ function App() {
               } />
             )
           })
-          : token && token.account.quyen == 2 && token.chuc_vu.id == 'LS02' ?
+          : token && token.account.quyen == 2 && token.chuc_vu._id == 'LS02' ?
             staffRouter.map((route, index) => {
             let Layout = route.layout
             return (
@@ -49,7 +49,7 @@ function App() {
               } />
             )
           })
-          : token && token.account.quyen == 2 && token.chuc_vu.id == 'TVV02' ?
+          : token && token.account.quyen == 2 && token.chuc_vu._id == 'TVV02' ?
           TuVanVienRouter.map((route, index) => {
             let Layout = route.layout
             return (
@@ -61,7 +61,7 @@ function App() {
               } />
             )
           })
-          : token && token.account.quyen == 2 && token.chuc_vu.id == 'KT02' ?
+          : token && token.account.quyen == 2 && token.chuc_vu._id == 'KT02' ?
           KeToanRouter.map((route, index) => {
             let Layout = route.layout
             return (

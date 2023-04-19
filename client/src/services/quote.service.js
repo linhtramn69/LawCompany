@@ -10,6 +10,9 @@ class QuoteService {
     async create(data){
         return (await API.post(`quote-form`, data));
     }
+    async sendMail(data){
+        return (await API.post(`quote-form/sendMail`, data));
+    }
     async update(id, data){
         return (await API.put(`quote-form/${id}`, data));
     }

@@ -6,7 +6,7 @@ import { taskService, userService } from "~/services";
 import { useToken } from "~/store";
 const statusText = ['Đã giao', 'Hoàn thành', 'Tạm ngưng']
 
-function TaskList() {
+function TaskListGiao() {
 
     let { id } = useParams()
     let navigate = useNavigate();
@@ -21,10 +21,8 @@ function TaskList() {
 
     useEffect(() => {
         const getTask = async () => {
-            const result = token.account.quyen === 1 ?
-                ((await taskService.get()).data)
-                : ((await taskService.getByStaff({ id: token._id })).data)
-            const arr = id === 'all' ? result : result.filter(item => item.status == id)
+            const result = (await taskService.getByStaffPhanCong({ id: token._id })).data
+            const arr = result.filter(item => item.status == id)
             setTask(arr)
         };
         const getLaw = async () => {
@@ -99,7 +97,7 @@ function TaskList() {
             },
             render: (status) => (
                 <Tag
-                    color={status === 0 ? 'geekblue' : status === 1 ? 'success' : 'volcano'}
+                    color={status === 0 ? 'geekblue' : 'success' }
                 >
                     {statusText[status]}
                 </Tag>
@@ -121,4 +119,4 @@ function TaskList() {
     );
 }
 
-export default TaskList;
+export default TaskListGiao;

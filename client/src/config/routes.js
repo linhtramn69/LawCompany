@@ -27,23 +27,20 @@ const routes = {
         taskList: '/tasks/:id',
         taskDetail: '/task/:id',
         taskAdd: '/task/add',
-
         // Quotes
         quotesManager: '/quote',
+        quoteList: '/quotes/:id',
         quotesAdd: '/quotes/add',
-        quoteDetail: '/quotes/:id',
-        quoteDetail: '/quotes/:id',
-        quoteEdit: '/quotes/edit/:id',
-
+        quoteDetail: '/quote/:id',
+        quoteEdit: '/quote/edit/:id',
         //Calendar
         calendarManager: '/calendar',
-
         //Fee
-        feeManager: '/fee',
-        feeList: '/fees',
-        feeDetail: '/fees/:id'
+        feeList: '/fees/:id',
+        feeDetail: '/fee/:id'
     },
     staff: {
+        dashboard: '/',
         // Matter
         matterManager: '/',
         matterList: '/matters/:id',
@@ -51,6 +48,7 @@ const routes = {
         matterEdit: '/matter/edit/:id',
         // Task
         taskList: '/tasks/:id',
+        taskListGiao: '/tasks-giao/:id',
         taskDetail: '/task/:id',
         taskAdd: '/task/add',
         // Calendar
@@ -58,14 +56,17 @@ const routes = {
 
     },
     tvv: {
-        taskManager: '/',
-        taskList: '/tasks/:id',
-        quotesManager: '/quotes',
+        dashboard: '/',
+        // Quotes
+        quoteList: '/quotes/:id',
+        quotesAdd: '/quotes/add',
+        quoteDetail: '/quote/:id',
+        quoteEdit: '/quote/edit/:id',
     },
     keToan: {
         feeManager: '/',
-        feeList: '/fees',
-        feeDetail: '/fees/:id'
+        feeList: '/fees/:id',
+        feeDetail: '/fee/:id'
     }
 }
 export default routes;

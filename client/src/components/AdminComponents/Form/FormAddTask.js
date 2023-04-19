@@ -101,6 +101,7 @@ function FormAddTask() {
             vu_viec: state.matter._id,
             han_chot_cong_viec: values.han_chot_cong_viec,
             ngay_giao: new Date(),
+            nguoi_phan_cong: token._id,
             status: 0
         }
         form.resetFields();

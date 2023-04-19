@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { boPhanService, quoteService, timeAppointmentService, typeAppointmentService, userService } from "~/services";
+import { useToken } from "~/store";
 const { RangePicker } = DatePicker;
 const formItemLayout = {
     labelCol: {
@@ -23,10 +24,11 @@ const formItemLayout = {
         }
     }
 };
-
+const url = ['', 'admin', 'tu-van-vien']
 function ModalCalendar(props) {
 
     let navigate = useNavigate();
+    const {token} = useToken();
     const [form] = Form.useForm();
     const [typeAppoint, setTypeAppoint] = useState([]);
     const [boPhan, setBoPhan] = useState([]);
@@ -62,7 +64,6 @@ function ModalCalendar(props) {
         return ({ value: value._id, label: value.ho_ten })
     })
     const onFinish = async (values) => {
-        console.log(values);
         const data = {
             tieu_de: values.tieu_de,
             bo_phan: values.bo_phan,
@@ -84,9 +85,11 @@ function ModalCalendar(props) {
         try {
             await timeAppointmentService.create(data);
             await quoteService.update(quote._id, {
+                linh_vuc: quote.linh_vuc._id,
+                dich_vu: quote.dich_vu._id,
                 status: 2
             })
-            navigate(`/admin/calendar`);
+            navigate(`/${url[token.account.quyen]}/calendar`);
         }
         catch (error) {
             console.log(error);
