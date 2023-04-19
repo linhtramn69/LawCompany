@@ -65,7 +65,23 @@ exports.findByStaff = async (req, res, next) => {
     }
     catch(error){
         return next(
-            new ApiError(500, "An error occured while find task by id")
+            new ApiError(500, "An error occured while find task by id phu trach")
+        );
+    }
+};
+
+exports.findByStaffPhanCong = async (req, res, next) => {
+    let documents = [];
+    try{
+        console.log(req.body);
+        const task = new Task(MongoDB.client);
+        console.log(req.body);
+         documents = await task.findByStaffPhanCong(req.body);
+        return res.send(documents);
+    }
+    catch(error){
+        return next(
+            new ApiError(500, "An error occured while find task by id phan cong")
         );
     }
 };

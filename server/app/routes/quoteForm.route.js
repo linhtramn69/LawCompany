@@ -12,4 +12,7 @@ router.route("/:id")
     .put(quoteForm.update)
     .delete(quoteForm.delete);
 
+router.route("/sendMail")
+    .post(quoteForm.sendMail);
+
 module.exports = router;

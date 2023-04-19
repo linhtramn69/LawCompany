@@ -11,11 +11,12 @@ class Task {
         const task = {
             ten_cong_viec: payload.ten_cong_viec,
             nguoi_phu_trach: payload.nguoi_phu_trach,
+            nguoi_phan_cong: payload.nguoi_phan_cong,
             vu_viec: payload.vu_viec,
             han_chot_cong_viec: payload.han_chot_cong_viec,
             ngay_giao: payload.ngay_giao,
             status: payload.status,
-            tai_lieu: payload.tai_lieu
+            tai_lieu: payload.tai_lieu,
         };
 
         Object.keys(task).forEach(
@@ -62,13 +63,22 @@ class Task {
         return result.toArray();
     }
     
-    //lay cong viec theo nvien
+    // lay cong viec theo nvien phu trach
     async findByStaff(payload) {
         const result = await this.Task.find({
             "nguoi_phu_trach._id": new ObjectId(payload.id)
         });
         return result.toArray();
     }
+
+    // lay cong viec theo nvien phan cong
+    async findByStaffPhanCong(payload) {
+        const result = await this.Task.find({
+            "nguoi_phan_cong._id": new ObjectId(payload.id)
+        });
+        return result.toArray();
+    }
+
 
     // lay cong viec theo trang thai
     async findByStatus(statusP) {
