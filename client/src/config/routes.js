@@ -66,7 +66,10 @@ const routes = {
     keToan: {
         feeManager: '/',
         feeList: '/fees/:id',
-        feeDetail: '/fee/:id'
+        feeDetail: '/fee/:id',
+        billList: '/bills/:id',
+        billDetail: '/bill/:id',
+        matterList: '/matter/:id'
     }
 }
 export default routes;

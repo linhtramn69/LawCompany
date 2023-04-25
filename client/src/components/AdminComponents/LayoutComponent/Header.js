@@ -127,6 +127,12 @@ function HeaderAdmin() {
       </Link>,
       key: 'fee',
     },
+    {
+      label: <Link to={`/${url}/fee`}>
+        Báo cáo
+      </Link>,
+      key: 'fee',
+    },
   ];
   const onClick = (e) => {
     setCurrent(e.key);

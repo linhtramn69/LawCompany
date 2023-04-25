@@ -30,6 +30,8 @@ import QuoteList from "~/pages/managers/quotes/QuoteList"
 import MatterManager from "~/pages/managers/matters/MatterManager"
 import Manager from "~/pages/managers/Manager"
 import TaskListGiao from "~/pages/managers/tasks/TaskListGiao"
+import BillList from "~/pages/managers/bills/BillList"
+import BillDetail from "~/pages/managers/bills/BillDetail"
 
 const publicRoutes = [
     { path: config.routes.login, component: LoginPage, layout: UserLayout },
@@ -100,6 +102,9 @@ const KeToanRouter = [
     { path: config.routes.keToan.feeManager, component: FeeManager, layout: LayoutAdmin },
     { path: config.routes.keToan.feeList, component: FeeList, layout: LayoutAdmin },
     { path: config.routes.keToan.feeDetail, component: FeeDetail, layout: LayoutAdmin },
+    { path: config.routes.keToan.billList, component: BillList, layout: LayoutAdmin },
+    { path: config.routes.keToan.billDetail, component: BillDetail, layout: LayoutAdmin },
+    { path: config.routes.keToan.matterList, component: MatterList, layout: LayoutAdmin },
 
 ]
 

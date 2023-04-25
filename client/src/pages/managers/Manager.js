@@ -117,8 +117,8 @@ function Manager() {
                                 <CardMatter title="Được giao" total={handleTotalTask(0)} color={0} url={`/admin/tasks/0`} />
                                 <CardMatter title="Tạm ngưng" total={handleTotalTask(2)} color={2} url={`/admin/tasks/2`} />
                                 <CardMatter title="Hoàn thành" total={handleTotalTask(1)} color={1} url={`/admin/tasks/1`} />
-                                <CardMatter title="Hạn hôm nay" total={0} />
-                                <CardMatter title="Quá hạn" total={0} />
+                                {/* <CardMatter title="Hạn hôm nay" total={0} />
+                                <CardMatter title="Quá hạn" total={0} /> */}
                             </Row>
                         </Col>
                     </Row>
@@ -150,14 +150,13 @@ function Manager() {
                                 icon={
                                     <ReconciliationFilled />
                                 } />
-                            <Title level={5}>Kết toán</Title>
+                            <Title level={5}>Chi phí</Title>
                         </Col>
                         <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
                             <Row gutter={[8, 8]}>
-                                <CardMatter title="Đợi xử lý" total={handleTotalFee(0)} color={0} url={`/admin/fees/0`} />
+                                <CardMatter title="Đã trình" total={handleTotalFee(0)} color={0} url={`/admin/fees/0`} />
                                 <CardMatter title="Đã duyệt" total={handleTotalFee(1)} color={1} url={`/admin/fees/1`} />
-                                <CardMatter title="Đã kết toán" total={handleTotalFee(2)} color={2} url={`/admin/fees/2`} />
-                                <CardMatter title="Từ chối" total={handleTotalFee(3)} color={3} url={`/admin/fees/3`} />
+                                <CardMatter title="Từ chối" total={handleTotalFee(2)} color={3} url={`/admin/fees/2`} />
                             </Row>
                         </Col>
                     </Row>

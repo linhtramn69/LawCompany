@@ -1,19 +1,33 @@
-import { Card, Col, Descriptions, message, Divider, Row, Space, Popconfirm, Badge, Button } from "antd";
+import { Card, Col, Descriptions, message, Divider, Row, Space, Popconfirm, Badge, Button, Modal, Form, Input, Select } from "antd";
 import { faCircleCheck, faMoneyBillTransfer, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { feeService, matterService } from "~/services";
 import { useState } from "react";
-import { actions, useStore } from "~/store";
+import { actions, useStore, useToken } from "~/store";
 import moment from "moment";
+import Title from "antd/es/typography/Title";
 
 function FeeDetail() {
 
     let { id } = useParams();
     const [state, dispatch] = useStore();
     const [fee, setFee] = useState({})
+    const { token } = useToken()
     const [messageApi, contextHolder] = message.useMessage();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [form] = Form.useForm();
+
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+    const handleOpen = () => {
+        setIsModalOpen(false);
+    };
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
     const success = () => {
         messageApi.open({
             type: 'success',
@@ -64,62 +78,32 @@ function FeeDetail() {
                                     : <Badge status="error" text="Đã từ chối" />
                     }
                     extra={
-                        <Space>
-                            {
-                                fee.status === 0 ?
-                                    <>
-                                        <Popconfirm
-                                            placement="topRight"
-                                            title="Bạn có chắc duyệt hoá đơn ?"
-                                            okText="Xác nhận"
-                                            cancelText="Hủy"
-                                            onConfirm={() => handleOk(1)}
-                                        >
-                                            <Button
-                                                className="btn btn-status"
-                                                icon={<FontAwesomeIcon
-                                                    style={{
-                                                        color: '#389e0d',
-                                                        marginRight: 10
-                                                    }} icon={faCircleCheck} />}>Duyệt hoá đơn</Button>
-                                        </Popconfirm>
-                                        <Popconfirm
-                                            placement="topRight"
-                                            title="Bạn có chắc từ chối duyệt hoá đơn này ?"
-                                            okText="Xác nhận"
-                                            cancelText="Hủy"
-                                            onConfirm={() => handleOk(3)}
-                                        >
-                                            <Button
-                                                className="btn btn-status"
-                                                icon={<FontAwesomeIcon
-                                                    style={{
-                                                        color: '#e31616',
-                                                        marginRight: 10
-                                                    }} icon={faXmark} />}>Huỷ hoá đơn</Button>
-                                        </Popconfirm>
-                                    </>
-
-                                    : fee.status === 1 ?
+                        token.account.quyen == 1 ?
+                            <Space>
+                                {
+                                    fee.status === 0 ?
                                         <>
                                             <Popconfirm
                                                 placement="topRight"
-                                                title="Bạn có chắc kết toán hoá đơn ?"
+                                                title="Bạn có chắc duyệt hoá đơn ?"
                                                 okText="Xác nhận"
                                                 cancelText="Hủy"
-                                                onConfirm={() => handleOk(2)}
+                                                onConfirm={() => handleOk(1)}
                                             >
-                                                <Button className="btn btn-status" icon={<FontAwesomeIcon style={{
-                                                    color: '#5ad82c',
-                                                    marginRight: 10
-                                                }} icon={faMoneyBillTransfer} />}>Kết toán hoá đơn</Button>
+                                                <Button
+                                                    className="btn btn-status"
+                                                    icon={<FontAwesomeIcon
+                                                        style={{
+                                                            color: '#389e0d',
+                                                            marginRight: 10
+                                                        }} icon={faCircleCheck} />}>Duyệt chi phí</Button>
                                             </Popconfirm>
                                             <Popconfirm
                                                 placement="topRight"
                                                 title="Bạn có chắc từ chối duyệt hoá đơn này ?"
                                                 okText="Xác nhận"
                                                 cancelText="Hủy"
-                                                onConfirm={() => handleOk(3)}
+                                                onConfirm={() => handleOk(2)}
                                             >
                                                 <Button
                                                     className="btn btn-status"
@@ -127,14 +111,42 @@ function FeeDetail() {
                                                         style={{
                                                             color: '#e31616',
                                                             marginRight: 10
-                                                        }} icon={faXmark} />}>Huỷ hoá đơn</Button>
+                                                        }} icon={faXmark} />}>Huỷ chi phí</Button>
                                             </Popconfirm>
                                         </>
-                                        : null
-                            }
+
+                                        : fee.status === 1 ?
+                                            <>
+                                                <Popconfirm
+                                                    placement="topRight"
+                                                    title="Bạn có chắc từ chối duyệt hoá đơn này ?"
+                                                    okText="Xác nhận"
+                                                    cancelText="Hủy"
+                                                    onConfirm={() => handleOk(2)}
+                                                >
+                                                    <Button
+                                                        className="btn btn-status"
+                                                        icon={<FontAwesomeIcon
+                                                            style={{
+                                                                color: '#e31616',
+                                                                marginRight: 10
+                                                            }} icon={faXmark} />}>Huỷ hoá đơn</Button>
+                                                </Popconfirm>
+                                            </>
+                                            : null
+                                }
 
 
-                        </Space>
+                            </Space>
+                            :
+                            <Button
+                                className="btn btn-status"
+                                onClick={showModal}
+                                icon={<FontAwesomeIcon
+                                    style={{
+                                        color: '#e31616',
+                                        marginRight: 10
+                                    }} icon={faMoneyBillTransfer} />}>Tạo hoá đơn</Button>
                     }
                 >
                     <Descriptions style={{ paddingLeft: 40 }} column={{
@@ -176,6 +188,91 @@ function FeeDetail() {
                     <Divider />
                 </Card>
                 : null}
+            <Modal width={1000} title="Hoá đơn mới" open={isModalOpen} onOk={handleOpen} onCancel={handleCancel} footer={null}>
+                <Form
+                    form={form}
+                    name="basic"
+                    labelCol={{
+                        span: 8,
+                    }}
+                    wrapperCol={{
+                        span: 16,
+                    }}
+                    style={{
+                        maxWidth: 1000,
+                        marginTop: 30
+                    }}
+                    autoComplete="off"
+                >
+                    <Row>
+                        <Col span={10} push={2}>
+                            <Form.Item
+                                label="Ngày lập hoá đơn">
+                                <Input />
+                            </Form.Item>
+                            <Form.Item
+                                label="Nhân viên"
+                                name="nameBank"
+                            >
+                                <Input/>
+                            </Form.Item>
+                        </Col>
+                        <Col span={10} push={2}>
+                            <Form.Item
+                                label="Loại hoá đơn">
+                                <Select />
+                            </Form.Item>
+                            <Form.Item
+                                label="Tổng tiền">
+                                <Select />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+
+                    <Row>
+                        <Col span={10} push={2}>
+                            <Form.Item>
+                                <Title level={5}>Tài khoản bồi hoàn</Title>
+                            </Form.Item>
+                            <Form.Item
+                                label="Ngân hàng"
+                                name="nameBank"
+                            >
+                            </Form.Item>
+                            <Form.Item
+                                label="Tên tài khoản"
+                                name="nameCreditCard"
+                            >
+                                <Input
+                                    style={{
+                                        width: 250,
+                                    }}
+                                />
+                            </Form.Item>
+                            <Form.Item
+                                label="Số tài khoản"
+                                name="numberCreditCard"
+                            >
+                                <Input
+                                    style={{
+                                        width: 250,
+                                    }}
+                                />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Form.Item
+                        wrapperCol={{
+                            offset: 18,
+                            span: 6,
+                        }}
+                    >
+                        <Button type="primary" htmlType="submit">
+                            Tạo mới
+                        </Button>
+                    </Form.Item>
+                </Form>
+            </Modal>
         </>
     );
 }
