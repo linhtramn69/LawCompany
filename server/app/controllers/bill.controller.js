@@ -15,7 +15,18 @@ exports.findAll = async (req, res, next) => {
         );
     }
 }
-
+exports.findByMatter = async (req, res, next) => {
+    try {
+        const bill = new Bill(MongoDB.client);
+        const documents = await bill.findByMatter(req.body);
+        return res.send(documents);
+    }
+    catch (error) {
+        return next(
+            new ApiError(500, "An error occured while find fee by id")
+        );
+    }
+};
 exports.findById = async (req, res, next) => {
     try{
         const bill = new Bill(MongoDB.client);

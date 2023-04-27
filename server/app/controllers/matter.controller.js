@@ -91,6 +91,18 @@ exports.setStatus = async (req, res, next) => {
         );
     }
 }
+exports.setStatusTT = async (req, res, next) => {
+    try{
+        const matter = new Matter(MongoDB.client);
+        const document = await matter.setStatus_TT(req.params.id, req.body);
+        return res.send(document);
+    }
+    catch(error){
+        return next(
+            new ApiError(500, "An error occured while update matter")
+        );
+    }
+}
 exports.delete = async (req, res, next) => {
     try{
         const matter = new Matter(MongoDB.client);

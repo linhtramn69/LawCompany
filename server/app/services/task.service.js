@@ -74,11 +74,10 @@ class Task {
     // lay cong viec theo nvien phan cong
     async findByStaffPhanCong(payload) {
         const result = await this.Task.find({
-            "nguoi_phan_cong._id": new ObjectId(payload.id)
+            nguoi_phan_cong: payload.id
         });
         return result.toArray();
     }
-
 
     // lay cong viec theo trang thai
     async findByStatus(statusP) {

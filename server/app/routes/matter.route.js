@@ -17,8 +17,11 @@ router.route("/findByStatus/:id")
 
 router.route("/setStatus/:id")
     .patch(matter.setStatus);
-    
+
+router.route("/setStatus-tt/:id")
+    .patch(matter.setStatusTT);
+
 router.route("/findByIdAccess")
     .post(matter.findByIdAccess);
-    
+
 module.exports = router;

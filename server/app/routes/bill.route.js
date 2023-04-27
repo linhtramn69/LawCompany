@@ -12,4 +12,6 @@ router.route("/:id")
     .put(bill.update)
     .delete(bill.delete);
 
+router.route("/findByMatter")
+    .post(bill.findByMatter)
 module.exports = router;

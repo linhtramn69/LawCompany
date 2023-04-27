@@ -27,7 +27,8 @@ class User {
             linh_vuc: payload.linh_vuc,
             bang_cap: payload.bang_cap,
             active: payload.active,
-            boss: payload.boss
+            boss: payload.boss,
+            chuyen_mon: payload.chuyen_mon
         };
 
         Object.keys(user).forEach(

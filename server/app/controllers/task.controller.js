@@ -73,10 +73,8 @@ exports.findByStaff = async (req, res, next) => {
 exports.findByStaffPhanCong = async (req, res, next) => {
     let documents = [];
     try{
-        console.log(req.body);
         const task = new Task(MongoDB.client);
-        console.log(req.body);
-         documents = await task.findByStaffPhanCong(req.body);
+        documents = await task.findByStaffPhanCong(req.body);
         return res.send(documents);
     }
     catch(error){

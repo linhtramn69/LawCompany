@@ -1,18 +1,25 @@
 const { ObjectId } = require("mongodb");
 
 class Bill {
-    constructor(client){
+    constructor(client) {
         this.Bill = client.db().collection("bill");
+        this.User = client.db().collection("user");
+        this.Matter = client.db().collection("matter");
     }
 
     // define csdl
-    extractConactData(payload){
+    extractConactData(payload) {
         const bill = {
-            ngay_lap_hoa_don: payload.ngay_lap_hoa_don,
+            ngay_lap: payload.ngay_lap,
+            nhan_vien_lap_hoa_don: payload.nhan_vien_lap_hoa_don,
+            loai_hoa_don: payload.loai_hoa_don,
+            vu_viec: payload.vu_viec,
+            chi_phi_phat_sinh: payload.chi_phi_phat_sinh,
             tong_gia_tri: payload.tong_gia_tri,
-            trang_thai_hoa_don: payload.trang_thai_hoa_don,
-            id_hop_dong: payload.id_hop_dong,
-            id_hinh_thuc_thanh_toan: payload.id_hinh_thuc_thanh_toan
+            status: payload.status,
+            ghi_chu: payload.ghi_chu,
+            tai_khoan_ket_toan: payload.tai_khoan_ket_toan,
+            tai_khoan_boi_hoan: payload.tai_khoan_boi_hoan,
         };
 
         // remove undefined fields
@@ -22,12 +29,17 @@ class Bill {
         return bill;
     }
 
-    async findAll(){
+    async findAll() {
         const result = await this.Bill.find();
         return result.toArray();
     }
-
-    async findById(id){
+    async findByMatter(payload){
+        const result = await this.Bill.find({
+            vu_viec : {$eq : payload.id}
+        });
+        return result.toArray();
+    }
+    async findById(id) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
@@ -35,13 +47,17 @@ class Bill {
         return result;
     }
 
-    async create(payload){
+    async create(payload) {
         const bill = this.extractConactData(payload);
-        const result = await this.Bill.insertOne(bill);
+        const newVal = {
+            ...bill,
+            nhan_vien_lap_hoa_don: await this.User.findOne({ _id: new ObjectId(payload.nhan_vien_lap_hoa_don) })
+        }
+        const result = await this.Bill.insertOne(newVal);
         return result;
     }
 
-    async update(id, payload){
+    async update(id, payload) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
@@ -54,7 +70,7 @@ class Bill {
         return result.value;
     }
 
-    async delete(id){
+    async delete(id) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
