@@ -1,13 +1,25 @@
-import { Card, Col, Descriptions, message, Divider, Row, Space, Popconfirm, Badge, Button, Modal, Form, Input, Select } from "antd";
+import { Card, Col, Descriptions, message, Divider, Row, Space, Popconfirm, Badge, Button, Modal, Form, Input, Select, InputNumber } from "antd";
 import { faCircleCheck, faMoneyBillTransfer, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "react-router-dom";
-import { useEffect } from "react";
-import { feeService, matterService } from "~/services";
-import { useState } from "react";
+import axios from "axios";
+import { billService, feeService, matterService } from "~/services";
+import { useState, useEffect} from "react";
 import { actions, useStore, useToken } from "~/store";
 import moment from "moment";
 import Title from "antd/es/typography/Title";
+import { Option } from "antd/es/mentions";
+import TextArea from "antd/es/input/TextArea";
+const arrTypeBill = [
+    {
+        value: 'NB',
+        label: 'Nội bộ'
+    },
+    {
+        value: 'KH',
+        label: 'Khách hàng'
+    },
+]
 
 function FeeDetail() {
 
@@ -18,6 +30,7 @@ function FeeDetail() {
     const [messageApi, contextHolder] = message.useMessage();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form] = Form.useForm();
+    const [bank, setBank] = useState([]);
 
     const showModal = () => {
         setIsModalOpen(true);
@@ -46,6 +59,13 @@ function FeeDetail() {
             setFee((await feeService.getById(id)).data)
         }
         getFee()
+        axios('https://api.vietqr.io/v2/banks')
+            .then(rs => {
+                setBank(rs.data.data);
+            })
+            .catch(err => {
+                console.log(err);
+            })
     }, [])
     useEffect(() => {
         const getMatter = async () => {
@@ -65,7 +85,41 @@ function FeeDetail() {
             error()
         }
     }
-
+    const handleAddBill = async (values) => {
+        try {
+            let result = (await billService.create(values)).data;
+            const rs = (await feeService.update(id, { status: 2 })).data;
+            setFee(rs);
+            setIsModalOpen(false);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+    const handleSubmit = async (value) => {
+        const data = {
+            ngay_lap: new Date(),
+            nhan_vien_lap_hoa_don: token._id,
+            loai_hoa_don: value.type_bill,
+            vu_viec: state.matter._id,
+            chi_phi_phat_sinh: fee._id,
+            tong_gia_tri: value.total,
+            ghi_chu: value.note,
+            tai_khoan_ket_toan: {
+                ngan_hang: value.name_bank_kt,
+                chu_tai_khoan: value.name_card_kt,
+                so_tai_khoan: value.number_kt
+            },
+            tai_khoan_boi_hoan: {
+                ngan_hang: value.name_bank_bh,
+                chu_tai_khoan: value.name_card_bh,
+                so_tai_khoan: value.number_bh
+            },
+            status: 2
+        } 
+        handleAddBill(data);
+    }
+    
     return (
         <>
             {contextHolder}
@@ -78,32 +132,58 @@ function FeeDetail() {
                                     : <Badge status="error" text="Đã từ chối" />
                     }
                     extra={
-                        token.account.quyen == 1 ?
-                            <Space>
-                                {
-                                    fee.status === 0 ?
+                        <Space>
+                            {
+                                fee.status === 0 ?
+                                    <>
+                                        <Popconfirm
+                                            placement="topRight"
+                                            title="Bạn có chắc duyệt hoá đơn ?"
+                                            okText="Xác nhận"
+                                            cancelText="Hủy"
+                                            onConfirm={() => handleOk(1)}
+                                        >
+                                            <Button
+                                                className="btn btn-status"
+                                                icon={<FontAwesomeIcon
+                                                    style={{
+                                                        color: '#389e0d',
+                                                        marginRight: 10
+                                                    }} icon={faCircleCheck} />}>Duyệt chi phí</Button>
+                                        </Popconfirm>
+                                        <Popconfirm
+                                            placement="topRight"
+                                            title="Bạn có chắc từ chối duyệt hoá đơn này ?"
+                                            okText="Xác nhận"
+                                            cancelText="Hủy"
+                                            onConfirm={() => handleOk(3)}
+                                        >
+                                            <Button
+                                                className="btn btn-status"
+                                                icon={<FontAwesomeIcon
+                                                    style={{
+                                                        color: '#e31616',
+                                                        marginRight: 10
+                                                    }} icon={faXmark} />}>Huỷ chi phí</Button>
+                                        </Popconfirm>
+                                    </>
+
+                                    : fee.status === 1 ?
                                         <>
-                                            <Popconfirm
-                                                placement="topRight"
-                                                title="Bạn có chắc duyệt hoá đơn ?"
-                                                okText="Xác nhận"
-                                                cancelText="Hủy"
-                                                onConfirm={() => handleOk(1)}
-                                            >
-                                                <Button
-                                                    className="btn btn-status"
-                                                    icon={<FontAwesomeIcon
-                                                        style={{
-                                                            color: '#389e0d',
-                                                            marginRight: 10
-                                                        }} icon={faCircleCheck} />}>Duyệt chi phí</Button>
-                                            </Popconfirm>
+                                            <Button
+                                                className="btn btn-status"
+                                                onClick={showModal}
+                                                icon={<FontAwesomeIcon
+                                                    style={{
+                                                        color: '#e31616',
+                                                        marginRight: 10
+                                                    }} icon={faMoneyBillTransfer} />}>Tạo hoá đơn</Button>
                                             <Popconfirm
                                                 placement="topRight"
                                                 title="Bạn có chắc từ chối duyệt hoá đơn này ?"
                                                 okText="Xác nhận"
                                                 cancelText="Hủy"
-                                                onConfirm={() => handleOk(2)}
+                                                onConfirm={() => handleOk(3)}
                                             >
                                                 <Button
                                                     className="btn btn-status"
@@ -111,42 +191,12 @@ function FeeDetail() {
                                                         style={{
                                                             color: '#e31616',
                                                             marginRight: 10
-                                                        }} icon={faXmark} />}>Huỷ chi phí</Button>
+                                                        }} icon={faXmark} />}>Huỷ hoá đơn</Button>
                                             </Popconfirm>
                                         </>
-
-                                        : fee.status === 1 ?
-                                            <>
-                                                <Popconfirm
-                                                    placement="topRight"
-                                                    title="Bạn có chắc từ chối duyệt hoá đơn này ?"
-                                                    okText="Xác nhận"
-                                                    cancelText="Hủy"
-                                                    onConfirm={() => handleOk(2)}
-                                                >
-                                                    <Button
-                                                        className="btn btn-status"
-                                                        icon={<FontAwesomeIcon
-                                                            style={{
-                                                                color: '#e31616',
-                                                                marginRight: 10
-                                                            }} icon={faXmark} />}>Huỷ hoá đơn</Button>
-                                                </Popconfirm>
-                                            </>
-                                            : null
-                                }
-
-
-                            </Space>
-                            :
-                            <Button
-                                className="btn btn-status"
-                                onClick={showModal}
-                                icon={<FontAwesomeIcon
-                                    style={{
-                                        color: '#e31616',
-                                        marginRight: 10
-                                    }} icon={faMoneyBillTransfer} />}>Tạo hoá đơn</Button>
+                                        : null
+                            }
+                        </Space>
                     }
                 >
                     <Descriptions style={{ paddingLeft: 40 }} column={{
@@ -174,7 +224,7 @@ function FeeDetail() {
                         </Col>
                         <Col md={{ span: 10, push: 3 }}>
                             <Descriptions
-                                title="Thông tin tài khoản kết toán"
+                                title="Thông tin tài khoản bồi hoàn"
                                 column={{
                                     md: 4
                                 }}>
@@ -202,29 +252,65 @@ function FeeDetail() {
                         maxWidth: 1000,
                         marginTop: 30
                     }}
+                    fields={   
+                        fee && fee.tai_khoan ? [
+                        {
+                            name: 'staff',
+                            value: token.ho_ten
+                        },
+                        {
+                            name: 'total',
+                            value: fee.don_gia
+                        },
+                        {
+                            name: 'name_bank_bh',
+                            value: fee.tai_khoan.ngan_hang
+                        },
+                        {
+                            name: 'name_card_bh',
+                            value: fee.tai_khoan.chu_tai_khoan
+                        },
+                        {
+                            name: 'number_bh',
+                            value: fee.tai_khoan.so_tai_khoan
+                        },
+                    ]
+                : null}
                     autoComplete="off"
+                    onFinish={handleSubmit}
                 >
                     <Row>
                         <Col span={10} push={2}>
                             <Form.Item
-                                label="Ngày lập hoá đơn">
+                                label="Nhân viên"
+                                name="staff"
+                            >
                                 <Input />
                             </Form.Item>
                             <Form.Item
-                                label="Nhân viên"
-                                name="nameBank"
-                            >
-                                <Input/>
+                                name='total'
+                                label="Tổng tiền">
+                                <InputNumber
+                                    style={{
+                                        width: 250
+                                    }}
+                                    min={1}
+                                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                    parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+                                    addonAfter="đ"
+                                />
                             </Form.Item>
                         </Col>
                         <Col span={10} push={2}>
                             <Form.Item
+                                name='type_bill'
                                 label="Loại hoá đơn">
-                                <Select />
+                                <Select options={arrTypeBill} />
                             </Form.Item>
                             <Form.Item
-                                label="Tổng tiền">
-                                <Select />
+                                name='note'
+                                label="Ghi chú">
+                                <TextArea />
                             </Form.Item>
                         </Col>
                     </Row>
@@ -232,16 +318,27 @@ function FeeDetail() {
                     <Row>
                         <Col span={10} push={2}>
                             <Form.Item>
-                                <Title level={5}>Tài khoản bồi hoàn</Title>
+                                <Title level={5}>Tài khoản kết toán</Title>
                             </Form.Item>
                             <Form.Item
                                 label="Ngân hàng"
-                                name="nameBank"
+                                name="name_bank_kt"
                             >
+                                <Select>
+                                    {bank.map((value, index) => {
+                                        return (
+                                            <Option
+                                                value={value.code + ' - ' + value.name}
+                                                key={index}>
+                                                {value.code + ' - ' + value.name}
+                                            </Option>
+                                        )
+                                    })}
+                                </Select>
                             </Form.Item>
                             <Form.Item
                                 label="Tên tài khoản"
-                                name="nameCreditCard"
+                                name="name_card_kt"
                             >
                                 <Input
                                     style={{
@@ -251,7 +348,48 @@ function FeeDetail() {
                             </Form.Item>
                             <Form.Item
                                 label="Số tài khoản"
-                                name="numberCreditCard"
+                                name="number_kt"
+                            >
+                                <Input
+                                    style={{
+                                        width: 250,
+                                    }}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col span={10} push={2}>
+                            <Form.Item>
+                                <Title level={5}>Tài khoản bồi hoàn</Title>
+                            </Form.Item>
+                            <Form.Item
+                                label="Ngân hàng"
+                                name="name_bank_bh"
+                            >
+                                <Select>
+                                    {bank.map((value, index) => {
+                                        return (
+                                            <Option
+                                                value={value.code + ' - ' + value.name}
+                                                key={index}>
+                                                {value.code + ' - ' + value.name}
+                                            </Option>
+                                        )
+                                    })}
+                                </Select>
+                            </Form.Item>
+                            <Form.Item
+                                label="Tên tài khoản"
+                                name="name_card_bh"
+                            >
+                                <Input
+                                    style={{
+                                        width: 250,
+                                    }}
+                                />
+                            </Form.Item>
+                            <Form.Item
+                                label="Số tài khoản"
+                                name="number_bh"
                             >
                                 <Input
                                     style={{

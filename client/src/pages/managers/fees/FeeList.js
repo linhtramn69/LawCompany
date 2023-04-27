@@ -9,8 +9,8 @@ const statusText = ['Đã trình', 'Đã duyệt', 'Đã từ chối']
 const columns = [
     {
         title: 'STT',
-        dataIndex: 'index',
-        key: 'index',
+        dataIndex: 'key',
+        key: 'key',
         width: 60
     },
     {
@@ -71,9 +71,9 @@ function FeeList() {
     const data = fee.length > 0 ? fee.map((value, index) => {
         return {
             _id: value._id,
-            index: index + 1,
+            key: index + 1,
             mo_ta: value.mo_ta,
-            don_gia: value.don_gia,
+            don_gia: `${value.don_gia}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ',
             ngay_lap: moment(value.ngay_lap).format('DD-MM-YYYY LT'),
             staff: value.nhan_vien.ho_ten,
             status: value.status

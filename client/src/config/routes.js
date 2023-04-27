@@ -37,7 +37,10 @@ const routes = {
         calendarManager: '/calendar',
         //Fee
         feeList: '/fees/:id',
-        feeDetail: '/fee/:id'
+        feeDetail: '/fee/:id',
+        // Bill
+        billTypeList: '/bills/type-bill/:id',
+        billDetail: '/bill/:id',
     },
     staff: {
         dashboard: '/',
@@ -64,12 +67,17 @@ const routes = {
         quoteEdit: '/quote/edit/:id',
     },
     keToan: {
+        // Fee
         feeManager: '/',
         feeList: '/fees/:id',
         feeDetail: '/fee/:id',
-        billList: '/bills/:id',
+        // Bill
+        billTypeList: '/bills/type-bill/:id',
         billDetail: '/bill/:id',
-        matterList: '/matter/:id'
+        billAdd: '/bill/add/:id',
+        // Matter
+        matterList: '/matters/:id',
+        matterDetail: '/matter/:id'
     }
 }
 export default routes;

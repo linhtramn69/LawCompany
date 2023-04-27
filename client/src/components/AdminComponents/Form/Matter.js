@@ -137,7 +137,7 @@ function FormMatter({ props }) {
     const handleAdd = async (data) => {
         try {
             let result = (await matterService.create(data)).data;
-            navigate(`/admin/matter`);
+            navigate(`/admin/matter/${result.insertedId}`);
         }
         catch (error) {
             console.log(error);
@@ -348,6 +348,19 @@ function FormMatter({ props }) {
                                         formatter={(value) => `${value}%`}
                                         parser={(value) => value.replace('%', '')}
                                     />
+                                </Form.Item>
+                                <Form.Item
+                                    name='tong_tien'
+                                    label="Tổng tiền">
+                                    <InputNumber
+                                    style={{
+                                        width: 250
+                                    }}
+                                    min={1}
+                                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                    parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+                                    addonAfter="đ"
+                                />
                                 </Form.Item>
                             </Col>
                             <Col md={{ span: 12 }}>

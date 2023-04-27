@@ -32,6 +32,7 @@ import Manager from "~/pages/managers/Manager"
 import TaskListGiao from "~/pages/managers/tasks/TaskListGiao"
 import BillList from "~/pages/managers/bills/BillList"
 import BillDetail from "~/pages/managers/bills/BillDetail"
+import BillCreate from "~/pages/managers/bills/BillCreate"
 
 const publicRoutes = [
     { path: config.routes.login, component: LoginPage, layout: UserLayout },
@@ -71,7 +72,10 @@ const privateRoutes = [
     { path: config.routes.admin.calendarManager, component: CalendarManager, layout: LayoutAdmin },
     //Fee
     { path: config.routes.admin.feeList, component: FeeList, layout: LayoutAdmin },
-    { path: config.routes.admin.feeDetail, component: FeeDetail, layout: LayoutAdmin },
+    { path: config.routes.admin.feeDetail, component: FeeDetail, layout: LayoutAdmin }, 
+    // Bill
+    { path: config.routes.admin.billTypeList, component: BillList, layout: LayoutAdmin },
+    { path: config.routes.admin.billDetail, component: BillDetail, layout: LayoutAdmin },
 ]
 const staffRouter = [
     // Dashboard
@@ -99,12 +103,18 @@ const TuVanVienRouter = [
     { path: config.routes.tvv.quoteEdit, component: QuoteEdit, layout: LayoutAdmin },
 ]
 const KeToanRouter = [
+    // Dashboard
     { path: config.routes.keToan.feeManager, component: FeeManager, layout: LayoutAdmin },
+    // Fee
     { path: config.routes.keToan.feeList, component: FeeList, layout: LayoutAdmin },
     { path: config.routes.keToan.feeDetail, component: FeeDetail, layout: LayoutAdmin },
-    { path: config.routes.keToan.billList, component: BillList, layout: LayoutAdmin },
+    // Bill
+    { path: config.routes.keToan.billTypeList, component: BillList, layout: LayoutAdmin },
     { path: config.routes.keToan.billDetail, component: BillDetail, layout: LayoutAdmin },
+    { path: config.routes.keToan.billAdd, component: BillCreate, layout: LayoutAdmin },
+    // Matter
     { path: config.routes.keToan.matterList, component: MatterList, layout: LayoutAdmin },
+    { path: config.routes.keToan.matterDetail, component: MatterDetail, layout: LayoutAdmin },
 
 ]
 

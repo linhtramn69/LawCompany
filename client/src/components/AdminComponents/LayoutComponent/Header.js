@@ -122,7 +122,7 @@ function HeaderAdmin() {
       key: 'calendar',
     },
     {
-      label: <Link to={`/${url}/fee`}>
+      label: <Link to={`/${url}/fees/all`}>
         Kế toán
       </Link>,
       key: 'fee',
@@ -131,7 +131,7 @@ function HeaderAdmin() {
       label: <Link to={`/${url}/fee`}>
         Báo cáo
       </Link>,
-      key: 'fee',
+      key: 'bc',
     },
   ];
   const onClick = (e) => {

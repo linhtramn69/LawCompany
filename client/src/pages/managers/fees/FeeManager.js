@@ -8,7 +8,7 @@ import Title from "antd/es/typography/Title";
 import CardMatter from "../../../components/AdminComponents/Card/CardMatter";
 import { actions, useStore, useToken } from "~/store";
 import { useEffect } from "react";
-import { feeService } from "~/services";
+import { billService, feeService, matterService } from "~/services";
 const styleCol = {
     textAlign: 'center'
 }
@@ -19,12 +19,24 @@ function FeeManager() {
     useEffect(() => {
         const getFees = async () => {
             const fee = (await feeService.get()).data;
+            const bill = (await billService.get()).data;
+            const matter = (await matterService.get()).data;
+            dispatch(actions.setMatters(matter));
             dispatch(actions.setFees(fee));
+            dispatch(actions.setBills(bill));
         }
         getFees();
     }, [])
+    const handleTotalMatter = (value) => {
+        const arr = state.matters.filter(vl => vl.status_tt === value)
+        return arr.length
+    }
     const handleTotalFee = (value) => {
         const arr = state.fees.filter(vl => vl.status === value)
+        return arr.length
+    }
+    const handleTotalBill = (value) => {
+        const arr = state.bills.filter(vl => vl.loai_hoa_don === value)
         return arr.length
     }
     return (
@@ -48,27 +60,10 @@ function FeeManager() {
                         </Col>
                         <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
                             <Row gutter={[8, 8]}>
-                                <CardMatter title="Chưa vào sổ" color={1} total={handleTotalFee(1)} url={`fees/1`} />
-                                <CardMatter title="Đã kết toán" total={handleTotalFee(3)} />
-                            </Row>
-                        </Col>
-                    </Row>
-                    <Divider />
-                    <Row>
-                        <Col style={{ ...styleCol }} xs={{ span: 4 }}>
-                            <Avatar
-                                style={{ backgroundColor: `var(--grey)` }}
-                                size={50}
-                                icon={
-                                    <ReconciliationFilled />
-                                } />
-                            <Title level={5}>Vụ việc</Title>
-                        </Col>
-                        <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
-                            <Row gutter={[8, 8]}>
-                                <CardMatter title="Chưa vào sổ" total={0} url={`/${url[token.account.quyen]}/matter/0`} />
-                                <CardMatter title="Chưa thanh toán" total={0} url={`quotes/`} />
-                                <CardMatter title="Đã thanh toán" total={0} />
+                                <CardMatter title="Đã trình" total={handleTotalFee(0)} color={0} url={`fees/0`} />
+                                <CardMatter title="Đã duyệt" total={handleTotalFee(1)} color={1} url={`fees/1`} />
+                                <CardMatter title="Đã kết toán" total={handleTotalFee(2)} color={2} url={`fees/2`} />
+                                <CardMatter title="Từ chối" total={handleTotalFee(3)} color={3} url={`fees/3`} />
                             </Row>
                         </Col>
                     </Row>
@@ -85,8 +80,27 @@ function FeeManager() {
                         </Col>
                         <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
                             <Row gutter={8}>
-                                <CardMatter title="Đã vào sổ" total={0} url={`/ke-toan/bills/0`} />
-                                <CardMatter title="Đã kết toán" total={0} />
+                                <CardMatter title="Nội bộ" color={0} total={handleTotalBill('NB')} url={`/ke-toan/bills/type-bill/NB`} />
+                                <CardMatter title="Khách hàng" color={1} total={handleTotalBill('KH')} url={`/ke-toan/bills/type-bill/KH`} />
+                            </Row>
+                        </Col>
+                    </Row>
+                    <Divider />
+                    <Row>
+                        <Col style={{ ...styleCol }} xs={{ span: 4 }}>
+                            <Avatar
+                                style={{ backgroundColor: `var(--grey)` }}
+                                size={50}
+                                icon={
+                                    <ReconciliationFilled />
+                                } />
+                            <Title level={5}>Vụ việc</Title>
+                        </Col>
+                        <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
+                            <Row gutter={[8, 8]}>
+                                <CardMatter title="Chưa thanh toán" color={0} total={handleTotalMatter(0)} url={`/${url[token.account.quyen]}/matters/0`} />
+                                <CardMatter title="Đang thanh toán" color={2} total={0} url={`quotes/`} />
+                                <CardMatter title="Đã thanh toán" color={1} total={0} />
                             </Row>
                         </Col>
                     </Row>

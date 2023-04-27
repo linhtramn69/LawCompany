@@ -6,6 +6,7 @@ import { Button, Input, Space, Table, Tag, Tooltip } from "antd";
 import Highlighter from 'react-highlight-words';
 import { SearchOutlined } from '@ant-design/icons';
 const statusText = ['Đang thực hiện', 'Hoàn thành', 'Tạm ngưng'];
+const statusTT = ['Chưa thanh toán', 'Đang thanh toán', 'Đã thanh toán'];
 function MatterList() {
 
     let { id } = useParams();
@@ -24,11 +25,13 @@ function MatterList() {
         url = 'staff'
     else if(token.chuc_vu._id === 'TVV02') 
         url = 'tro-ly'
+    else if(token.chuc_vu._id === 'KT02') 
+        url = 'ke-toan'
 
     useEffect(() => {
         const getMatter = async () => {
             const result =
-                token.account.quyen === 1 ?
+                token.account.quyen === 1 || token.chuc_vu._id === 'KT02' ?
                     ((await matterService.get()).data)
                     : ((await matterService.findByIdAccess({ id: token._id })).data)
             const arr = id === 'all' ? result : result.filter(item => item.status == id)
@@ -59,7 +62,8 @@ function MatterList() {
             customer: value.khach_hang.ho_ten,
             phoneCus: value.khach_hang.account.sdt,
             law: value.luat_su.ho_ten,
-            status: value.status
+            status: value.status,
+            status_tt: value.status_tt
         }
     })
     const arrType = type.map((value) => {
@@ -241,6 +245,17 @@ function MatterList() {
                     color={status === 0 ? 'geekblue' : status === 1 ?  'success' : 'volcano'}
                 >
                     {statusText[status]}
+                </Tag>
+            ),
+        },
+        {
+            title: 'Thanh toán',
+            dataIndex: 'status_tt',
+            render: (status_tt) => (
+                <Tag
+                    color={status_tt === 0 ? 'volcano' : status_tt === 2 ?  'success' : 'geekblue'}
+                >
+                    {statusTT[status_tt]}
                 </Tag>
             ),
         },

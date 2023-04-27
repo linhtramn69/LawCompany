@@ -19,7 +19,7 @@ function MatterManager() {
 
     const { token } = useToken();
     const [state, dispatch] = useStore();
-    const [taskPhanCong, setTaskPhanCong] = useState([]);
+    const [taskGiaoCho, setTaskGiaoCho] = useState([]);
     const [isModalOpenTask, setIsModalOpenTask] = useState(false);
 
     const showModalTask = () => {
@@ -33,8 +33,8 @@ function MatterManager() {
         const getMatters = async () => {
             const matter = (await matterService.findByIdAccess({ id: token._id })).data;
             const task = (await taskService.getByStaff({ id: token._id })).data;
-            const taskDaPhanCong = (await taskService.getByStaffPhanCong({id: token._id})).data;
-            setTaskPhanCong(taskDaPhanCong);
+            const taskGiaoCho = (await taskService.getByStaffPhanCong({id: token._id})).data;
+            setTaskGiaoCho(taskGiaoCho);
             dispatch(actions.setMatters(matter));
             dispatch(actions.setTasks(task));
         }
@@ -49,9 +49,8 @@ function MatterManager() {
         const arr = state.tasks.filter(vl => vl.status === value)
         return arr.length
     }
-
-    const handleTotalTaskPhanCong = (value) => {
-        const arr = taskPhanCong.filter(vl => vl.status === value)
+    const handleTotalTaskGiaoCho = (value) => {
+        const arr = taskGiaoCho.filter(vl => vl.status === value)
         return arr.length
     }
 
@@ -81,9 +80,9 @@ function MatterManager() {
                         </Col>
                         <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
                             <Row gutter={8}>
-                                <CardMatter title="Đang thực hiện" color={0} total={handleTotalMatter(0)} url={`/staff/matters/0`} />
-                                <CardMatter title="Tạm ngưng" color={2} total={handleTotalMatter(2)} url={`/staff/matters/2`} />
-                                <CardMatter title="Hoàn thành" color={1} total={handleTotalMatter(1)} url={`/staff/matters/1`} />
+                                <CardMatter title="Đang thực hiện" color={0} total={handleTotalMatter(0)} url={`matters/0`} />
+                                <CardMatter title="Tạm ngưng" color={2} total={handleTotalMatter(2)} url={`matters/2`} />
+                                <CardMatter title="Hoàn thành" color={1} total={handleTotalMatter(1)} url={`matters/1`} />
                             </Row>
                         </Col>
                     </Row>
@@ -96,13 +95,13 @@ function MatterManager() {
                                 icon={
                                     <CreditCardFilled />
                                 } />
-                            <Title level={5}>Công việc được giao</Title>
+                            <Title level={5}>Công việc được phân công</Title>
                         </Col>
                         <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
                             <Row gutter={[8, 8]}>
-                                <CardMatter title="Được giao" total={handleTotalTask(0)} color={0} url={`/staff/tasks/0`} />
-                                <CardMatter title="Tạm ngưng" total={handleTotalTask(2)} color={2} url={`/staff/tasks/2`} />
-                                <CardMatter title="Hoàn thành" total={handleTotalTask(1)} color={1} url={`/staff/tasks/1`} />
+                                <CardMatter title="Được phân công" total={handleTotalTask(0)} color={0} url={`tasks/0`} />
+                                <CardMatter title="Tạm ngưng" total={handleTotalTask(2)} color={2} url={`tasks/2`} />
+                                <CardMatter title="Hoàn thành" total={handleTotalTask(1)} color={1} url={`tasks/1`} />
                                 {/* <CardMatter title="Hạn hôm nay" total={0} />
                                 <CardMatter title="Quá hạn" total={0} /> */}
                             </Row>
@@ -117,12 +116,12 @@ function MatterManager() {
                                 icon={
                                     <CreditCardFilled />
                                 } />
-                            <Title level={5}>Công việc đã phân công</Title>
+                            <Title level={5}>Công việc đã giao</Title>
                         </Col>
                         <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
                             <Row gutter={[8, 8]}>
-                                <CardMatter title="Đã giao" total={handleTotalTaskPhanCong(0)} color={0} url={`/staff/tasks-giao/0`} />
-                                <CardMatter title="Đã hoàn thành" total={handleTotalTaskPhanCong(1)} color={1} url={`/staff/tasks-giao/1`} />
+                                <CardMatter title="Đã giao" total={handleTotalTaskGiaoCho(0)} color={0} url={`tasks-giao/0`} />
+                                <CardMatter title="Đã hoàn thành" total={handleTotalTaskGiaoCho(1)} color={1} url={`tasks-giao/1`} />
                                 {/* <CardMatter title="Hạn hôm nay" total={0} />
                                 <CardMatter title="Quá hạn" total={0} /> */}
                             </Row>

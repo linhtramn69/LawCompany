@@ -1,32 +1,34 @@
-import { faCircleCheck, faCirclePause, faCirclePlay } from "@fortawesome/free-solid-svg-icons";
+import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Badge, Button, Card, Col, Descriptions, Divider, Popconfirm, Row, Space, Tabs, message } from "antd";
+import { Badge, Button, Card, Col, Descriptions, Divider, Popconfirm, Row, Tabs, message } from "antd";
 import moment from "moment";
-import { useEffect,useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import FormAddFile from "~/components/AdminComponents/Form/FormAddFile";
 import { matterService, taskService } from "~/services";
 import { useStore } from "~/store";
 
 function TaskDetail() {
-    let { id } = useParams()
-    let navigate = useNavigate()
+
+    let { id } = useParams();
     const [state, disabled] = useStore();
     const [task, setTask] = useState({});
     const [matter, setMatter] = useState({});
     const [messageApi, contextHolder] = message.useMessage();
+
     const success = () => {
         messageApi.open({
-          type: 'success',
-          content: 'Cập nhật thành công',
+            type: 'success',
+            content: 'Cập nhật thành công',
         });
-      };
-      const error = () => {
+    };
+    const error = () => {
         messageApi.open({
-          type: 'error',
-          content: 'Có lỗi khi xử lý',
+            type: 'error',
+            content: 'Có lỗi khi xử lý',
         });
-      };
+    };
+
     useEffect(() => {
         const getTask = async () => {
             setTask((await taskService.getById(id)).data)
@@ -38,69 +40,74 @@ function TaskDetail() {
             setMatter((await matterService.getById(task.vu_viec)).data)
         }
         getMatter()
-    }, [task, task.status])
+    }, [task])
+
     const handleOk = async (value) => {
         const newVal = {
             ...task,
             nguoi_phu_trach: task.nguoi_phu_trach._id,
             status: value
         }
-        try{
-            try{
-                await taskService.update(task._id, newVal)
-                success()
-            } catch(err){
-                error()
-            } 
+        try {
+            const rs = (await taskService.update(task._id, newVal)).data
+            success();
+            setTask(rs);
         }
-        catch(err){
-            console.log(err);
+        catch (err) {
+            error();
         }
     }
-    const handleSubmit = async() => {
-        const newData ={
+    const handleSubmit = async () => {
+        const newData = {
             ...task,
             nguoi_phu_trach: task.nguoi_phu_trach._id,
             tai_lieu: state.files
         }
-        try{
+        try {
             if (window.confirm(`Bạn muốn cập nhật lại công việc ${task.ten_cong_viec} ?`)) {
-                await taskService.update(task._id, newData);
-                navigate(`/admin/task/${task._id}`);
+                try{
+                    const rs = (await taskService.update(task._id, newData)).data;
+                    setTask(rs);
+                    success();
+                }
+                catch(err){
+                    error();
+                }
             }
         }
-        catch(err){
+        catch (err) {
             console.log(err);
         }
     }
+    
     return (
         <>
-        {contextHolder}
+            {contextHolder}
             <Card
                 style={{ width: '90%', marginLeft: 60 }}
                 title={
-                    task.status == 0 ? <Badge status="processing" text="Đã giao" />
-                        : task.status == 1 ? <Badge status="success" text="Hoàn thành" />
+                    task.status === 0 ? <Badge status="processing" text="Đã giao" />
+                        : task.status === 1 ? <Badge status="success" text="Hoàn thành" />
                             : <Badge status="warning" text="Tạm ngưng" />
                 }
                 extra={
-                    task.status == 0 ?
-                            <Popconfirm
-                                placement="topRight"
-                                title="Hoàn thành vụ việc"
-                                description="Bạn có chắc là vụ việc đã hoàn thành chứ?"
-                                okText="Xác nhận"
-                                cancelText="Hủy"
-                                onConfirm={() => handleOk(1)}
-                            >
-                                <Button
-                                    className="btn btn-status"
-                                    icon={<FontAwesomeIcon
-                                        style={{
-                                            color: '#389e0d',
-                                            marginRight: 10
-                                        }} icon={faCircleCheck} />}>Hoàn thành</Button>
-                            </Popconfirm> : null
+                    task.status === 0 ?
+                        <Popconfirm
+                            placement="topRight"
+                            title="Hoàn thành vụ việc"
+                            description="Bạn có chắc là vụ việc đã hoàn thành chứ?"
+                            okText="Xác nhận"
+                            cancelText="Hủy"
+                            onConfirm={() => handleOk(1)}
+                        >
+                            <Button
+                                className="btn btn-status"
+                                icon={<FontAwesomeIcon
+                                    style={{
+                                        color: '#389e0d',
+                                        marginRight: 10
+                                    }} icon={faCircleCheck} />}>Hoàn thành</Button>
+                        </Popconfirm> : null
                 }
             >
                 {
@@ -186,10 +193,10 @@ function TaskDetail() {
                             children: <FormAddFile />
                         },
                     ]} />
-                    {task.status == 0 ? 
+                {task.status === 0 ?
                     <Button type="primary" onClick={handleSubmit} className="btn-submit">Lưu thông tin</Button>
-                : <></>}
-                
+                    : <></>}
+
             </Card>
         </>
     );

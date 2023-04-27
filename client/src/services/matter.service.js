@@ -22,6 +22,9 @@ class MatterService {
     async setStatus(id, data){
         return (await API.patch(`matter/setStatus/${id}`, data));
     }
+    async setStatus_TT(id, data){
+        return (await API.patch(`matter/setStatus-tt/${id}`, data));
+    }
     async delete(id){
         return (await API.delete(`matter/${id}`));
     }

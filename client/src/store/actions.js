@@ -10,7 +10,9 @@ import {
     SET_STEPS,
     SET_FILES,
     SET_FEES,
-    SET_USER
+    SET_USER,
+    SET_BILLS,
+    SET_BILL
 } from './constants'
 export const setUser = payload => (
     {
@@ -81,6 +83,18 @@ export const setFiles = payload => (
 export const setFees = payload => (
     {
         type: SET_FEES,
+        payload
+    }
+)
+export const setBills = payload => (
+    {
+        type: SET_BILLS,
+        payload
+    }
+)
+export const setBill = payload => (
+    {
+        type: SET_BILL,
         payload
     }
 )
