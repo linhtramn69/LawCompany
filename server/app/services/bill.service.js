@@ -18,8 +18,8 @@ class Bill {
             tong_gia_tri: payload.tong_gia_tri,
             status: payload.status,
             ghi_chu: payload.ghi_chu,
-            tai_khoan_ket_toan: payload.tai_khoan_ket_toan,
-            tai_khoan_boi_hoan: payload.tai_khoan_boi_hoan,
+            tai_khoan_cong_ty: payload.tai_khoan_cong_ty,
+            tai_khoan_khach: payload.tai_khoan_khach,
         };
 
         // remove undefined fields
@@ -33,9 +33,9 @@ class Bill {
         const result = await this.Bill.find();
         return result.toArray();
     }
-    async findByMatter(payload){
+    async findByMatter(payload) {
         const result = await this.Bill.find({
-            vu_viec : {$eq : payload.id}
+            vu_viec: { $eq: payload.id }
         });
         return result.toArray();
     }
@@ -53,8 +53,19 @@ class Bill {
             ...bill,
             nhan_vien_lap_hoa_don: await this.User.findOne({ _id: new ObjectId(payload.nhan_vien_lap_hoa_don) })
         }
-        const result = await this.Bill.insertOne(newVal);
-        return result;
+        // const result = await this.Bill.insertOne(newVal);
+        this.updateToTalMatter(payload.vu_viec)
+        return newVal;
+    }
+    updateToTalMatter(payload) {
+        let total = 0;
+        const result = this.Bill.find({ vu_viec: payload })
+        result.forEach((value) => {
+            total = total + value.tong_gia_tri
+        }).then(()=> {
+            console.log(total);
+            return total;
+        })
     }
 
     async update(id, payload) {

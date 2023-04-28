@@ -32,7 +32,8 @@ class Matter {
             lien_he: payload.lien_he,
             status: payload.status,
             tong_tien: payload.tong_tien,
-            status_tt: payload.status_tt
+            status_tt: payload.status_tt,
+            ngay_lap: payload.ngay_lap
         };
 
         Object.keys(matter).forEach(
@@ -129,25 +130,25 @@ class Matter {
         return rs.value
     }
 
-    // async setStatus(id, payload) {
-    //     const id_string = id;
-    //     id = {
-    //         _id: ObjectId.isValid(id) ? new ObjectId(id) : null
-    //     };
-    //     const matter = this.extractConactData(payload);
-    //     const rs = await this.Matter.findOneAndUpdate(
-    //         id,
-    //         { $set: matter },
-    //         { returnDocument: "after" }
-    //     );
-    //     if(payload.status == 2){
-    //         const result = await this.Task.updateMany(
-    //             {status: 0, vu_viec: id_string},
-    //             {$set: {status: 2}}
-    //         )
-    //     }
-    //     return rs.value;
-    // }
+    async setStatus(id, payload) {
+        const id_string = id;
+        id = {
+            _id: ObjectId.isValid(id) ? new ObjectId(id) : null
+        };
+        const matter = this.extractConactData(payload);
+        const rs = await this.Matter.findOneAndUpdate(
+            id,
+            { $set: matter },
+            { returnDocument: "after" }
+        );
+        if(payload.status == 2){
+            const result = await this.Task.updateMany(
+                {status: 0, vu_viec: id_string},
+                {$set: {status: 2}}
+            )
+        }
+        return rs.value;
+    }
 
     async delete(id) {
         id = {

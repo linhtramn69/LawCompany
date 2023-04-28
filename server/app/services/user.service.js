@@ -52,7 +52,7 @@ class User {
 
     // tim tat ca nhan vien theo bo phan
     async findAllByBoPhan(id_bo_phan) {
-        const result = await this.User.find({ "bo_phan.id": id_bo_phan });
+        const result = await this.User.find({ "bo_phan._id": id_bo_phan });
         return result.toArray();
     }
 
