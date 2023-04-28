@@ -41,6 +41,7 @@ const routes = {
         // Bill
         billTypeList: '/bills/type-bill/:id',
         billDetail: '/bill/:id',
+        billAdd: '/bill/add/:id',
     },
     staff: {
         dashboard: '/',
@@ -65,6 +66,8 @@ const routes = {
         quotesAdd: '/quotes/add',
         quoteDetail: '/quote/:id',
         quoteEdit: '/quote/edit/:id',
+        //Calendar
+        calendarManager: '/calendar',
     },
     keToan: {
         // Fee

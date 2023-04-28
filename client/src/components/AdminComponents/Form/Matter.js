@@ -1,13 +1,14 @@
-import { Button, Col, Form, Input, Radio, Row, Space, Tabs, Select, Divider, InputNumber } from "antd";
+import { Button, Col, Form, Input, Radio, Row, Space, Tabs, Select, Divider, InputNumber, Table } from "antd";
 import { useEffect, useState } from "react";
 import { TableAddFile } from "~/components";
 import FormAddTask from "./FormAddTask";
 import FormAddPeriod from "./FormAddPeriod";
 import FormAddFee from "./FormAddFee";
-import { matterService, serviceService, timePayService, typePayService, typeServiceService, userService } from '~/services/index';
+import { accountingEntryService, matterService, serviceService, timePayService, typePayService, typeServiceService, userService } from '~/services/index';
 import { useNavigate } from "react-router-dom";
 import { useStore, useToken } from "~/store";
 import FormAddFile from "./FormAddFile";
+import FormAccountingEntry from "./FormAccountingEntry";
 
 const formItemLayout = {
     labelCol: {
@@ -31,7 +32,44 @@ const label = [
     'Nội bộ được phép truy cập',
     'Khách hàng được phép truy cập'
 ]
+const columnsBill = [
 
+    {
+        title: 'Ngày lập',
+        dataIndex: 'dateCreate',
+        width: 200
+    },
+    {
+        title: 'Nhân viên',
+        dataIndex: 'staff',
+        width: 200
+    },
+    {
+        title: 'Tài khoản bút toán',
+        dataIndex: 'stk_bt',
+        width: 150
+    },
+    {
+        title: 'Chủ tài khoản bút toán',
+        dataIndex: 'ctk_bt',
+        width: 150
+    },
+    {
+        title: 'Tài khoản nhận',
+        dataIndex: 'stk_nhan',
+        width: 150
+    },
+    {
+        title: 'Chủ tài khoản nhận',
+        dataIndex: 'ctk_nhan',
+        width: 150
+    },
+    {
+        title: 'Tổng',
+        dataIndex: 'tong_tien',
+        width: 150
+    },
+];
 function FormMatter({ props }) {
 
     const matter = { ...props }
@@ -50,7 +88,7 @@ function FormMatter({ props }) {
     const [type, setType] = useState(
         matter._id ? matter.linh_vuc._id : null
     );
-    const {token} = useToken();
+    const { token } = useToken();
     let navigate = useNavigate();
 
     useEffect(() => {
@@ -93,10 +131,12 @@ function FormMatter({ props }) {
                 label: value.ho_ten
             })
         }
-        else arrStaff.push({
-            value: value._id,
-            label: value.ho_ten
-        })
+        else if (value.chuc_vu._id === 'LS02' && value.chuyen_mon.includes(type)) {
+            arrStaff.push({
+                value: value._id,
+                label: value.ho_ten
+            })
+        }
     })
     const arrTypeService = typeServices.map((value) => {
         return ({
@@ -162,7 +202,6 @@ function FormMatter({ props }) {
         }
     }
     const onFinish = (values) => {
-
         const newData = {
             ...values,
             chiet_khau_hoa_hong: values.chiet_khau_hoa_hong
@@ -172,13 +211,14 @@ function FormMatter({ props }) {
                 nhan_vien: values.staffAccess
             },
             status: 0,
+            ngay_lap: new Date(),
             tai_lieu: matter._id ? state.files : null,
             cong_viec: matter._id ? state.tasks : null,
             phi_co_dinh: matter._id ? state.steps : null,
             chi_phi_phat_sinh: matter._id ? state.fees : null
         }
-        matter._id ? handleUpdate(newData) :
-            handleAdd(newData)
+       
+        matter._id ? handleUpdate(newData) : handleAdd(newData)
     }
 
 
@@ -221,28 +261,31 @@ function FormMatter({ props }) {
                         value: matter.chiet_khau_hoa_hong
                     },
                     {
+                        name: ['tong_tien'],
+                        value: matter.tong_tien
+                    },
+                    {
                         name: ['show'],
                         value: matter.truy_cap.khach_hang ? 1 : 0
                     },
                     {
                         name: ['staffAccess'],
-                        value: arrStaffAccess
+                        value: matter.truy_cap.nhan_vien
                     },
                     {
                         name: ['customerAccess'],
-                        value: arrCustomerAccess
+                        value: matter.truy_cap.khach_hang
                     },
                 ] : null}
             >
-                  <Form.Item
-                        wrapperCol={{
-                            offset: 20,
-                        }}
-                    >
-                        <Button type="primary" htmlType="submit" className="btn-primary">Lưu thông tin</Button>
-                    </Form.Item>
+                <Form.Item
+                    wrapperCol={{
+                        offset: 20,
+                    }}
+                >
+                    <Button type="primary" htmlType="submit" className="btn-primary">Lưu thông tin</Button>
+                </Form.Item>
                 <Row>
-                  
                     <Col span={12} pull={2}>
                         <Form.Item
                             label="Tên vụ việc"
@@ -294,7 +337,7 @@ function FormMatter({ props }) {
                             name="khach_hang"
                         >
                             <Select
-                                disabled={token.account.quyen != 1}
+                                disabled={token.account.quyen !== 1}
                                 showSearch
                                 allowClear
                                 style={{
@@ -308,7 +351,7 @@ function FormMatter({ props }) {
                             name="luat_su"
                         >
                             <Select
-                                disabled={token.account.quyen != 1}
+                                disabled={token.account.quyen !== 1}
                                 showSearch
                                 allowClear
                                 style={{
@@ -317,15 +360,14 @@ function FormMatter({ props }) {
                                 options={arrStaff}
                             />
                         </Form.Item>
-
                     </Col>
                 </Row>
                 <Divider />
-                <Tabs style={{ width: '100%' }} type="card" defaultActiveKey={token.account.quyen == 1 ? '1' : '2'} items={[
+                <Tabs style={{ width: '100%' }} type="card" defaultActiveKey={token.account.quyen === 1 ? '1' : '2'} items={[
                     {
                         key: '1',
                         label: `Thiết lập`,
-                        disabled: token.account.quyen != 1 ? true : false,
+                        disabled: token.account.quyen !== 1 ? true : false,
                         children: <Row style={{ paddingTop: 30 }}>
                             <Col md={{ span: 10 }}>
                                 <Form.Item
@@ -353,14 +395,14 @@ function FormMatter({ props }) {
                                     name='tong_tien'
                                     label="Tổng tiền">
                                     <InputNumber
-                                    style={{
-                                        width: 250
-                                    }}
-                                    min={1}
-                                    formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                                    parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
-                                    addonAfter="đ"
-                                />
+                                        style={{
+                                            width: 250
+                                        }}
+                                        min={1}
+                                        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                        parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
+                                        addonAfter="đ"
+                                    />
                                 </Form.Item>
                             </Col>
                             <Col md={{ span: 12 }}>
@@ -431,17 +473,35 @@ function FormMatter({ props }) {
                         children: <FormAddTask props={matter.cong_viec} />,
                         disabled: matter ? false : true
                     },
-                    {
-                        key: '5',
-                        label: `Phí cố định`,
-                        children: <FormAddPeriod props={matter.phi_co_dinh} />,
-                        disabled: matter ? false : true
-                    },
+                    
                     {
                         key: '6',
                         label: `Chi phí`,
                         children: <FormAddFee props={matter.chi_phi_phat_sinh} />,
                         disabled: matter ? false : true
+                    },
+                    {
+                        key: '7',
+                        label: `Hoá đơn khách hàng`,
+                        children:
+                            <>
+                                <Table pagination={false} columns={columnsBill} />
+                                <br />
+                                <Space direction="vertical" style={{ textAlign: 'end', float: 'right' }}>
+                                    <span>
+                                        <b style={{ marginRight: 15 }}>Tổng tiền vụ việc :</b>
+                                        {`${state.matter.tong_tien}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'}
+                                    </span>
+                                    <span>
+                                        <b style={{ marginRight: 15 }}>Đã thanh toán :</b>
+                                        {`${state.matter.tong_tien}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'}
+                                    </span>
+                                    <span>
+                                        <b style={{ marginRight: 15 }}>Số tiền còn lại:</b>
+                                        {`${state.matter.tong_tien}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'}
+                                        </span>
+                                </Space>
+                            </>,
                     }
                 ]} />
             </Form>

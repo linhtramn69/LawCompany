@@ -2,7 +2,7 @@ import { Avatar, Button, Col, DatePicker, Form, Input, Radio, Row, Select, Switc
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { avatar } from "~/assets/images";
-import { boPhanService, chucVuService, userService } from '../../../services/index';
+import { boPhanService, chucVuService, typeServiceService, userService } from '../../../services/index';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { useStore } from "~/store";
@@ -28,15 +28,30 @@ function FormLaw({ props }) {
     const [state, dispatch] = useStore()
     const [chucVu, setChucVu] = useState([]);
     const [boPhan, setBoPhan] = useState([]);
-    const [show, setShow] = useState(false);
+    const [showBoss, setShowBoss] = useState(false);
+    const [showChuyenMon, setShowChuyenMon] = useState(false);
+    const [typeService, setTypeService] = useState([]);
+    const [arrType, setArrType]= useState([]);
+    const [arrLaws, setArrLaw] = useState([]);
     const [law, setLaw] = useState([]);
+    let arrLaw = [];
+    let arrTypeService = [];
 
     useEffect(() => {
         const getBoPhan = async () => {
             setBoPhan((await boPhanService.get()).data)
         };
+        const getTypeService = async () => {
+            setTypeService((await typeServiceService.get()).data)
+        };
+        const getLaw = async () => {
+            setLaw((await userService.get()).data)
+        }
+        getLaw();
+        getTypeService();
         getBoPhan();
     }, []);
+
     const handleSelectedBoPhan = async (e) => {
         setChucVu((await chucVuService.getByBoPhan({ bo_phan: e })).data)
     }
@@ -53,19 +68,30 @@ function FormLaw({ props }) {
         }
     });
     const handleSelectedChucVu = async (e) => {
-        let arrLaw = [];
         if (e === 'TL02') {
-            setShow(true)
-            state.users.map(item => {
-                if (item.account.quyen != 0 && item.chuc_vu.id === 'LS02') {
+            setShowBoss(true);
+            setShowChuyenMon(false);
+            law.map(item => {
+                if (item.account.quyen != 0 && item.chuc_vu._id === 'LS02') {
                     arrLaw.push({
                         label: item.ho_ten,
                         value: item._id
                     })
                 }
             })
+            setArrLaw(arrLaw);
         }
-        setLaw(arrLaw)
+        else if (e === 'LS02') {
+            setShowChuyenMon(true);
+            setShowBoss(false);
+            typeService.map((item) => {
+                arrTypeService.push({
+                    label: item.ten_linh_vuc,
+                    value: item._id
+                })
+            })
+            setArrType(arrTypeService);
+        }
     }
     const handleUpdate = async (data) => {
         try {
@@ -104,12 +130,14 @@ function FormLaw({ props }) {
             active: values.active,
             chuc_vu: values.chucVu,
             bo_phan: values.boPhan,
-            boss: values.boss
+            boss: values.boss,
+            chuyen_mon: values.type
         }
         if (props)
             handleUpdate(data);
         else handleAdd(data);
     }
+    
     return (
         <>
             <Form
@@ -276,14 +304,12 @@ function FormLaw({ props }) {
                     </Col>
                 </Row>
                 <Row>
-
                     <Col md={{ span: 8 }}>
                         <Form.Item
                             name="boPhan"
                             label="Bộ phận"
                         >
                             <Select
-                                // defaultValue={selectedBoPhan ? user.bo_phan.ten_bo_phan : null}
                                 options={arrBoPhan}
                                 onChange={handleSelectedBoPhan}
                             />
@@ -295,16 +321,12 @@ function FormLaw({ props }) {
                             name="chucVu"
                         >
                             <Select
-                                // defaultValue={selectedChucVu ? user.chuc_vu.ten_chuc_vu : null}
                                 options={arrChucVu}
                                 onChange={handleSelectedChucVu}
                             />
                         </Form.Item>
-
-
                     </Col>
                 </Row>
-
                 <Row>
                     <Col md={{ span: 8 }}>
                         <Form.Item
@@ -315,16 +337,25 @@ function FormLaw({ props }) {
                         >
                             <Switch checkedChildren="Hoạt động" unCheckedChildren="Khoá" success="false" />
                         </Form.Item>
-
                     </Col>
                     <Col md={{ span: 8, push: 1 }}>
-                        {show
+                        {showBoss
                             ? <Form.Item
                                 label="Thuộc cấp"
                                 name="boss"
                             >
                                 <Select
-                                    options={law}
+                                    options={arrLaws}
+                                />
+                            </Form.Item> : <></>}
+                        {showChuyenMon
+                            ? <Form.Item
+                                label="Chuyên môn"
+                                name="type"
+                            >
+                                <Select
+                                    mode="multiple"
+                                    options={arrType}
                                 />
                             </Form.Item> : <></>}
                     </Col>

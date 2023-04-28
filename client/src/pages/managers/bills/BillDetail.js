@@ -45,7 +45,7 @@ function BillDetail() {
     };
     return (
         <>
-            {bill && bill.tai_khoan_boi_hoan && bill.loai_hoa_don === 'NB'
+            {bill._id &&  bill.loai_hoa_don === 'NB'
                 ?
                 <Card
                     title="Chi tiết hoá đơn"
@@ -60,10 +60,10 @@ function BillDetail() {
                                 column={{
                                     md: 1,
                                 }}
-                                title="Thông tin tài khoản bồi hoàn">
-                                <Descriptions.Item label="Ngân hàng">{bill.tai_khoan_boi_hoan.ngan_hang}</Descriptions.Item>
-                                <Descriptions.Item label="Số tài khoản">{bill.tai_khoan_boi_hoan.so_tai_khoan}</Descriptions.Item>
-                                <Descriptions.Item label="Chủ tài khoản">{bill.tai_khoan_boi_hoan.chu_tai_khoan}</Descriptions.Item>
+                                title="Thông tin tài khoản khách">
+                                <Descriptions.Item label="Ngân hàng">{bill.tai_khoan_khach.ngan_hang}</Descriptions.Item>
+                                <Descriptions.Item label="Số tài khoản">{bill.tai_khoan_khach.so_tai_khoan}</Descriptions.Item>
+                                <Descriptions.Item label="Chủ tài khoản">{bill.tai_khoan_khach.chu_tai_khoan}</Descriptions.Item>
                             </Descriptions>
                         </Col>
                         <Col md={{ span: 12, push: 1 }}>
@@ -129,7 +129,7 @@ function BillDetail() {
                     </Space>
 
                 </Card>
-                : bill && bill.tai_khoan_boi_hoan ?
+                : bill._id ?
                     <Card
                         title="Chi tiết hoá đơn"
                         style={{
@@ -153,10 +153,10 @@ function BillDetail() {
                                     column={{
                                         md: 2,
                                     }}
-                                    title="Tài khoản bút toán">
-                                    <Descriptions.Item span={2} label="Ngân hàng">{bill.tai_khoan_boi_hoan.ngan_hang}</Descriptions.Item>
-                                    <Descriptions.Item label="Số tài khoản">{bill.tai_khoan_boi_hoan.so_tai_khoan}</Descriptions.Item>
-                                    <Descriptions.Item label="Chủ tài khoản">{bill.tai_khoan_boi_hoan.chu_tai_khoan}</Descriptions.Item>
+                                    title="Tài khoản khách">
+                                    <Descriptions.Item span={2} label="Ngân hàng">{bill.tai_khoan_khach.ngan_hang}</Descriptions.Item>
+                                    <Descriptions.Item label="Số tài khoản">{bill.tai_khoan_khach.so_tai_khoan}</Descriptions.Item>
+                                    <Descriptions.Item label="Chủ tài khoản">{bill.tai_khoan_khach.chu_tai_khoan}</Descriptions.Item>
                                 </Descriptions>
                             </Col>
                             <Col md={{ span: 12 }}>
@@ -164,10 +164,10 @@ function BillDetail() {
                                     column={{
                                         md: 2,
                                     }}
-                                    title="Tài khoản nhận tiền">
-                                    <Descriptions.Item span={2} label="Ngân hàng">{bill.tai_khoan_boi_hoan.ngan_hang}</Descriptions.Item>
-                                    <Descriptions.Item label="Số tài khoản">{bill.tai_khoan_boi_hoan.so_tai_khoan}</Descriptions.Item>
-                                    <Descriptions.Item label="Chủ tài khoản">{bill.tai_khoan_boi_hoan.chu_tai_khoan}</Descriptions.Item>
+                                    title="Tài khoản công ty">
+                                    <Descriptions.Item span={2} label="Ngân hàng">{bill.tai_khoan_cong_ty.ngan_hang}</Descriptions.Item>
+                                    <Descriptions.Item label="Số tài khoản">{bill.tai_khoan_cong_ty.so_tai_khoan}</Descriptions.Item>
+                                    <Descriptions.Item label="Chủ tài khoản">{bill.tai_khoan_cong_ty.chu_tai_khoan}</Descriptions.Item>
                                 </Descriptions>
                             </Col>
                         </Row>

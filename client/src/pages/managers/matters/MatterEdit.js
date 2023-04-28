@@ -3,16 +3,16 @@ import FormMatter from "~/components/AdminComponents/Form/Matter";
 import { faCircleCheck, faCirclePause, faCirclePlay } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useStore } from "~/store";
-import { matterService, taskService } from "~/services";
+import { matterService } from "~/services";
 import { useNavigate } from "react-router-dom";
 import ErrorResult from "~/pages/Result/Error";
-import { useEffect } from "react";
 
 function MatterEdit() {
 
     const [state, dispatch] = useStore();
     const [messageApi, contextHolder] = message.useMessage();
-    let navigate = useNavigate()
+    let navigate = useNavigate();
+
     const success = () => {
         messageApi.open({
             type: 'success',
@@ -33,10 +33,10 @@ function MatterEdit() {
                 navigate(`/staff/matters/${state.matter._id}`)
             }, [500])
         } catch (err) {
-            console.log(err);
             error()
         }
     }
+    
     return (
         <>
             {

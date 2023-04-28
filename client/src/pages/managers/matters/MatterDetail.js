@@ -97,23 +97,23 @@ const columnsBill = [
         width: 200
     },
     {
-        title: 'Tài khoản bút toán',
-        dataIndex: 'stk_bt',
+        title: 'Tài khoản khách',
+        dataIndex: 'stk_khach',
         width: 150
     },
     {
-        title: 'Chủ tài khoản bút toán',
-        dataIndex: 'ctk_bt',
+        title: 'Chủ tài khoản khách',
+        dataIndex: 'ctk_khach',
         width: 150
     },
     {
-        title: 'Tài khoản nhận',
-        dataIndex: 'stk_nhan',
+        title: 'Tài khoản công ty',
+        dataIndex: 'stk_cty',
         width: 150
     },
     {
-        title: 'Chủ tài khoản nhận',
-        dataIndex: 'ctk_nhan',
+        title: 'Chủ tài khoản công ty',
+        dataIndex: 'ctk_cty',
         width: 150
     },
     {
@@ -203,7 +203,7 @@ function MatterDetail() {
     useEffect(() => {
         const getAccess = async () => {
             const arr1 = state.matter.truy_cap.nhan_vien;
-            const arr2 = state.matter.truy_cap.khach_hang;
+            const arr2 = state.matter.truy_cap.khach_hang ? state.matter.truy_cap.khach_hang : [];
             setAccess((await userService.getByMatter(arr1.concat(arr2))).data)
         }
         dispatch(actions.setFiles(state.matter.tai_lieu))
@@ -257,10 +257,10 @@ function MatterDetail() {
                 _id: value._id,
                 dateCreate: moment(value.ngay_lap).format('DD-MM-YYYY LT'),
                 staff: value.nhan_vien_lap_hoa_don.ho_ten,
-                stk_bt: value.tai_khoan_boi_hoan.so_tai_khoan,
-                ctk_bt: value.tai_khoan_boi_hoan.chu_tai_khoan,
-                stk_nhan: value.tai_khoan_ket_toan.so_tai_khoan,
-                ctk_nhan: value.tai_khoan_ket_toan.chu_tai_khoan,
+                stk_khach: value.tai_khoan_khach.so_tai_khoan,
+                ctk_khach: value.tai_khoan_khach.chu_tai_khoan,
+                stk_cty: value.tai_khoan_cong_ty.so_tai_khoan,
+                ctk_cty: value.tai_khoan_cong_ty.chu_tai_khoan,
                 tong_tien: `${value.tong_gia_tri}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'
 
             })
@@ -319,10 +319,9 @@ function MatterDetail() {
         })
     }
 
-    console.log(total_bill);
     return (
         <>
-            <Link to={`/ke-toan/bill/add/${state.matter._id}`}>
+            <Link to={`/${url[token.account.quyen]}/bill/add/${state.matter._id}`}>
                 <Button>Tạo hoá đơn</Button>
             </Link>
             {state.matter._id ?
@@ -336,13 +335,17 @@ function MatterDetail() {
                         textTransform: 'uppercase',
                         color: '#000'
                     }}
-                    text="Chưa thanh toán"
-                    color="volcano"
+                    text={
+                       state.matter.status_tt == 0 ? "Chưa thanh toán" : "Đang thanh toán"
+                    }
+                    color={
+                        state.matter.status_tt == 0 ? "vocalno" : "greekblue"
+                    }
                 >
                     <Card
                         title={
-                            state.matter.status == 0 ? <Badge status="processing" text="Đang thực hiện" />
-                                : state.matter.status == 1 ? <Badge status="success" text="Hoàn thành" />
+                            state.matter.status === 0 ? <Badge status="processing" text="Đang thực hiện" />
+                                : state.matter.status === 1 ? <Badge status="success" text="Hoàn thành" />
                                     : <Badge status="warning" text="Tạm ngưng" />
                         }
                         extra={
@@ -414,6 +417,9 @@ function MatterDetail() {
                                                     </Descriptions.Item>
                                                     <Descriptions.Item span={4} label="Chiết khấu hoa hồng">
                                                         {state.matter.chiet_khau_hoa_hong} %
+                                                    </Descriptions.Item>
+                                                    <Descriptions.Item span={4} label="Tổng tiền">
+                                                        {`${state.matter.tong_tien}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'}
                                                     </Descriptions.Item>
                                                 </Descriptions>
                                             </Col>
@@ -503,7 +509,7 @@ function MatterDetail() {
                             }
                         ]} />
                         {
-                            state.matter.status != 1 ?
+                            state.matter.status !== 1 ?
                                 <Link to={`/${url[token.account.quyen]}/matter/edit/${id}`}>
                                     <Button type="primary" className="btn-primary">Chỉnh sửa</Button>
                                 </Link>

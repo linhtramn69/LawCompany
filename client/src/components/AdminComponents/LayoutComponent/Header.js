@@ -1,7 +1,6 @@
 import { Col, Menu, Row } from "antd";
 import {
   UserOutlined,
-  BellFilled,
   SettingOutlined,
   LogoutOutlined,
   MailOutlined
@@ -10,7 +9,7 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHouse } from '@fortawesome/free-solid-svg-icons'
 import "~/assets/style/Admin/Header.scss";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useToken } from "~/store";
 const url = ['', 'admin', 'staff']
 
@@ -18,11 +17,11 @@ function HeaderAdmin() {
   const [current, setCurrent] = useState('mail');
   const { token } = useToken();
   let url = 'admin'
-  if (token.chuc_vu._id == 'LS02')
+  if (token.chuc_vu._id === 'LS02')
     url = 'staff'
-  else if (token.chuc_vu._id == 'TVV02')
+  else if (token.chuc_vu._id === 'TVV02')
     url = 'tu-van-vien'
-  else if (token.chuc_vu._id == 'KT02')
+  else if (token.chuc_vu._id === 'KT02')
     url = 'ke-toan'
   const itemsAdmin = [
     {
@@ -102,7 +101,7 @@ function HeaderAdmin() {
       key: 'calendar',
     },
     {
-      label: <Link to={`/${url}/quote`}>
+      label: <Link to={`/${url}/quotes/all`}>
         Báo giá
       </Link>,
       key: 'quote',
@@ -182,19 +181,19 @@ function HeaderAdmin() {
     <>
       <Row className="header-admin">
         <Col md={
-          token.account.quyen == 1 ? { span: 16, push: 1 }
+          token.account.quyen === 1 ? { span: 16, push: 1 }
             : { span: 10, push: 1 }
         }>
           <Menu onClick={onClick} className="menu" selectedKeys={[current]} mode="horizontal" items={
-            token.account.quyen == 1 ? itemsAdmin
-              : token.chuc_vu._id == 'LS02' ? itemsLaw
-                : token.chuc_vu._id == 'TVV02' ? itemsTuVanVien
+            token.account.quyen === 1 ? itemsAdmin
+              : token.chuc_vu._id === 'LS02' ? itemsLaw
+                : token.chuc_vu._id === 'TVV02' ? itemsTuVanVien
                   : itemsKeToan
           } />
         </Col>
         <Col md={
-          token.account.quyen == 1 ? { span: 8 }
-            : { span: 8, push: 6 }
+          token.account.quyen === 1 ? { span: 8 }
+            : { span: 9, push: 5 }
         }>
           <Menu onClick={onClick} className="menu" selectedKeys={[current]} mode="horizontal" items={items1} />
         </Col>

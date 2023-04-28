@@ -76,6 +76,7 @@ const privateRoutes = [
     // Bill
     { path: config.routes.admin.billTypeList, component: BillList, layout: LayoutAdmin },
     { path: config.routes.admin.billDetail, component: BillDetail, layout: LayoutAdmin },
+    { path: config.routes.admin.billAdd, component: BillCreate, layout: LayoutAdmin },
 ]
 const staffRouter = [
     // Dashboard
@@ -101,6 +102,8 @@ const TuVanVienRouter = [
     { path: config.routes.tvv.quotesAdd, component: QuotesAdd, layout: LayoutAdmin },
     { path: config.routes.tvv.quoteDetail, component: QuoteDetail, layout: LayoutAdmin },
     { path: config.routes.tvv.quoteEdit, component: QuoteEdit, layout: LayoutAdmin },
+    //Calendar
+    { path: config.routes.tvv.calendarManager, component: CalendarManager, layout: LayoutAdmin },
 ]
 const KeToanRouter = [
     // Dashboard
