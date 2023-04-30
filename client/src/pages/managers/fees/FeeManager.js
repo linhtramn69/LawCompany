@@ -32,7 +32,7 @@ function FeeManager() {
         return arr.length
     }
     const handleTotalFee = (value) => {
-        const arr = state.fees.filter(vl => vl.status === value)
+        const arr = state.fees.filter(vl => vl.status_tt === value)
         return arr.length
     }
     const handleTotalBill = (value) => {
@@ -99,8 +99,8 @@ function FeeManager() {
                         <Col md={{ span: 18, push: 2 }} xs={{ span: 19, push: 1 }}>
                             <Row gutter={[8, 8]}>
                                 <CardMatter title="Chưa thanh toán" color={0} total={handleTotalMatter(0)} url={`/${url[token.account.quyen]}/matters/0`} />
-                                <CardMatter title="Đang thanh toán" color={2} total={0} url={`quotes/`} />
-                                <CardMatter title="Đã thanh toán" color={1} total={0} />
+                                <CardMatter title="Đang thanh toán" color={2}total={handleTotalMatter(1)} url={`/${url[token.account.quyen]}/matters/1`} />
+                                <CardMatter title="Đã thanh toán" color={1} total={handleTotalMatter(2)} url={`/${url[token.account.quyen]}/matters/2`}/>
                             </Row>
                         </Col>
                     </Row>

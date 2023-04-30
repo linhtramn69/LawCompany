@@ -8,6 +8,7 @@ import axios from "axios";
 import { Option } from "antd/es/mentions";
 import { feeService } from "~/services";
 import { DeleteOutlined } from '@ant-design/icons';
+import {UploadImg, fileSelected} from "../UploadImg";
 import moment from "moment";
 dayjs.extend(customParseFormat);
 const statusText = ['Đã trình', 'Đã duyệt', 'Đã kết toán', 'Đã huỷ'];
@@ -49,7 +50,7 @@ function FormAddFee() {
                     don_gia: `${value.don_gia}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ',
                     nameBank: value.tai_khoan.ngan_hang,
                     nameCreditCard: value.tai_khoan.chu_tai_khoan,
-                    numberCreditCard: value.tai_khoan.so_tai_khoan
+                    numberCreditCard: value.tai_khoan.so_tai_khoan,
                 }
             })
         }
@@ -89,7 +90,9 @@ function FormAddFee() {
                 ngan_hang: values.nameBank,
                 chu_tai_khoan: values.nameCreditCard,
                 so_tai_khoan: values.numberCreditCard
-            }
+            },
+            hinh_anh: fileSelected
+
         }
         form.resetFields();
         handleAdd(newVal);
@@ -336,6 +339,12 @@ function FormAddFee() {
                                     }}
                                 />
                             </Form.Item>
+                        </Col>
+                        <Col span={10} push={4}>
+                        <Form.Item>
+                                <Title level={5}>Hình ảnh minh chứng</Title>
+                            </Form.Item>
+                            <UploadImg/>
                         </Col>
                     </Row>
                     <Divider />

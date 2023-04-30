@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { billService, matterService } from "~/services";
 import { useToken } from "~/store";
-const url = ['', 'admin', 'ke-toan']
+
 function BillCreate() {
     const [form] = Form.useForm();
     const [bank, setBank] = useState([]);
@@ -31,8 +31,7 @@ function BillCreate() {
     }, [])
     const handleAdd = async (value) => {
         const result = (await billService.create(value)).data
-        // const rs = (await matterService.setStatus_TT(matter._id,{status_tt: 1}))
-        // navigate(`/${url[token.account.quyen]}/bill/${result.insertedId}`)
+        navigate(`/ke-toan/bill/${result.insertedId}`)
     }
     const onFinish = (values) => {
         const newVal = {
@@ -40,15 +39,15 @@ function BillCreate() {
             vu_viec: matter._id,
             loai_hoa_don: 'KH',
             ngay_lap: new Date(),
-            tai_khoan_cong_ty: {
-                ngan_hang: values.name_bank_cty,
-                chu_tai_khoan: values.name_card_cty,
-                so_tai_khoan: values.number_cty
-            },
             tai_khoan_khach: {
                 ngan_hang: values.name_bank_khach,
                 chu_tai_khoan: values.name_card_khach,
                 so_tai_khoan: values.number_khach
+            },
+            tai_khoan_cong_ty: {
+                ngan_hang: values.name_bank_cty,
+                chu_tai_khoan: values.name_card_cty,
+                so_tai_khoan: values.number_cty
             },
             tong_gia_tri: values.total
         }
@@ -56,12 +55,12 @@ function BillCreate() {
     }
     return (
         <>
-            <Card title="Tạo hoá đơn">
+            <Card title="Tạo bút toán">
                 <Form
                     form={form}
                     name="basic"
                     labelCol={{
-                        span: 4,
+                        span: 6,
                     }}
                     wrapperCol={{
                         span: 16,
@@ -104,7 +103,7 @@ function BillCreate() {
                     <Row>
                         <Col span={10} push={2}>
                             <Form.Item>
-                                <Title level={5}>Tài khoản công ty</Title>
+                                <Title level={5}>Tài khoản kết toán</Title>
                             </Form.Item>
                             <Form.Item
                                 label="Ngân hàng"
@@ -158,7 +157,7 @@ function BillCreate() {
                         </Col>
                         <Col span={10} push={2}>
                             <Form.Item>
-                                <Title level={5}>Tài khoản khách </Title>
+                                <Title level={5}>Tài khoản bút toán</Title>
                             </Form.Item>
                             <Form.Item
                                 label="Ngân hàng"

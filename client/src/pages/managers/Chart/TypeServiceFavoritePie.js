@@ -1,18 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
+import { quoteService } from '~/services';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 
 export function TypeServiceFavoritePie() {
-
+    const [dataSource, setDataSource] = useState([])
+  useEffect(() => {
+    const getData = async() => {
+      setDataSource((await quoteService.findByTypeServiceAndYear()).data)
+    }
+    getData()
+  }, [])
+  console.log(dataSource);
     const data = {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: dataSource.map((item) => item._id),
         datasets: [
           {
             label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
+            data: dataSource.map((item) => item.count),
             backgroundColor: [
               'rgba(255, 99, 132, 0.2)',
               'rgba(54, 162, 235, 0.2)',

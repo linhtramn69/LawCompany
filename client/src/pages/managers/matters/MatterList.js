@@ -34,7 +34,7 @@ function MatterList() {
                 token.account.quyen === 1 || token.chuc_vu._id === 'KT02' ?
                     ((await matterService.get()).data)
                     : ((await matterService.findByIdAccess({ id: token._id })).data)
-            const arr = id === 'all' ? result : result.filter(item => item.status == id)
+            const arr = id === 'all' ? result : result.filter(item => item.status == id || item.status_tt == id)
             setMatters(arr)
         }
         const getType = async () => {

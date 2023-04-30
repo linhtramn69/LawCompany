@@ -8,7 +8,7 @@ import { actions, useStore, useToken } from "~/store";
 import { avatar } from "~/assets/images";
 import moment from "moment";
 import FormAddFile from "~/components/AdminComponents/Form/FormAddFile";
-const url = ['', 'admin', 'staff'];
+const url = ['', 'admin', 'ke-toan'];
 const statusTask = ['Đã giao', 'Đã hoàn thành', 'Tạm ngưng'];
 const statusFee = ['Đã trình', 'Đã duyệt', 'Đã kết toán', 'Đã huỷ'];
 
@@ -162,6 +162,9 @@ const detail = (data) => Modal.info({
                 <Descriptions.Item span={2} label="Tên tài khoản">{data.nameCreditCard}</Descriptions.Item>
                 <Descriptions.Item span={2} label="Số tài khoản">{data.numberCreditCard}</Descriptions.Item>
             </Descriptions>
+            <Divider/>
+            <img src={data.hinh_anh} width="50%" height="auto" alt="ok"/>
+
         </>
     ),
     onOk() { },
@@ -248,10 +251,11 @@ function MatterDetail() {
                 idHD: value.so_hoa_don,
                 nameBank: value.tai_khoan.ngan_hang,
                 nameCreditCard: value.tai_khoan.chu_tai_khoan,
-                numberCreditCard: value.tai_khoan.so_tai_khoan
+                numberCreditCard: value.tai_khoan.so_tai_khoan,
+                hinh_anh: value.hinh_anh
             })
         }) : []
-        const dataBill = state.bills>0 ? state.bills.map((value, index) => {
+        const dataBill = state.bills.length > 0 ? state.bills.map((value, index) => {
             return ({
                 key: index + 1,
                 _id: value._id,
@@ -270,7 +274,7 @@ function MatterDetail() {
         showDataSource();
         setDataFee(dataFee);
     }, [state.tasks, state.steps, state.fees])
-
+    console.log(dataBill);
     const columnsTask = [
         {
             title: 'Tên công việc',
@@ -498,11 +502,11 @@ function MatterDetail() {
                                             </span>
                                             <span>
                                                 <b style={{ marginRight: 15 }}>Đã thanh toán :</b>
-                                                {`${result}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'}
+                                                {`${result ? result : 0}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'}
                                             </span>
                                             <span>
                                                 <b style={{ marginRight: 15 }}>Số tiền còn lại:</b>
-                                                {`${state.matter.tong_tien - result}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'}
+                                                {`${state.matter.tong_tien - (result ? result : 0)}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',') + ' đ'}
                                                 </span>
                                         </Space>
                                     </>,
