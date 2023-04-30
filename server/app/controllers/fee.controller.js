@@ -1,6 +1,7 @@
 const MongoDB = require("../utils/mongodb.util");
 const ApiError = require("../api-error");
 const Fee = require("../services/fee.service")
+const cloudinary = require('../config/cloudinary')
 
 exports.findAll = async (req, res, next) => {
     let documents = [];
@@ -56,12 +57,20 @@ exports.findByStatus = async (req, res, next) => {
 }
 
 exports.create = async (req, res, next) => {
-    try {
+    let document = {}
+    try{
         const fee = new Fee(MongoDB.client);
-        const document = await fee.create(req.body);
+        cloudinary.uploader.upload(req.body.hinh_anh, {
+            folder: "Fee"
+        }).then((result) => {
+            document = fee.create({
+            ...req.body,
+            hinh_anh: result.secure_url
+        });
+        })
         return res.send(document);
     }
-    catch (error) {
+    catch(error){
         return next(
             new ApiError(500, "An error occured while creating fee")
         );

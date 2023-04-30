@@ -2,14 +2,14 @@ const { ObjectId } = require("mongodb");
 const nodeMailer = require('nodemailer');
 
 class QuoteForm {
-    constructor(client){
+    constructor(client) {
         this.QuoteForm = client.db().collection("quoteForm");
         this.TypeService = client.db().collection("typeService");
         this.Service = client.db().collection("service");
     }
 
     // define csdl
-    extractConactData(payload){
+    extractConactData(payload) {
         const quoteForm = {
             khach_hang: payload.khach_hang,
             linh_vuc: payload.linh_vuc,
@@ -32,12 +32,12 @@ class QuoteForm {
         return quoteForm;
     }
 
-    async findAll(){
+    async findAll() {
         const result = await this.QuoteForm.find();
         return result.toArray();
     }
 
-    async findById(id){
+    async findById(id) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
@@ -46,19 +46,25 @@ class QuoteForm {
     }
 
     // tim cac bao gia theo linh vuc va theo nam
-    async findByTypeServiceAndYear(payload, type){
-        const rs = await this.QuoteForm.find({
-            "linh_vuc._id": type,
-            "$expr": {
-                "$and": [
-                    { "$eq": [{ "$year": "$ngay_lap_phieu" }, payload.year] }
-                ]
-            }
-        })
+    async findByTypeServiceAndYear(payload) {
+        const rs = await this.QuoteForm.aggregate([
+            {
+                $group: {
+                    _id: "$linh_vuc.ten_linh_vuc",
+                    count: { $count: {} }
+                }
+            },
+            // {
+            //     $match: {
+            //         // "$expr": { "$eq": [{ "$year": "$ngay_lap_phieu" }, payload.year]}
+            //         "status": 2
+            //     }
+            // }
+        ])
         return rs.toArray()
     }
 
-    async create(payload){
+    async create(payload) {
         const linh_vuc = await this.TypeService.findOne({ _id: payload.linh_vuc });
         const dich_vu = await this.Service.findOne({ _id: new ObjectId(payload.dich_vu) });
         const quote = {
@@ -72,8 +78,8 @@ class QuoteForm {
         return result;
     }
 
-    async sendMail(payload){
-       
+    async sendMail(payload) {
+
         const adminEmail = 'coopmart.service69@gmail.com';
         const adminPassword = 'zkxomevbzvqlmkdy';
         const mailHost = 'smtp.gmail.com';
@@ -82,25 +88,25 @@ class QuoteForm {
         const html = `<p>${payload.dich_vu.ten_dv}</p>`
 
         const transporter = nodeMailer.createTransport({
-          host: mailHost,
-          port: mailPort,
-          secure: false, 
-          auth: {
-            user: adminEmail,
-            pass: adminPassword
-          }
+            host: mailHost,
+            port: mailPort,
+            secure: false,
+            auth: {
+                user: adminEmail,
+                pass: adminPassword
+            }
         })
-        
+
         const options = {
-          from: adminEmail,
-          to: payload.khach_hang.email,
-          subject: subject,
-          html: html
+            from: adminEmail,
+            to: payload.khach_hang.email,
+            subject: subject,
+            html: html
         }
         return transporter.sendMail(options);
     }
 
-    async update(id, payload){
+    async update(id, payload) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };
@@ -120,7 +126,7 @@ class QuoteForm {
         return result.value;
     }
 
-    async delete(id){
+    async delete(id) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
         };

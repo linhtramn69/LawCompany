@@ -58,18 +58,33 @@ class Bill {
             nhan_vien_lap_hoa_don: await this.User.findOne({ _id: new ObjectId(payload.nhan_vien_lap_hoa_don) })
         }
         const result = await this.Bill.insertOne(newVal);
+        this.updateToTalMatter(payload.vu_viec)
         return result;
     }
-    updateToTalMatter(payload) {
+    async updateToTalMatter(payload) {
         let total = 0;
+        const id = {
+            _id: ObjectId.isValid(payload) ? new ObjectId(payload) : null
+        };
         const result = this.Bill.find({ vu_viec: payload })
+        const matter = await this.Matter.findOne({ _id: new ObjectId(payload)})
+       console.log(matter);
         result.forEach((value) => {
             total = total + value.tong_gia_tri
         }).then(() => {
-            return total;
+                matter.tong_tien - total > 0 && total > 0 
+                ? matter.status_tt = 1
+                : matter.tong_tien == total ? matter.status_tt = 2
+                : matter.status_tt = 0
+        }).then(() => {
+            this.Matter.findOneAndUpdate(
+                id,
+                {
+                    $set: matter
+                }
+            );
         })
     }
-
     // tim cac bill theo loai hoa don va theo nam
     async getByMonthAndType(payload, i) {
         const rs = await this.Bill.find({

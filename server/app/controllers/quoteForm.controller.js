@@ -30,25 +30,38 @@ exports.findById = async (req, res, next) => {
     }
 };
 
-exports.findByTypeServiceAndYear = async (req, res, next) => {
-    let arrs = [];
+// exports.findByTypeServiceAndYear = async (req, res, next) => {
+//     let arrs = [];
+//     try {
+//         const quoteForm = new QuoteForm(MongoDB.client);
+//         const type = new TypeService(MongoDB.client);
+//         const arrType = await type.findAll({})
+//         arrType.forEach(async (item) => {
+//             const documents = await quoteForm.findByTypeServiceAndYear(req.body, item._id);
+//             arrs.push(documents.length)
+//             console.log(arrs);
+//         })
+//         return res.send(arrs);
+//     }
+//     catch (error) {
+//         return next(
+//             new ApiError(500, "An error occured while find fee by year and type")
+//         );
+//     }
+// };
+exports.findByTypeServiceAndYear =  async (req, res, next) => {
+    let documents = [];
     try {
         const quoteForm = new QuoteForm(MongoDB.client);
-        const type = new TypeService(MongoDB.client);
-        const arrType = await type.findAll({})
-        arrType.forEach(async (item) => {
-            const documents = await quoteForm.findByTypeServiceAndYear(req.body, item._id);
-            arrs.push(documents.length)
-            console.log(arrs);
-        })
-        return res.send(arrs);
+        documents = await quoteForm.findByTypeServiceAndYear(req.body);
+        return res.send(documents);
     }
     catch (error) {
         return next(
-            new ApiError(500, "An error occured while find fee by year and type")
+            new ApiError(500, "An error occured while find all quoteForms")
         );
     }
-};
+    };
 
 exports.create = async (req, res, next) => {
     try {
