@@ -10,6 +10,9 @@ class BillService {
     async findByMatter(data) {
         return (await API.post(`/bill/findByMatter`, data));
     }
+    async findByMonthYearAndType(data) {
+        return (await API.post(`/bill/findByMonth`, data));
+    }
     async create(data){
         return (await API.post(`bill`, data));
     }

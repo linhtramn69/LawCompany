@@ -28,6 +28,9 @@ class MatterService {
     async delete(id){
         return (await API.delete(`matter/${id}`));
     }
+    async findFinishedMatterByYear(data){
+        return (await API.post(`matter/findFinishedMatterByYear`, data))
+    }
 }
 
 let matterService = new MatterService();

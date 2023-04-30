@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import { matterService, quoteService, taskService } from "~/services";
 import { useState } from "react";
 import ModalAddTask from "./ModalAddTask";
+import { MatterFinishBar } from "../Chart/MatterFinishBar";
 const styleCol = {
     textAlign: 'center'
 }
@@ -147,71 +148,19 @@ function MatterManager() {
                         </Col>
                     </Row>
                 </Col>
-                {/* <Col md={{ span: 10, push: 1 }} xs={{ span: 24 }}>
+                <Col md={{ span: 10, push: 1 }} xs={{ span: 24 }}>
                     <Divider>
-                        <Title level={4}>Tổng vụ việc tính phí</Title>
+                        <Title level={4}>Số lượng vụ việc đã hoàn thành theo từng tháng / {new Date().getFullYear()}</Title>
                     </Divider>
                     <Row>
-                        <Col span={8} push={4}>
-                            <Title level={5}>Thời gian tháng này</Title>
-                            <Divider />
-                            <Progress
-                                type="circle"
-                                size={150}
-                                percent={90}
-                                strokeColor={{
-                                    '0%': '#108ee9',
-                                    '100%': '#87d068',
-                                }}
-                            />
+                        <Col span={24} >
+                            <MatterFinishBar />
                         </Col>
-                        <Col span={8} push={6}>
-                            <Title level={5}>Thời gian tháng này</Title>
-                            <Divider />
-                            <Progress
-                                type="circle"
-                                size={150}
-                                percent={90}
-                                strokeColor={{
-                                    '0%': '#108ee9',
-                                    '100%': '#87d068',
-                                }}
-                            />
-                        </Col>
+                        {/* <Col span={24} >
+                            <BillChiLine />
+                        </Col> */}
                     </Row>
-                    <Divider />
-                    <Divider>
-                        <Title level={4}>Tổng vụ việc tính phí</Title>
-                    </Divider>
-                    <Row>
-                        <Col span={8} push={4}>
-                            <Title level={5}>Thời gian tháng này</Title>
-                            <Divider />
-                            <Progress
-                                type="circle"
-                                size={150}
-                                percent={90}
-                                strokeColor={{
-                                    '0%': '#108ee9',
-                                    '100%': '#87d068',
-                                }}
-                            />
-                        </Col>
-                        <Col span={8} push={6}>
-                            <Title level={5}>Thời gian tháng này</Title>
-                            <Divider />
-                            <Progress
-                                type="circle"
-                                size={150}
-                                percent={90}
-                                strokeColor={{
-                                    '0%': '#108ee9',
-                                    '100%': '#87d068',
-                                }}
-                            />
-                        </Col>
-                    </Row>
-                </Col> */}
+                </Col>
             </Row>
             {isModalOpenTask ? <ModalAddTask open={isModalOpenTask} onCancel={handleCancelTask} /> : null}
         </>

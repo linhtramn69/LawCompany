@@ -1,4 +1,4 @@
-import { Avatar, Button, Col, Divider, Progress, Row, Space, } from "antd";
+import { Avatar, Button, Col, Divider, Row, Space, } from "antd";
 import {
     ReconciliationFilled,
     CreditCardFilled,
@@ -14,6 +14,10 @@ import { billService, feeService, matterService, quoteService, taskService } fro
 import ModalAddTask from "./matters/ModalAddTask";
 import ModalAddFee from "./matters/ModalAddFee";
 import CardMatter from "~/components/AdminComponents/Card/CardMatter";
+import { BillChiLine } from "./Chart/BillChiLine";
+import { BillThuLine } from "./Chart/BillThuLine";
+import { MatterFinishBar } from "./Chart/MatterFinishBar";
+import { TypeServiceFavoritePie } from "./Chart/TypeServiceFavoritePie";
 const styleCol = {
     textAlign: 'center'
 }
@@ -23,6 +27,9 @@ function Manager() {
     const [state, dispatch] = useStore();
     const [isModalOpenTask, setIsModalOpenTask] = useState(false);
     const [isModalOpenFee, setIsModalOpenFee] = useState(false);
+
+    
+
 
     const showModalTask = () => {
         setIsModalOpenTask(true)
@@ -205,66 +212,30 @@ function Manager() {
                 </Col>
                 <Col md={{ span: 10, push: 1 }} xs={{ span: 24 }}>
                     <Divider>
-                        <Title level={4}>Tổng vụ việc tính phí</Title>
+                        <Title level={4}>Tổng thu chi theo từng tháng / {new Date().getFullYear()}</Title>
                     </Divider>
                     <Row>
-                        <Col span={8} push={4}>
-                            <Title level={5}>Thời gian tháng này</Title>
-                            <Divider />
-                            <Progress
-                                type="circle"
-                                size={150}
-                                percent={90}
-                                strokeColor={{
-                                    '0%': '#108ee9',
-                                    '100%': '#87d068',
-                                }}
-                            />
+                        <Col span={24} >
+                            <BillThuLine />
                         </Col>
-                        <Col span={8} push={6}>
-                            <Title level={5}>Thời gian tháng này</Title>
-                            <Divider />
-                            <Progress
-                                type="circle"
-                                size={150}
-                                percent={90}
-                                strokeColor={{
-                                    '0%': '#108ee9',
-                                    '100%': '#87d068',
-                                }}
-                            />
+                        <Col span={24} >
+                            <BillChiLine />
                         </Col>
                     </Row>
-                    <Divider />
                     <Divider>
-                        <Title level={4}>Tổng vụ việc tính phí</Title>
+                        <Title level={4}>Số lượng vụ việc đã hoàn thành theo từng tháng / {new Date().getFullYear()}</Title>
                     </Divider>
                     <Row>
-                        <Col span={8} push={4}>
-                            <Title level={5}>Thời gian tháng này</Title>
-                            <Divider />
-                            <Progress
-                                type="circle"
-                                size={150}
-                                percent={90}
-                                strokeColor={{
-                                    '0%': '#108ee9',
-                                    '100%': '#87d068',
-                                }}
-                            />
+                        <Col span={24} >
+                            <MatterFinishBar />
                         </Col>
-                        <Col span={8} push={6}>
-                            <Title level={5}>Thời gian tháng này</Title>
-                            <Divider />
-                            <Progress
-                                type="circle"
-                                size={150}
-                                percent={90}
-                                strokeColor={{
-                                    '0%': '#108ee9',
-                                    '100%': '#87d068',
-                                }}
-                            />
+                    </Row>
+                    <Divider>
+                        <Title level={4}>Thống kê lĩnh vực được quan tâm theo năm ({new Date().getFullYear()}) </Title>
+                    </Divider>
+                    <Row>
+                        <Col span={20} >
+                            <TypeServiceFavoritePie />
                         </Col>
                     </Row>
                 </Col>

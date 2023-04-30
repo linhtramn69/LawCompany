@@ -105,12 +105,12 @@ function FeeDetail() {
             chi_phi_phat_sinh: fee._id,
             tong_gia_tri: value.total,
             ghi_chu: value.note,
-            tai_khoan_ket_toan: {
+            tai_khoan_cong_ty: {
                 ngan_hang: value.name_bank_kt,
                 chu_tai_khoan: value.name_card_kt,
                 so_tai_khoan: value.number_kt
             },
-            tai_khoan_boi_hoan: {
+            tai_khoan_khach: {
                 ngan_hang: value.name_bank_bh,
                 chu_tai_khoan: value.name_card_bh,
                 so_tai_khoan: value.number_bh

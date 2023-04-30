@@ -202,7 +202,7 @@ function MatterDetail() {
     }, [id, dispatch])
     useEffect(() => {
         const getAccess = async () => {
-            const arr1 = state.matter.truy_cap.nhan_vien;
+            const arr1 = state.matter.truy_cap.nhan_vien ;
             const arr2 = state.matter.truy_cap.khach_hang ? state.matter.truy_cap.khach_hang : [];
             setAccess((await userService.getByMatter(arr1.concat(arr2))).data)
         }
@@ -251,7 +251,7 @@ function MatterDetail() {
                 numberCreditCard: value.tai_khoan.so_tai_khoan
             })
         }) : []
-        const dataBill = state.bills ? state.bills.map((value, index) => {
+        const dataBill = state.bills>0 ? state.bills.map((value, index) => {
             return ({
                 key: index + 1,
                 _id: value._id,
