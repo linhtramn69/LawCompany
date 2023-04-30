@@ -45,6 +45,19 @@ class QuoteForm {
         return result;
     }
 
+    // tim cac bao gia theo linh vuc va theo nam
+    async findByTypeServiceAndYear(payload, type){
+        const rs = await this.QuoteForm.find({
+            "linh_vuc._id": type,
+            "$expr": {
+                "$and": [
+                    { "$eq": [{ "$year": "$ngay_lap_phieu" }, payload.year] }
+                ]
+            }
+        })
+        return rs.toArray()
+    }
+
     async create(payload){
         const linh_vuc = await this.TypeService.findOne({ _id: payload.linh_vuc });
         const dich_vu = await this.Service.findOne({ _id: new ObjectId(payload.dich_vu) });
@@ -52,6 +65,7 @@ class QuoteForm {
             ...payload,
             linh_vuc: linh_vuc,
             dich_vu: dich_vu,
+            ngay_lap_phieu: new Date(payload.ngay_lap_phieu),
         }
         const quoteForm = this.extractConactData(quote);
         const result = await this.QuoteForm.insertOne(quoteForm);

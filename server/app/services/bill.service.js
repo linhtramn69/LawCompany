@@ -33,12 +33,15 @@ class Bill {
         const result = await this.Bill.find();
         return result.toArray();
     }
+
+    // tim bill theo vu viec
     async findByMatter(payload) {
         const result = await this.Bill.find({
             vu_viec: { $eq: payload.id }
         });
         return result.toArray();
     }
+
     async findById(id) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
@@ -51,21 +54,34 @@ class Bill {
         const bill = this.extractConactData(payload);
         const newVal = {
             ...bill,
+            ngay_lap: new Date(payload.ngay_lap),
             nhan_vien_lap_hoa_don: await this.User.findOne({ _id: new ObjectId(payload.nhan_vien_lap_hoa_don) })
         }
-        // const result = await this.Bill.insertOne(newVal);
-        this.updateToTalMatter(payload.vu_viec)
-        return newVal;
+        const result = await this.Bill.insertOne(newVal);
+        return result;
     }
     updateToTalMatter(payload) {
         let total = 0;
         const result = this.Bill.find({ vu_viec: payload })
         result.forEach((value) => {
             total = total + value.tong_gia_tri
-        }).then(()=> {
-            console.log(total);
+        }).then(() => {
             return total;
         })
+    }
+
+    // tim cac bill theo loai hoa don va theo nam
+    async getByMonthAndType(payload, i) {
+        const rs = await this.Bill.find({
+            loai_hoa_don: payload.loai_hoa_don,
+            "$expr": {
+                "$and": [
+                    { "$eq": [{ "$month": "$ngay_lap" }, i] },
+                    { "$eq": [{ "$year": "$ngay_lap" }, payload.year] }
+                ]
+            }
+        })
+        return rs.toArray()
     }
 
     async update(id, payload) {

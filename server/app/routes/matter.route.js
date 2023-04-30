@@ -24,4 +24,7 @@ router.route("/setStatus-tt/:id")
 router.route("/findByIdAccess")
     .post(matter.findByIdAccess);
 
+router.route("/findFinishedMatterByYear")
+    .post(matter.findFinishedByIdAndYear);
+
 module.exports = router;

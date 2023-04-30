@@ -67,6 +67,36 @@ class Matter {
         return result.toArray();
     }
 
+    // tim cac vu viec da hoan thanh theo id luat su va theo nam
+    async findFinishedByIdAndYear(payload, i) {
+        const quyen = payload.quyen
+        if (quyen === 1) {
+            const rs = await this.Matter.find({
+                status: 1,
+                "$expr": {
+                    "$and": [
+                        { "$eq": [{ "$month": "$ngay_lap" }, i] },
+                        { "$eq": [{ "$year": "$ngay_lap" }, payload.year] }
+                    ]
+                }
+            })
+            return rs.toArray()
+        }
+        else {
+            const rs = await this.Matter.find({
+                status: 1,
+                "luat_su._id": new ObjectId(payload.id),
+                "$expr": {
+                    "$and": [
+                        { "$eq": [{ "$month": "$ngay_lap" }, i] },
+                        { "$eq": [{ "$year": "$ngay_lap" }, payload.year] }
+                    ]
+                }
+            })
+            return rs.toArray()
+        }
+    }
+
     async create(payload) {
         const linh_vuc = await this.TypeService.findOne({ _id: payload.linh_vuc });
         const dich_vu = await this.Service.findOne({ _id: new ObjectId(payload.dich_vu) });
@@ -82,6 +112,7 @@ class Matter {
             khach_hang: khach_hang,
             phuong_thuc_tinh_phi: phuong_thuc_tinh_phi,
             dieu_khoan_thanh_toan: dieu_khoan_thanh_toan,
+            ngay_lap: new Date(payload.ngay_lap),
             status_tt: 0
         }
 
@@ -117,6 +148,8 @@ class Matter {
         );
         return result.value;
     }
+
+    // set status thanh toan
     async setStatus_TT(id, payload) {
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
@@ -130,6 +163,7 @@ class Matter {
         return rs.value
     }
 
+    // set status cac task cua vu viec
     async setStatus(id, payload) {
         const id_string = id;
         id = {
@@ -141,10 +175,10 @@ class Matter {
             { $set: matter },
             { returnDocument: "after" }
         );
-        if(payload.status == 2){
+        if (payload.status == 2) {
             const result = await this.Task.updateMany(
-                {status: 0, vu_viec: id_string},
-                {$set: {status: 2}}
+                { status: 0, vu_viec: id_string },
+                { $set: { status: 2 } }
             )
         }
         return rs.value;

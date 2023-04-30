@@ -115,3 +115,23 @@ exports.delete = async (req, res, next) => {
         );
     }
 }
+exports.findFinishedByIdAndYear = async (req, res, next) => {
+    let arrs = [];
+    try {
+        const matter = new Matter(MongoDB.client);
+        for(let i=1; i<=12; i++){
+            let total = 0;
+            const documents = await matter.findFinishedByIdAndYear(req.body, i);
+            documents.forEach(element => {
+                total ++;
+            })
+            documents.length > 0 ? arrs.push(total) : arrs.push(0)
+        }
+        return res.send(arrs);
+    }
+    catch (error) {
+        return next(
+            new ApiError(500, "An error occured while find finish matter by year ")
+        );
+    }
+};

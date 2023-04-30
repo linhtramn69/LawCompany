@@ -15,4 +15,7 @@ router.route("/:id")
 router.route("/sendMail")
     .post(quoteForm.sendMail);
 
+router.route("/findByTypeServiceAndYear")
+    .post(quoteForm.findByTypeServiceAndYear)
+
 module.exports = router;
