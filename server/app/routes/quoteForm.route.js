@@ -18,4 +18,7 @@ router.route("/sendMail")
 router.route("/findByTypeServiceAndYear")
     .post(quoteForm.findByTypeServiceAndYear)
 
+router.route("/findByProvinceAndYear")
+    .post(quoteForm.findByProvinceAndYear)
+
 module.exports = router;

@@ -33,7 +33,8 @@ class Matter {
             status: payload.status,
             tong_tien: payload.tong_tien,
             status_tt: payload.status_tt,
-            ngay_lap: payload.ngay_lap
+            ngay_lap: payload.ngay_lap,
+            cap_nhat_lan_cuoi: payload.cap_nhat_lan_cuoi
         };
 
         Object.keys(matter).forEach(
@@ -59,6 +60,44 @@ class Matter {
     async findByStatus(statusP) {
         const result = await this.Matter.find({ status: Number(statusP) });
         return result.toArray();
+    }
+    async reminder(){
+        const rs = await this.Matter.find({
+            status_tt: {$ne: 2}
+        })
+        return rs.toArray()
+    }
+    //thong ke hoa hong vu viec
+    async getRoseByMonth(payload) {
+        if(payload.quyen == 1){
+            const rs = await this.Matter.find({
+                status: 1,
+                chiet_khau_hoa_hong: {$gt: 0},
+                "$expr": {
+                    "$and": [
+                        { "$eq": [{ "$month": "$cap_nhat_lan_cuoi" }, payload.month] },
+                        { "$eq": [{ "$year": "$cap_nhat_lan_cuoi" }, payload.year] }
+                    ]
+                }
+            })
+        return rs.toArray()
+        }
+        else{
+             const rs = await this.Matter.find({
+            "luat_su._id": new ObjectId(payload._id),
+            status: 1,
+            chiet_khau_hoa_hong: {$gt: 0},
+            "$expr": {
+                "$and": [
+                    { "$eq": [{ "$month": "$cap_nhat_lan_cuoi" }, payload.month] },
+                    { "$eq": [{ "$year": "$cap_nhat_lan_cuoi" }, payload.year] }
+                ]
+            }
+        })
+        return rs.toArray()
+        
+        }
+       
     }
 
     // lay vu viec theo id truy cap
@@ -102,7 +141,7 @@ class Matter {
         const dich_vu = await this.Service.findOne({ _id: new ObjectId(payload.dich_vu) });
         const luat_su = await this.User.findOne({ _id: new ObjectId(payload.luat_su) });
         const khach_hang = await this.User.findOne({ _id: new ObjectId(payload.khach_hang) });
-        const phuong_thuc_tinh_phi = await this.TypePay.findOne({ _id: new ObjectId(payload.phuong_thuc_tinh_phi) });
+        // const phuong_thuc_tinh_phi = await this.TypePay.findOne({ _id: new ObjectId(payload.phuong_thuc_tinh_phi) });
         const dieu_khoan_thanh_toan = await this.TimePay.findOne({ _id: new ObjectId(payload.dieu_khoan_thanh_toan) });
         const vu_viec = {
             ...payload,
@@ -110,7 +149,7 @@ class Matter {
             dich_vu: dich_vu,
             luat_su: luat_su,
             khach_hang: khach_hang,
-            phuong_thuc_tinh_phi: phuong_thuc_tinh_phi,
+            // phuong_thuc_tinh_phi: phuong_thuc_tinh_phi,
             dieu_khoan_thanh_toan: dieu_khoan_thanh_toan,
             ngay_lap: new Date(payload.ngay_lap),
             status_tt: 0
@@ -129,7 +168,7 @@ class Matter {
         const dich_vu = await this.Service.findOne({ _id: new ObjectId(payload.dich_vu) });
         const luat_su = await this.User.findOne({ _id: new ObjectId(payload.luat_su) });
         const khach_hang = await this.User.findOne({ _id: new ObjectId(payload.khach_hang) });
-        const phuong_thuc_tinh_phi = await this.TypePay.findOne({ _id: new ObjectId(payload.phuong_thuc_tinh_phi) });
+        // const phuong_thuc_tinh_phi = await this.TypePay.findOne({ _id: new ObjectId(payload.phuong_thuc_tinh_phi) });
         const dieu_khoan_thanh_toan = await this.TimePay.findOne({ _id: new ObjectId(payload.dieu_khoan_thanh_toan) });
         const vu_viec = {
             ...payload,
@@ -137,7 +176,7 @@ class Matter {
             dich_vu: dich_vu,
             luat_su: luat_su,
             khach_hang: khach_hang,
-            phuong_thuc_tinh_phi: phuong_thuc_tinh_phi,
+            // phuong_thuc_tinh_phi: phuong_thuc_tinh_phi,
             dieu_khoan_thanh_toan: dieu_khoan_thanh_toan,
         }
         const matter = this.extractConactData(vu_viec);
@@ -165,6 +204,8 @@ class Matter {
 
     // set status cac task cua vu viec
     async setStatus(id, payload) {
+        console.log(payload.status);
+
         const id_string = id;
         id = {
             _id: ObjectId.isValid(id) ? new ObjectId(id) : null
@@ -178,8 +219,21 @@ class Matter {
         if (payload.status == 2) {
             const result = await this.Task.updateMany(
                 { status: 0, vu_viec: id_string },
-                { $set: { status: 2 } }
+                { $set: { status: -1 } }
             )
+        }
+        else if (payload.status == 0) {
+            const result = await this.Task.updateMany(
+                { status: -1, vu_viec: id_string },
+                { $set: { status: 0 } }
+            )
+        }
+        else if(payload.status == 1){
+            const update = await this.Matter.findOneAndUpdate(
+                id,
+                { $set: {cap_nhat_lan_cuoi: new Date()} },
+                { returnDocument: "after" }
+            );
         }
         return rs.value;
     }

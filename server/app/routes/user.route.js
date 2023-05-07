@@ -17,6 +17,9 @@ router.route("/login")
 
 router.route("/findByBoPhan/:id")
     .get(user.findAllByBoPhan);
+
+router.route("/findByBoss/:id")
+    .get(user.findAllByBoss);
     
 router.route("/findByMatter")
     .post(user.findByMatter);

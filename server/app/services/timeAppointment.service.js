@@ -4,7 +4,6 @@ class TimeAppointment {
     constructor(client){
         this.TimeAppointment = client.db().collection("timeAppointment");
     }
-
     // define csdl
     extractConactData(payload){
         const timeAppointment = {
@@ -43,7 +42,6 @@ class TimeAppointment {
         const result = await this.TimeAppointment.findOne(id);
         return result;
     }
-
     async create(payload){
         const timeAppointment = this.extractConactData(payload);
         const isExist = await this.TimeAppointment.find({ 
@@ -59,9 +57,16 @@ class TimeAppointment {
                 $lte: timeAppointment.thoi_gian.end
             },
         }).toArray();
-
+        console.log(isExist);
+        const newVal = {
+            ...timeAppointment,
+            thoi_gian:{
+                start: new Date(timeAppointment.thoi_gian.start),
+                end: new Date(timeAppointment.thoi_gian.end), 
+            }
+        }
         if(isExist.length == 0){
-            const result = await this.TimeAppointment.insertOne(timeAppointment);
+            const result = await this.TimeAppointment.insertOne({...newVal});
             return result;
         }
         return Error;

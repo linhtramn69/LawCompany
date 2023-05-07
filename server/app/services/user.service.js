@@ -28,7 +28,8 @@ class User {
             bang_cap: payload.bang_cap,
             active: payload.active,
             boss: payload.boss,
-            chuyen_mon: payload.chuyen_mon
+            chuyen_mon: payload.chuyen_mon,
+            avatar: payload.avatar
         };
 
         Object.keys(user).forEach(
@@ -53,6 +54,10 @@ class User {
     // tim tat ca nhan vien theo bo phan
     async findAllByBoPhan(id_bo_phan) {
         const result = await this.User.find({ "bo_phan._id": id_bo_phan });
+        return result.toArray();
+    }
+    async findAllByBoss(id) {
+        const result = await this.User.find({ "boss": id });
         return result.toArray();
     }
 

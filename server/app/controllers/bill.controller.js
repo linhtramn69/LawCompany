@@ -55,24 +55,24 @@ exports.create = async (req, res, next) => {
 
 exports.getByMonthAndType = async (req, res, next) => {
     let arrs = [];
-    try {
-        let total = 0;
-        const bill = new Bill(MongoDB.client);
-        for(let i=1; i<=12; i++){
-            const documents = await bill.getByMonthAndType(req.body, i);
-            const arr = documents.map((item) => {return item.tong_gia_tri})
-            arr.length > 0 ?
-            total = arr.reduce((tong, currentValue) => {
-                arrs.push(tong + currentValue)
-            }) : arrs.push(0)
-        }
-        return res.send(arrs);
-    }
-    catch (error) {
-        return next(
-            new ApiError(500, "An error occured while find fee by year and type")
-        );
-    }
+    // try {
+    //     let total = 0;
+    //     const bill = new Bill(MongoDB.client);
+    //     for(let i=1; i<=12; i++){
+    //         const documents = await bill.getByMonthAndType(req.body, i);
+    //         const arr = documents.map((item) => {return item.tong_gia_tri})
+    //         arr.length > 0 ?
+    //         total = arr.reduce((tong, currentValue) => {
+    //             arrs.push(tong + currentValue)
+    //         }) : arrs.push(0)
+    //     }
+    //     return res.send(arrs);
+    // }
+    // catch (error) {
+    //     return next(
+    //         new ApiError(500, "An error occured while find fee by year and type")
+    //     );
+    // }
 };
 
 exports.update = async (req, res, next) => {

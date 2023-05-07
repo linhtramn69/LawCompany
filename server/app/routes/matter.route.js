@@ -24,6 +24,12 @@ router.route("/setStatus-tt/:id")
 router.route("/findByIdAccess")
     .post(matter.findByIdAccess);
 
+router.route("/getRoseByMonth")
+        .post(matter.getRoseByMonth)
+
+router.route("/reminder")
+        .post(matter.reminder)
+
 router.route("/findFinishedMatterByYear")
     .post(matter.findFinishedByIdAndYear);
 

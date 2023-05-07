@@ -53,7 +53,46 @@ exports.findById = async (req, res, next) => {
         );
     }
 };
+exports.getRoseByMonth = async (req, res, next) => {
+    try{
+        const matter = new Matter(MongoDB.client);
+        const document = await matter.getRoseByMonth(req.body);
+        console.log(document);
+        return res.send(document);
+    }
+    catch(error){
+        return next(
+            new ApiError(500, "An error occured while find matter by id")
+        );
+    }
+};
+exports.reminder = async (req, res, next) => {
+    let documents = [];
+    const get_day_of_time = (d1, d2) => {
+        let ms1 = d1.getTime();
+        let ms2 = d2.getTime();
+        return Math.ceil((ms2 - ms1) / (24*60*60*1000));
+    };
+    try{
+        const matter = new Matter(MongoDB.client);
+        documents = await matter.reminder(req.body);
+        let arr = documents.map((item) => {
+            if(
+                (item.dieu_khoan_thanh_toan.ten - get_day_of_time(item.ngay_lap, new Date()) > 0 ) &&
+                (item.dieu_khoan_thanh_toan.ten - get_day_of_time(item.ngay_lap, new Date()) <= 7))
+            {
+                return item
+            }
+        })
+        return res.send(arr);
 
+    }
+    catch(error){
+        return next(
+            new ApiError(500, "An error occured while find all matters")
+        );
+    }
+}
 exports.create = async (req, res, next) => {
     try{
         const matter = new Matter(MongoDB.client);

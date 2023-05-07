@@ -20,6 +20,7 @@ class Bill {
             ghi_chu: payload.ghi_chu,
             tai_khoan_cong_ty: payload.tai_khoan_cong_ty,
             tai_khoan_khach: payload.tai_khoan_khach,
+            khach_hang: payload.khach_hang
         };
 
         // remove undefined fields
@@ -68,7 +69,6 @@ class Bill {
         };
         const result = this.Bill.find({ vu_viec: payload })
         const matter = await this.Matter.findOne({ _id: new ObjectId(payload)})
-       console.log(matter);
         result.forEach((value) => {
             total = total + value.tong_gia_tri
         }).then(() => {

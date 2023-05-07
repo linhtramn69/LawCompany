@@ -1,6 +1,7 @@
 const MongoDB = require("../utils/mongodb.util");
 const ApiError = require("../api-error");
 const User = require("../services/user.service")
+const cloudinary = require('../config/cloudinary')
 
 exports.findAll = async (req, res, next) => {
     let documents = [];
@@ -42,6 +43,19 @@ exports.findAllByBoPhan = async (req, res, next) => {
         );
     }
 }
+exports.findAllByBoss = async (req, res, next) => {
+    let documents = [];
+    try{
+        const user = new User(MongoDB.client);
+        documents = await user.findAllByBoss(req.params.id);
+        return res.send(documents);
+    }
+    catch(error){
+        return next(
+            new ApiError(500, "An error occured while find all users by id bophan")
+        );
+    }
+}
 exports.findByMatter = async (req, res, next) => {
     let documents = [];
     try{
@@ -57,9 +71,18 @@ exports.findByMatter = async (req, res, next) => {
 }
 
 exports.create = async (req, res, next) => {
+    let document = {}
+
     try{
         const user = new User(MongoDB.client);
-        const document = await user.create(req.body);
+        cloudinary.uploader.upload(req.body.avatar, {
+            folder: "User"
+        }).then((result) => {
+            document = user.create({
+            ...req.body,
+            avatar: result.secure_url
+        });
+    })
         return res.send(document);
     }
     catch(error){
